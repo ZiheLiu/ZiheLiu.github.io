@@ -452,7 +452,10 @@
       
         
           
-            <p>发现自己Java基础知识真的是薄弱到极点，在此记录平时遇到的各种琐碎知识。</p>
+            <h2 id="IO"><a href="#IO" class="headerlink" title="IO"></a>IO</h2><h3 id="内存映射文件"><a href="#内存映射文件" class="headerlink" title="内存映射文件"></a>内存映射文件</h3><p>传统的读取文件方式，要先把文件内容拷贝到内核的IO缓存区，再从内核的IO缓存区拷贝到进程的私有空间中。</p>
+<p>而内存映射文件，可以直接把进程的用户私有空间的一部分区域与文件对象建立起映射关系，不需要拷贝到内核的IO缓存区。</p>
+<p>在Java NIO中创建内存映射文件方式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">File file = <span class="keyword">new</span> File(<span class="string">"filename"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读的时候，从FileInputStream或RandomAccessFile得到Channel都可以</span></span><br><span class="line">FileInputStream fin = <span class="keyword">new</span> FileInputStream(file);</span><br><span class="line">FileChannel inChannel = fin.getChannel();</span><br><span class="line">MappedByteBuffer inBuffer = inChannel.map(FileChannel.MapMode.READ_ONLY, <span class="number">0</span>, inChannel.size());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 写的时候，只能从RandomAccessFile得到Channel</span></span><br><span class="line">RandomAccessFile fout = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rw"</span>);</span><br><span class="line">FileChannel outChannel = fout.getChannel();</span><br><span class="line">MappedByteBuffer outBuffer = outChannel.map(FileChannel.MapMode.READ_ONLY, <span class="number">0</span>, outChannel.size());</span><br></pre></td></tr></table></figure>
 
           
         
