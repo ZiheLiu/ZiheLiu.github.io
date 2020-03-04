@@ -1,2 +1,20 @@
 # ziheliu.github.io
-config分支存储了原始的hexo配置和博客。
+`blog` 分支存储了 markdown 博客以及 hexo 配置。
+
+## How to Run
+
+### Run Server
+
+```shell
+$ hexo server
+```
+
+### Deploy to Remote Sites
+
+```shell
+# Generate static files firstly
+$ hexo generate
+# Deploy to remote sites
+$ hexo deploy
+```
+
