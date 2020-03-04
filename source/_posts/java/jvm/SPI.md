@@ -7,7 +7,7 @@ tags:
 categories:
 	- java
 	- jvm
-typora-root-url: ../../
+typora-root-url: ../../../
 ---
 
 # SPI 机制

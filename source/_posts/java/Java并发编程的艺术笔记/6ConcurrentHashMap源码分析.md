@@ -7,7 +7,7 @@ tags:
 categories:
 	- java	
 	- concurrency
-typora-root-url: ../../
+typora-root-url: ../../../../
 ---
 
 # 6. ConcurrentHashMap 源码分析

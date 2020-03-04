@@ -7,7 +7,7 @@ tags:
 categories:
 	- java	
 	- concurrency
-typora-root-url: ../../
+typora-root-url: ../../../
 ---
 
 # 8. BlockingQueue 简介

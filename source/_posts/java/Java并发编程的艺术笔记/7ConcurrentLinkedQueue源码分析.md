@@ -7,7 +7,7 @@ tags:
 categories:
 	- java	
 	- concurrency
-typora-root-url: ../../
+typora-root-url: ../../../../
 ---
 
 # 7. ConcuurentLinkedQueue 源码分析

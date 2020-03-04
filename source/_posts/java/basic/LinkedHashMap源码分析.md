@@ -5,7 +5,8 @@ tags:
 	- java
 categories:
 	- java
-typora-root-url: ../
+	- basic
+typora-root-url: ../../../
 ---
 
 # LinkedHashMap 源码分析

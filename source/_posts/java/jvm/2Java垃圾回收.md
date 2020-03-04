@@ -7,7 +7,7 @@ tags:
 categories:
 	- java
 	- jvm
-typora-root-url: ../../
+typora-root-url: ../../../
 ---
 
 # 2. Java 垃圾收集器与内存分配分配策略

@@ -7,7 +7,7 @@ tags:
 categories:
 	- java	
 	- concurrency
-typora-root-url: ../../
+typora-root-url: ../../../../
 ---
 
 # 4. Java 并发编程基础

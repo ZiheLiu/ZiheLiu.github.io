@@ -4,8 +4,9 @@ date: 2020-03-04 14:48:52
 tags:
 	- java
 categories:
-	- java
-typora-root-url: ../
+	- java	
+	- basic
+typora-root-url: ../../../
 ---
 
 # Java 基础知识汇总

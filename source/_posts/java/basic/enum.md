@@ -5,7 +5,8 @@ tags:
 	- java
 categories:
 	- java
-typora-root-url: ../
+	- basic
+typora-root-url: ../../../
 ---
 
 # Enum
@@ -13,6 +14,8 @@ typora-root-url: ../
 ## 1. 定义
 
 ### 基础
+
+test
 
 使用 `enum`  关键字，类似于定义类的方式。
 

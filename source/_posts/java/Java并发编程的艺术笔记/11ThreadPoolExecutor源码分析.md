@@ -7,7 +7,7 @@ tags:
 categories:
 	- java	
 	- concurrency
-typora-root-url: ../../
+typora-root-url: ../../../
 ---
 
 # 11. ThreadPoolExecutor 源码分析

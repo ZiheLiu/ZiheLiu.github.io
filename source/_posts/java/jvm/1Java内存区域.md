@@ -7,7 +7,7 @@ tags:
 categories:
 	- java
 	- jvm
-typora-root-url: ../../
+typora-root-url: ../../../
 ---
 
 # 1. Java内存区域
