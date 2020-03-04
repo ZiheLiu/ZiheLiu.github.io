@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="4. Java 并发编程基础Java 的线程对应操作系统级别的线程。 执行 main() 方法的是主线程。 1. 线程的状态Java 线程的 6 个状态：  线程状态的迁移：  2. Daemon 线程当 JVM 中不存在非 Daemon 线程时，JVM 将会推出。">
+<meta name="keywords" content="java,concurrency">
+<meta property="og:type" content="article">
+<meta property="og:title" content="4. Java 并发编程基础">
+<meta property="og:url" content="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/4Java并发编程基础/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="4. Java 并发编程基础Java 的线程对应操作系统级别的线程。 执行 main() 方法的是主线程。 1. 线程的状态Java 线程的 6 个状态：  线程状态的迁移：  2. Daemon 线程当 JVM 中不存在非 Daemon 线程时，JVM 将会推出。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/Java线程的状态.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/Java线程状态的迁移.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/threadlocal.png">
+<meta property="og:updated_time" content="2020-03-04T16:57:42.989Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="4. Java 并发编程基础">
+<meta name="twitter:description" content="4. Java 并发编程基础Java 的线程对应操作系统级别的线程。 执行 main() 方法的是主线程。 1. 线程的状态Java 线程的 6 个状态：  线程状态的迁移：  2. Daemon 线程当 JVM 中不存在非 Daemon 线程时，JVM 将会推出。">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/Java线程的状态.png">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/4Java并发编程基础/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>4. Java 并发编程基础 | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/4Java并发编程基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          4. Java 并发编程基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:04" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:04+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:57:42" itemprop="dateModified" datetime="2020-03-05T00:57:42+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/4Java并发编程基础/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/4Java并发编程基础/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="4-Java-并发编程基础"><a href="#4-Java-并发编程基础" class="headerlink" title="4. Java 并发编程基础"></a>4. Java 并发编程基础</h1><p>Java 的线程对应操作系统级别的线程。</p>
+<p>执行 <code>main()</code> 方法的是主线程。</p>
+<h2 id="1-线程的状态"><a href="#1-线程的状态" class="headerlink" title="1. 线程的状态"></a>1. 线程的状态</h2><p>Java 线程的 6 个状态：</p>
+<p><img src="/images/Java线程的状态.png" alt="Java线程的状态"></p>
+<p>线程状态的迁移：</p>
+<p><img src="/images/Java线程状态的迁移.png" alt="Java线程状态的迁移"></p>
+<h2 id="2-Daemon-线程"><a href="#2-Daemon-线程" class="headerlink" title="2. Daemon 线程"></a>2. Daemon 线程</h2><p>当 JVM 中不存在非 Daemon 线程时，JVM 将会推出。</p>
+<p>使用 <code>thread.setDaemon(true)</code> 来设置，只能在线程启动前设置。</p>
+<h2 id="3-线程初始化"><a href="#3-线程初始化" class="headerlink" title="3. 线程初始化"></a>3. 线程初始化</h2><p>线程 A 的父线程（创建线程 A 的线程）来初始化线程 A。</p>
+<ul>
+<li>子线程继承了 父线程的 <code>daemon</code>、优先级、contextClassLoader、InheritiableThreadLocal</li>
+<li>分配 <code>threadID</code> (从 0 开始递增)。</li>
+</ul>
+<h2 id="4-启动线程"><a href="#4-启动线程" class="headerlink" title="4. 启动线程"></a>4. 启动线程</h2><p>调用 <code>thread.start()</code> 方法来启动线程，它会调用 <code>thread.run()</code> 方法。</p>
+<p><code>Thread</code> 类 默认的 <code>start</code> 方法是调用 <code>Runnable</code> 类型的 <code>target</code> 的 <code>target.run()</code> 方法。</p>
+<p>因此，可以在构造线程时，传入一个 <code>Runnable</code> 对象。</p>
+<h2 id="5-线程的中断"><a href="#5-线程的中断" class="headerlink" title="5. 线程的中断"></a>5. 线程的中断</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><p>注意，这里的中断不是操作系统的中断，而是线程的一个标志位。</p>
+<p>常用方法：</p>
+<ul>
+<li><code>threadA.interrupt()</code> 其他线程调用来中断 A 线程。</li>
+<li><code>threadA.isInterrupted()</code> 返回 A 线程是否被中断了。如果线程状态是 <code>TERMINATED</code>，即使被中断过，也会返回 false。</li>
+<li><code>Thread.interrupted()</code> 静态方法，返回当前线程是否被中断了，并且清除标志位。</li>
+</ul>
+<p>许多方法声明了 <code>throws InterruptedException</code>，在执行这些方法时，如果线程被中断，则会抛出 <code>InterruptedException</code>、清除标志位。</p>
+<h3 id="终止线程"><a href="#终止线程" class="headerlink" title="终止线程"></a>终止线程</h3><h4 id="suspend-、resume-、stop"><a href="#suspend-、resume-、stop" class="headerlink" title="suspend()、resume()、stop()"></a>suspend()、resume()、stop()</h4><p><code>suspend()</code>、<code>resume()</code>、<code>stop()</code> 方法可以暂停、回复、终止线程。</p>
+<p>但是他们不给线程资源释放的时间、没办法释放锁，只要调用了，就会进行操作，所以现在是<strong>过期</strong>的方法了。</p>
+<h4 id="可以使用中断来安全的终止线程"><a href="#可以使用中断来安全的终止线程" class="headerlink" title="可以使用中断来安全的终止线程"></a>可以使用中断来安全的终止线程</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyRunnable</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (!Thread.interrupted()) &#123;</span><br><span class="line">      <span class="comment">// do somthing ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 释放资源</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Thread thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> MyRunnable());</span><br><span class="line">thread.start();</span><br><span class="line">thread.interrupt(); <span class="comment">// 终止线程</span></span><br></pre></td></tr></table></figure>
+<h2 id="6-等待-通知机制"><a href="#6-等待-通知机制" class="headerlink" title="6. 等待/通知机制"></a>6. 等待/通知机制</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><code>Object</code> 类上定义了 <code>wait()</code> 和 <code>notify()</code> 方法。</p>
+<ul>
+<li>持有锁的线程，调用 <code>wait()</code> ，会释放锁，阻塞在 <code>wait()</code> 方法上。这个线程被移动到这个 <code>Object</code> 的监视器的等待队列上。</li>
+<li>持有锁的线程 A，调用 <code>notify()</code>，<ul>
+<li>会把一个线程 B 从监视器的等待队列移到同步队列，从而 B 开始竞争锁。</li>
+<li>在线程 A 释放锁后（注意，不是调用了 <code>notify()</code> 就释放锁），B 获得锁后，从 <code>wait()</code> 方法返回。</li>
+</ul>
+</li>
+<li><code>notifyAll()</code>，把监视器的等待队列上的所有线程都移动到同步队列上。</li>
+</ul>
+<h3 id="经典范式"><a href="#经典范式" class="headerlink" title="经典范式"></a>经典范式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 等待方（消费者）</span></span><br><span class="line"><span class="keyword">synchronized</span>(obj) &#123;</span><br><span class="line">  <span class="keyword">while</span> (条件不满足) &#123;</span><br><span class="line">    obj.wait();</span><br><span class="line">  &#125;</span><br><span class="line">  条件满足了，进行逻辑处理</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通知方（生产者）</span></span><br><span class="line"><span class="keyword">synchronized</span>(obj) &#123;</span><br><span class="line">  进行逻辑处理，改变条件</span><br><span class="line">  obj.notifyAll();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="7-thread-join-方法"><a href="#7-thread-join-方法" class="headerlink" title="7. thread.join() 方法"></a>7. thread.join() 方法</h2><h4 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h4><p>线程 A 执行了 <code>threadB.join()</code> 方法，则线程 A 需要等待线程 B 终止之后才能从 <code>threadB.join()</code> 方法返回。</p>
+<h4 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h4><ul>
+<li>调用 <code>threadB.join()</code> 方法，其实是线程 A 调用了 <code>threadB.wait(0)</code> 方法。注意需要先 <code>synchronized</code> 得到 <code>threadB</code> 的监视器锁。</li>
+<li>在线程 B 终止时，会调用 <code>threadB.notifyAll()</code> 方法。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">join</span><span class="params">(<span class="keyword">long</span> millis)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (isAlive()) &#123;</span><br><span class="line">    wait(<span class="number">0</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="8-ThreadLocal"><a href="#8-ThreadLocal" class="headerlink" title="8. ThreadLocal"></a>8. ThreadLocal</h2><h3 id="8-0-引用"><a href="#8-0-引用" class="headerlink" title="8.0 引用"></a>8.0 引用</h3><ul>
+<li><a href="https://juejin.im/post/5a5efb1b518825732b19dca4" target="_blank" rel="noopener">ThreadLocal源码深度剖析</a></li>
+<li><a href="https://juejin.im/post/59db31c16fb9a00a4843dc36" target="_blank" rel="noopener">源码|ThreadLocal的实现原理</a></li>
+<li><a href="https://www.cnblogs.com/hf-cherish/p/4970267.html" target="_blank" rel="noopener"><a href="https://www.cnblogs.com/hf-cherish/p/4970267.html" target="_blank" rel="noopener">java 静态变量生命周期（类生命周期）</a></a></li>
+</ul>
+<h3 id="8-1-语法"><a href="#8-1-语法" class="headerlink" title="8.1 语法"></a>8.1 语法</h3><p><code>ThreadLocal</code> 类提供了线程内部的局部变量。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ThreadLocal&lt;String&gt; strLocal = ThreadLocal.withInitial(() -&gt; <span class="keyword">new</span> String(<span class="string">"test"</span>));</span><br><span class="line">strLocal.set(<span class="keyword">new</span> String(<span class="string">"hello"</span>));</span><br><span class="line">System.out.println(strLocal.get());</span><br></pre></td></tr></table></figure>
+<h3 id="8-2-原理"><a href="#8-2-原理" class="headerlink" title="8.2 原理"></a>8.2 原理</h3><p><img src="/images/threadlocal.png" alt="threadlocal"></p>
+<h4 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h4><p>ThreadLocal 的数据结构如上图所示。</p>
+<ul>
+<li><p>每个 Thread 存储了一个 <code>ThreadLocalMap</code>，是一个内部实现的哈希表。</p>
+</li>
+<li><p><code>ThreadLocalMap</code> 内部存储了一个 <code>Entry</code> 数组，初始大小是 16。</p>
+</li>
+<li><code>Entry</code> 是 <code>WeakReference&lt;ThreadLocal&lt;?&gt;&gt;</code> 的子类，存储了 key 的弱引用和 value。</li>
+</ul>
+<h4 id="弱引用的-key"><a href="#弱引用的-key" class="headerlink" title="弱引用的 key"></a>弱引用的 key</h4><p>通过弱引用，实现了<strong>线程封闭</strong>的线程局部变量。</p>
+<ul>
+<li>当创建 ThreadLocal 变量的对象 GC 后，如果不使用弱引用，因为 entry 还引用着这个对象作为 key，没有办法 GC 这个 ThreadLocal 对象。</li>
+<li>而使用弱引用，如果只有 entry 引用了 key，则key会被回收，调用 key.get() 会得到 null。</li>
+</ul>
+<p>但是注意，只是 entry 的 key 被 GC 了，value 还没有GC。因此，<code>ThreadLocal</code> 的 <code>get()</code>、<code>remove()</code>、<code>set()</code> 方法中会检查一部分的 entry，看 key 是否为null，如果是的话把 value 设为 null，使得 value 可以被 GC。</p>
+<h4 id="hash-算法"><a href="#hash-算法" class="headerlink" title="hash 算法"></a>hash 算法</h4><p>Entry 数组初始大小是 16，当遇到碰撞时，使用寻址法，找到下一个可用的空位置。</p>
+<p>当负载达到 <code>threshold</code>（2/3 * 数组的长度）后，进行 rehash。</p>
+<ul>
+<li>首先遍历所有 Entry，清除 key 为 null 的元素。</li>
+<li>如果 <code>size &gt;= threshold - threshold / 4</code>，把数组长度加倍，重新放元素。</li>
+</ul>
+<h3 id="8-3-内存泄漏"><a href="#8-3-内存泄漏" class="headerlink" title="8.3 内存泄漏"></a>8.3 内存泄漏</h3><ol>
+<li><p>如果一个线程的 ThreadLocal 变量定义后，再也没有用过，则没有机会调用 <code>get</code>、<code>set</code> 方法，<code>value</code> 永远也没有办法被回收。</p>
+</li>
+<li><p>此外，如果是使用 <code>static</code> 声明的 ThreadLocal 对象，一般生命周期为整个应用程序，这个对 key 的引用一直存在，则没有办法回收 key。</p>
+</li>
+</ol>
+<blockquote>
+<p><code>static</code> 的生命周期：</p>
+<ul>
+<li>加载：JVM 在加载类的过程中为静态变量分配内存。</li>
+<li>销毁：类被卸载时，静态变量被销毁，并释放内存空间。</li>
+</ul>
+<p>类的生命周期：</p>
+<ul>
+<li>该类所有的实例都已经被回收，也就是 Java 堆中不存在该类的任何实例。</li>
+<li>加载该类的 ClassLoader 已经被回收。</li>
+<li>该类对应的 java.lang.Class 对象没有任何地方被引用，无法在任何地方通过反射访问该类的方法。</li>
+</ul>
+</blockquote>
+<p>所以，在不再使用 ThreadLocal 对象时，主动调用 <code>remove()</code> 方法来删除它。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/concurrency/" rel="tag"># concurrency</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/java/Java并发编程的艺术笔记/3Java内存模型/" rel="prev" title="3. Java 内存模型">
+      <i class="fa fa-chevron-left"></i> 3. Java 内存模型
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/java/Java并发编程的艺术笔记/5concurrenct包中的锁/" rel="next" title="5. concurrenct 包中的锁">
+      5. concurrenct 包中的锁 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#4-Java-并发编程基础"><span class="nav-number">1.</span> <span class="nav-text">4. Java 并发编程基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-线程的状态"><span class="nav-number">1.1.</span> <span class="nav-text">1. 线程的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Daemon-线程"><span class="nav-number">1.2.</span> <span class="nav-text">2. Daemon 线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-线程初始化"><span class="nav-number">1.3.</span> <span class="nav-text">3. 线程初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-启动线程"><span class="nav-number">1.4.</span> <span class="nav-text">4. 启动线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-线程的中断"><span class="nav-number">1.5.</span> <span class="nav-text">5. 线程的中断</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#语法"><span class="nav-number">1.5.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#终止线程"><span class="nav-number">1.5.2.</span> <span class="nav-text">终止线程</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#suspend-、resume-、stop"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">suspend()、resume()、stop()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#可以使用中断来安全的终止线程"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">可以使用中断来安全的终止线程</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-等待-通知机制"><span class="nav-number">1.6.</span> <span class="nav-text">6. 等待/通知机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.6.1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#经典范式"><span class="nav-number">1.6.2.</span> <span class="nav-text">经典范式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-thread-join-方法"><span class="nav-number">1.7.</span> <span class="nav-text">7. thread.join() 方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#语法-1"><span class="nav-number">1.7.0.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#原理-1"><span class="nav-number">1.7.0.2.</span> <span class="nav-text">原理</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-ThreadLocal"><span class="nav-number">1.8.</span> <span class="nav-text">8. ThreadLocal</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#8-0-引用"><span class="nav-number">1.8.1.</span> <span class="nav-text">8.0 引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-1-语法"><span class="nav-number">1.8.2.</span> <span class="nav-text">8.1 语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-2-原理"><span class="nav-number">1.8.3.</span> <span class="nav-text">8.2 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据结构"><span class="nav-number">1.8.3.1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#弱引用的-key"><span class="nav-number">1.8.3.2.</span> <span class="nav-text">弱引用的 key</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#hash-算法"><span class="nav-number">1.8.3.3.</span> <span class="nav-text">hash 算法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-3-内存泄漏"><span class="nav-number">1.8.4.</span> <span class="nav-text">8.3 内存泄漏</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/4Java并发编程基础/";
+    this.page.identifier = "2020/java/Java并发编程的艺术笔记/4Java并发编程基础/";
+    this.page.title = "4. Java 并发编程基础";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

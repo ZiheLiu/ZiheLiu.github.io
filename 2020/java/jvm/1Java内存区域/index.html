@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. Java内存区域0. 引用 《深入理解 Java 虚拟机 - 第三版》  0. 简介JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：  由所有线程共享的数据区。随虚拟机进程的启动而一直存在。  线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。    1. 程序计数器当前线程所执行的字节码指令的行号指示器。 较小的内存空间。">
+<meta name="keywords" content="java,jvm">
+<meta property="og:type" content="article">
+<meta property="og:title" content="1. Java内存区域">
+<meta property="og:url" content="http://ziheliu.github.io/2020/java/jvm/1Java内存区域/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="1. Java内存区域0. 引用 《深入理解 Java 虚拟机 - 第三版》  0. 简介JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：  由所有线程共享的数据区。随虚拟机进程的启动而一直存在。  线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。    1. 程序计数器当前线程所执行的字节码指令的行号指示器。 较小的内存空间。">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/JVM内存运行时数据区.svg">
+<meta property="og:updated_time" content="2020-03-04T16:57:33.430Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="1. Java内存区域">
+<meta name="twitter:description" content="1. Java内存区域0. 引用 《深入理解 Java 虚拟机 - 第三版》  0. 简介JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：  由所有线程共享的数据区。随虚拟机进程的启动而一直存在。  线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。    1. 程序计数器当前线程所执行的字节码指令的行号指示器。 较小的内存空间。">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/JVM内存运行时数据区.svg">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/java/jvm/1Java内存区域/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>1. Java内存区域 | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/1Java内存区域/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          1. Java内存区域
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:57:33" itemprop="dateModified" datetime="2020-03-05T00:57:33+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/jvm/1Java内存区域/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/1Java内存区域/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-Java内存区域"><a href="#1-Java内存区域" class="headerlink" title="1. Java内存区域"></a>1. Java内存区域</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li>《深入理解 Java 虚拟机 - 第三版》</li>
+</ul>
+<h2 id="0-简介"><a href="#0-简介" class="headerlink" title="0. 简介"></a>0. 简介</h2><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
+<ol>
+<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
+</li>
+<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
+</li>
+</ol>
+<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
+<h2 id="1-程序计数器"><a href="#1-程序计数器" class="headerlink" title="1. 程序计数器"></a>1. 程序计数器</h2><p>当前线程所执行的字节码指令的行号指示器。</p>
+<p>较小的内存空间。</p>
+<ul>
+<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
+<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
+</ul>
+<h2 id="2-Java-虚拟机栈"><a href="#2-Java-虚拟机栈" class="headerlink" title="2. Java 虚拟机栈"></a>2. Java 虚拟机栈</h2><p>每个 Java 方法被执行时，JVM 会创建一个栈帧，存储局部变量表、操作数栈、动态连结、方法出口等信息。</p>
+<p>方法从被调用到执行完毕的过程，对应栈帧在虚拟机栈中从入栈到出栈的过程。</p>
+<h3 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h3><p>局部变量表存放了</p>
+<ul>
+<li>基本数据类型</li>
+<li>对象引用</li>
+<li>returnAddress 类型（指向一条字节码指令的地址）</li>
+</ul>
+<p>它的存储空间使用局部变量槽（Slot）来表示，64 位的 <code>long</code> <code>double</code> 占用两个变量槽。</p>
+<p>局部变量表所需的内存空间，在编译期间就完成了分配。</p>
+<h3 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h3><p>分配的栈过多、或栈的内存使用太多，会导致新的栈帧内存无法分配时，HotSpot 虚拟机都会抛出 <code>StackOverflowError</code>。</p>
+<h3 id="JVM-参数"><a href="#JVM-参数" class="headerlink" title="JVM 参数"></a>JVM 参数</h3><ul>
+<li>-Xss：栈容量。</li>
+<li>-Xoss：本地方法栈容量。HotSpot 虚拟机不区分两个栈，所以这个参数没有用。</li>
+</ul>
+<h2 id="3-本地方法栈"><a href="#3-本地方法栈" class="headerlink" title="3. 本地方法栈"></a>3. 本地方法栈</h2><p>与 Java 虚拟机栈类似，为虚拟机使用到的本地 native 方法服务。</p>
+<p>《Java 虚拟机规范》没有强制规定如何实现本地方法栈。HotSpot 虚拟机中，直接把 Java 虚拟机栈 和 本地方法栈合二为一。</p>
+<h2 id="4-Java-堆"><a href="#4-Java-堆" class="headerlink" title="4. Java 堆"></a>4. Java 堆</h2><p>唯一目的：存放对象实例。是垃圾收集器管理的内存区域。</p>
+<h3 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h3><ol>
+<li>执行字节码 <code>new</code> 指令。<ol>
+<li>类加载检查。<ol>
+<li>检查指令的参数能否在常量池中定位到类的符号引用。</li>
+<li>进行类的加载、解析、初始化。（如果没有进行的话）。</li>
+</ol>
+</li>
+<li>为对象分配内存。<ul>
+<li>大小在类加载完成后可以完全确定。</li>
+<li>如果保证多个对象分配的线程安全？<ul>
+<li>CAS + 重试保证原子性更新。</li>
+<li>本地线程分配缓冲（Thread local Allocation Buffer，TLAB）。每个线程在 Java 堆中预先分配一块内存。分配内存现在线程的 TLAB 上进行，只有用完了，才去锁定。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>将分配来的内存空间（除了对象头）初始化为零。</li>
+<li>在对象头中设置必要的信息。</li>
+</ol>
+</li>
+<li>执行 <code>&lt;init&gt;()</code> 方法，即构造函数。</li>
+</ol>
+<h3 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h3><ol>
+<li>对象头部信息。<ol>
+<li>Mark Word。对象自身运行时信息。对象哈希码、对象分代年龄、锁的信息。</li>
+<li>类型指针。指向它的元数据的指针。</li>
+<li>如果是 Java 数组，还需记录数组长度。</li>
+</ol>
+</li>
+<li>实例数据部分。</li>
+<li>对齐填充。<ol>
+<li>HotSpot 虚拟机要求对象起始地址必须是 8 字节的整数倍。</li>
+</ol>
+</li>
+</ol>
+<h3 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h3><p>两种主流方式。</p>
+<ul>
+<li>句柄。Java 堆中分出一块内存作为句柄池。reference 存储的是对象的句柄地址。句柄包含了对象实例数据的地址、类型数据的地址。<ul>
+<li>这种方式，不需要对象头存储类型指针。</li>
+</ul>
+</li>
+<li>直接指针。reference 直接指向对象实例数据的地址，类型数据的地址存储在对象头的类型指针中。HotSpot 使用这种方式。</li>
+</ul>
+<h3 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h3><p><code>OutOfMemoryError</code> 。</p>
+<h3 id="JVM-参数-1"><a href="#JVM-参数-1" class="headerlink" title="JVM 参数"></a>JVM 参数</h3><ul>
+<li>堆的最小值：-Xms</li>
+<li>堆的最大值：-Xmx</li>
+</ul>
+<h2 id="5-方法区"><a href="#5-方法区" class="headerlink" title="5. 方法区"></a>5. 方法区</h2><p>存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。</p>
+<h3 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h3><p>包含</p>
+<ul>
+<li>.class 文件中包含 编译时生成的字面量、符号引用。</li>
+<li>运行期间放入的新的常量，例如 <code>String.intern()</code>。</li>
+</ul>
+<h3 id="从永久代到元空间"><a href="#从永久代到元空间" class="headerlink" title="从永久代到元空间"></a>从永久代到元空间</h3><p>在 JDK 7 以前，HotSpot 虚拟机使用永久代来实现方法区。把收集器的分代设计扩展到了方法区。</p>
+<p>在 JDK 7 把字符串常量池、静态变量移到堆中。</p>
+<p>在 JDK 8 把剩余内容（主要是类型信息）移到本地 native 内存的元空间中。</p>
+<h3 id="异常-2"><a href="#异常-2" class="headerlink" title="异常"></a>异常</h3><p><code>OutOfMemoryError</code>。</p>
+<h3 id="JVM-参数-2"><a href="#JVM-参数-2" class="headerlink" title="JVM 参数"></a>JVM 参数</h3><p>永久代大小（只对JDK 6、JDK 7中除字符串常量池、静态变量部分有效）</p>
+<ul>
+<li>-XX:PermSize 和 -XX:MaxPermSize。限制永久代的大小。</li>
+</ul>
+<p>元空间大小（只对JDK 8中类型信息）</p>
+<ul>
+<li>-XX:MaxMetaspaceSize。最大值。</li>
+<li>-XX:MinMetaspaceSize。最小值。</li>
+<li>-XX:MetaspaceSize。初始大小。</li>
+</ul>
+<h2 id="6-直接内存"><a href="#6-直接内存" class="headerlink" title="6. 直接内存"></a>6. 直接内存</h2><p>不是 《Java 虚拟机规范》 定义的内存区域。</p>
+<p>使用 native 函数 <code>unsafe.allocateMemory()</code> 分配的内存，直接在堆外分配。</p>
+<p>通过 Java 堆里的 <code>DirectByeteBuffer</code> 作为这块内存的引用进行操作。</p>
+<h3 id="异常-3"><a href="#异常-3" class="headerlink" title="异常"></a>异常</h3><ul>
+<li><p>使用  <code>ByeteBuffer.allocateDirect()</code> ，会抛出 <code>OutOfMemoryError:Direct buffer memory</code>。是在 Java 代码中，在向操作系统申请内存前，手动检查的。</p>
+</li>
+<li><p>使用 <code>unsafe.allocateMemory()</code>，会抛出 <code>java.lang.OutOfMemoryError\ n t sun.misc.Unsafe.allocateMemory(Native Method)</code>。是在操作系统申请内存时，抛出的。</p>
+</li>
+</ul>
+<h3 id="JVM-参数-3"><a href="#JVM-参数-3" class="headerlink" title="JVM 参数"></a>JVM 参数</h3><ul>
+<li>-XX:MaxDirectMemorySize。只在 <code>ByeteBuffer.allocateDirect()</code> 手动检查时使用。<code>unsafe</code> 分配不受它的限制。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/jvm/" rel="tag"># jvm</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/java/io/内存映射文件/" rel="prev" title="FileChannel与内存映射文件">
+      <i class="fa fa-chevron-left"></i> FileChannel与内存映射文件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/java/jvm/2Java垃圾回收/" rel="next" title="2. Java垃圾收集器与内存分配分配策略">
+      2. Java垃圾收集器与内存分配分配策略 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-Java内存区域"><span class="nav-number">1.</span> <span class="nav-text">1. Java内存区域</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0-引用"><span class="nav-number">1.1.</span> <span class="nav-text">0. 引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0-简介"><span class="nav-number">1.2.</span> <span class="nav-text">0. 简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-程序计数器"><span class="nav-number">1.3.</span> <span class="nav-text">1. 程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Java-虚拟机栈"><span class="nav-number">1.4.</span> <span class="nav-text">2. Java 虚拟机栈</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#局部变量表"><span class="nav-number">1.4.1.</span> <span class="nav-text">局部变量表</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异常"><span class="nav-number">1.4.2.</span> <span class="nav-text">异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-参数"><span class="nav-number">1.4.3.</span> <span class="nav-text">JVM 参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-本地方法栈"><span class="nav-number">1.5.</span> <span class="nav-text">3. 本地方法栈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Java-堆"><span class="nav-number">1.6.</span> <span class="nav-text">4. Java 堆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的创建"><span class="nav-number">1.6.1.</span> <span class="nav-text">对象的创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的内存布局"><span class="nav-number">1.6.2.</span> <span class="nav-text">对象的内存布局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的访问定位"><span class="nav-number">1.6.3.</span> <span class="nav-text">对象的访问定位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异常-1"><span class="nav-number">1.6.4.</span> <span class="nav-text">异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-参数-1"><span class="nav-number">1.6.5.</span> <span class="nav-text">JVM 参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-方法区"><span class="nav-number">1.7.</span> <span class="nav-text">5. 方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#运行时常量池"><span class="nav-number">1.7.1.</span> <span class="nav-text">运行时常量池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从永久代到元空间"><span class="nav-number">1.7.2.</span> <span class="nav-text">从永久代到元空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异常-2"><span class="nav-number">1.7.3.</span> <span class="nav-text">异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-参数-2"><span class="nav-number">1.7.4.</span> <span class="nav-text">JVM 参数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-直接内存"><span class="nav-number">1.8.</span> <span class="nav-text">6. 直接内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异常-3"><span class="nav-number">1.8.1.</span> <span class="nav-text">异常</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM-参数-3"><span class="nav-number">1.8.2.</span> <span class="nav-text">JVM 参数</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://pisces.theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/java/jvm/1Java内存区域/";
+    this.page.identifier = "2020/java/jvm/1Java内存区域/";
+    this.page.title = "1. Java内存区域";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
