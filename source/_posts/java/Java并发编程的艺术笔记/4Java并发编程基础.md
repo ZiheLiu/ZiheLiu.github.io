@@ -160,10 +160,10 @@ System.out.println(strLocal.get());
 
 ThreadLocal 的数据结构如上图所示。
 
-- 每个 Thread 存储了一个 `ThreadLocalMap`，是一个内部实现的哈希表。
+- 每个 Thread 内部存储了一个 `ThreadLocalMap`，是一个内部实现的哈希表。
 
 - `ThreadLocalMap` 内部存储了一个 `Entry` 数组，初始大小是 16。
-- `Entry` 是 `WeakReference<ThreadLocal<?>>` 的子类，存储了 key 的弱引用和 value。
+- `Entry` 是 `WeakReference<ThreadLocal<?>>` 的子类，存储了 key （这个 `ThreadLocal` 对象）的弱引用和 value （要存储的值）。
 
 ### 弱引用的 key
 
@@ -173,6 +173,20 @@ ThreadLocal 的数据结构如上图所示。
 - 而使用弱引用，如果只有 entry 引用了 key，则key会被回收，调用 key.get() 会得到 null。
 
 但是注意，只是 entry 的 key 被 GC 了，value 还没有GC。因此，`ThreadLocal` 的 `get()`、`remove()`、`set()` 方法中会检查一部分的 entry，看 key 是否为null，如果是的话把 value 设为 null，使得 value 可以被 GC。
+
+### hash 函数
+
+在创建一个 `ThreadLocal` 对象时，会赋予其一个新的 `threadLocalHashCode`，是从一个 `AtomicInteger` 增加固定值来的。
+
+```java
+private final int threadLocalHashCode = nextHashCode();
+
+private static AtomicInteger nextHashCode = new AtomicInteger();
+private static final int HASH_INCREMENT = 0x61c88647;
+private static int nextHashCode() {
+    return nextHashCode.getAndAdd(HASH_INCREMENT);
+}
+```
 
 ### hash 算法
 
