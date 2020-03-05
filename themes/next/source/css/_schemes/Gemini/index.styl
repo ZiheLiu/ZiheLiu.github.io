@@ -121,22 +121,29 @@ $use-seo = hexo-config('seo');
 // Headers.
 // ==================================================
 .post-body {
-  h1, h2 {
+  h1 {
     border-bottom: 1px solid $body-bg-color;
+    color: #0050b3;
+    //font-size: 1.65em;
+  }
+
+  h2 {
   }
 
   h3 {
-    if ($use-seo) {
-      border-bottom: 1px solid $body-bg-color;
-    } else {
-      border-bottom: 1px dotted $body-bg-color;
-    }
+    color: #8c8c8c;
+    //if ($use-seo) {
+     // border-bottom: 1px solid $body-bg-color;
+    //} else {
+    //  border-bottom: 1px dotted $body-bg-color;
+    //}
   }
 
   h4 {
-    if ($use-seo) {
-      border-bottom: 1px dotted $body-bg-color;
-    }
+    color: #bfbfbf;
+   // if ($use-seo) {
+     // border-bottom: 1px dotted $body-bg-color;
+    //}
   }
 }
 
