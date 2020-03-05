@@ -20,20 +20,20 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="2. Java 并发机制的底层实现原理1. 锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声">
+  <meta name="description" content="锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制">
 <meta name="keywords" content="java,concurrency">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2. Java 并发机制的底层实现原理">
 <meta property="og:url" content="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/2Java并发机制的底层实现原理/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="2. Java 并发机制的底层实现原理1. 锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声">
+<meta property="og:description" content="锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ziheliu.github.io/images/对象头.jpeg">
 <meta property="og:image" content="http://ziheliu.github.io/images/重量级锁.png">
-<meta property="og:updated_time" content="2020-03-05T04:50:03.865Z">
+<meta property="og:updated_time" content="2020-03-05T12:56:59.812Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2. Java 并发机制的底层实现原理">
-<meta name="twitter:description" content="2. Java 并发机制的底层实现原理1. 锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声">
+<meta name="twitter:description" content="锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制">
 <meta name="twitter:image" content="http://ziheliu.github.io/images/对象头.jpeg">
 
 <link rel="canonical" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/2Java并发机制的底层实现原理/">
@@ -220,7 +220,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 12:50:03" itemprop="dateModified" datetime="2020-03-05T12:50:03+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 20:56:59" itemprop="dateModified" datetime="2020-03-05T20:56:59+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -261,29 +261,29 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="2-Java-并发机制的底层实现原理"><a href="#2-Java-并发机制的底层实现原理" class="headerlink" title="2. Java 并发机制的底层实现原理"></a>2. Java 并发机制的底层实现原理</h1><h2 id="1-锁总线与锁缓存"><a href="#1-锁总线与锁缓存" class="headerlink" title="1. 锁总线与锁缓存"></a>1. 锁总线与锁缓存</h2><p>原子操作和 <code>volatile</code> 基于锁总线或锁缓存实现。</p>
-<h3 id="锁总线"><a href="#锁总线" class="headerlink" title="锁总线"></a>锁总线</h3><p>使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。</p>
-<h3 id="锁缓存"><a href="#锁缓存" class="headerlink" title="锁缓存"></a>锁缓存</h3><p>如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制来保证操作的原子性。</p>
+        <h1 id="锁总线与锁缓存"><a href="#锁总线与锁缓存" class="headerlink" title="锁总线与锁缓存"></a>锁总线与锁缓存</h1><p>原子操作和 <code>volatile</code> 基于锁总线或锁缓存实现。</p>
+<h2 id="锁总线"><a href="#锁总线" class="headerlink" title="锁总线"></a>锁总线</h2><p>使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。</p>
+<h2 id="锁缓存"><a href="#锁缓存" class="headerlink" title="锁缓存"></a>锁缓存</h2><p>如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制来保证操作的原子性。</p>
 <p><strong>缓存一致性机制</strong>，当一个CPU 对缓存中的数据进行操作后，通知其他 CPU 放弃储存在它们内部的缓存，或者从主内存中重新读取。使用 <a href="https://blog.csdn.net/qq_35642036/article/details/82801708" target="_blank" rel="noopener">MESI （修改、独占、共享、无效）协议</a>实现。</p>
 <p>如果操作的数据不能被缓存在 CPU 内、或操作的数据跨多个缓存行，则<strong>不会使用锁缓存</strong>，而是锁总线。</p>
-<h2 id="2-volatile"><a href="#2-volatile" class="headerlink" title="2. volatile"></a>2. volatile</h2><h3 id="语义"><a href="#语义" class="headerlink" title="语义"></a>语义</h3><p>一个字段被声明为 <code>volatile</code>，Java 线程内存模型确保所有线程看到这个变亮的值是一致的。</p>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><ol>
+<h1 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h1><h2 id="语义"><a href="#语义" class="headerlink" title="语义"></a>语义</h2><p>一个字段被声明为 <code>volatile</code>，Java 线程内存模型确保所有线程看到这个变亮的值是一致的。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ol>
 <li>汇编中添加 lock 指令。使用锁缓存机制、或使用锁总线机制，引起 CPU 缓存写回到内存。</li>
 <li>一个 CPU 缓存回内存，根据 MESI 协议，使其他处理器的缓存无效。</li>
 </ol>
-<h3 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h3><p>可以把使用 <code>volatile</code> 的变量追加到 64 字节。否则其他数据和它共用一个缓存行，在它写数据时，会锁缓存行，导致其他 CPU 的其他数据的缓存也失效。</p>
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><p>可以把使用 <code>volatile</code> 的变量追加到 64 字节。否则其他数据和它共用一个缓存行，在它写数据时，会锁缓存行，导致其他 CPU 的其他数据的缓存也失效。</p>
 <p>因此在频繁写 <code>volatile</code> 变量的场景，可以使用追加字节的方式，避免缓存数据的相互锁定。</p>
-<h2 id="3-synchronized"><a href="#3-synchronized" class="headerlink" title="3. synchronized"></a>3. synchronized</h2><h3 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h3><ol>
+<h1 id="synchronized"><a href="#synchronized" class="headerlink" title="synchronized"></a>synchronized</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><ol>
 <li>普通同步方法，锁当前的实例对象。</li>
 <li>同步方法块，锁当前的类的 Class 对象。</li>
 <li>静态同步方法，锁 <code>synchronized</code> 括号中的对象。</li>
 </ol>
-<h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><blockquote>
+<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><blockquote>
 <p>主要参考 <a href="https://github.com/farmerjohngit/myblog/issues/12" target="_blank" rel="noopener">死磕Synchronized底层实现</a></p>
 </blockquote>
 <p>编译器会在同步代的开始位置前添加 <code>monitorenter</code> 指令，在方法结束处、异常处添加 <code>monitorexit</code> 指令。</p>
 <p>当线程执行到 <code>monitorenter</code> 指令，会尝试获取对象所对应的 <code>monitor</code> 的所有权，即尝试获得对象锁。</p>
-<h3 id="锁的三种形式"><a href="#锁的三种形式" class="headerlink" title="锁的三种形式"></a>锁的三种形式</h3><p>大多数情况，锁不仅不存在多线程竞争，而且总是同以线程多次获得。因此，设计了三级锁：偏向锁、轻量级锁、重量级锁。</p>
+<h2 id="锁的三种形式"><a href="#锁的三种形式" class="headerlink" title="锁的三种形式"></a>锁的三种形式</h2><p>大多数情况，锁不仅不存在多线程竞争，而且总是同以线程多次获得。因此，设计了三级锁：偏向锁、轻量级锁、重量级锁。</p>
 <p>对象的锁的信息存储在对象头里。</p>
 <p><img src="/images/对象头.jpeg" alt="对象头"></p>
 <p>其中，</p>
@@ -293,8 +293,8 @@
 <li><p>偏向锁和重量级锁，使用自己线程栈中的 <code>lock record</code> 来记录重入的次数，存储了要锁的对象 <code>obj</code>、加锁前对象头的内容 <code>displaced_markword</code>。</p>
 </li>
 </ul>
-<h3 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h3><p>1.6 以上，JVM 默认开启偏向锁。</p>
-<h4 id="加锁过程"><a href="#加锁过程" class="headerlink" title="加锁过程"></a>加锁过程</h4><ol>
+<h2 id="偏向锁"><a href="#偏向锁" class="headerlink" title="偏向锁"></a>偏向锁</h2><p>1.6 以上，JVM 默认开启偏向锁。</p>
+<h3 id="加锁过程"><a href="#加锁过程" class="headerlink" title="加锁过程"></a>加锁过程</h3><ol>
 <li>如果还没有加过锁，尝试 CAS 加锁，将 <code>markword</code> 更新为自己线程的 id。<ul>
 <li>成功，则获得了偏向锁，返回。</li>
 <li>失败，将偏向锁撤销，升级为轻量级锁。</li>
@@ -303,14 +303,14 @@
 <li>如果加过锁，并且 <code>markword</code> 中是自己线程的id，即重入了，在自己线程的栈中添加一条 <code>displaced_markdowrd</code> 为空的 Lock Recoard。因为是自己栈的变量，这里没有 CAS 操作。</li>
 <li>如果加过锁，并且不是自己线程加的锁，则将偏向锁撤销，升级为轻量级锁。</li>
 </ol>
-<h4 id="撤销锁"><a href="#撤销锁" class="headerlink" title="撤销锁"></a>撤销锁</h4><p>在 <code>safepoint</code> 中去查看偏向的线程是否还存活。</p>
+<h3 id="撤销锁"><a href="#撤销锁" class="headerlink" title="撤销锁"></a>撤销锁</h3><p>在 <code>safepoint</code> 中去查看偏向的线程是否还存活。</p>
 <ul>
 <li>如果存活、且还在同步块中（看持有锁线程是否有还指向锁对象的 <code>lock record</code>），则将锁升级为轻量级锁，原偏向的线程继续拥有锁，当前线程则走入到锁升级的逻辑里。</li>
 <li>如果偏向的线程已经不存活或者不在同步块中，则将对象头的<code>markword</code>改为无锁状态（unlocked），之后再升级为轻量级锁。</li>
 </ul>
-<h4 id="释放锁过程"><a href="#释放锁过程" class="headerlink" title="释放锁过程"></a>释放锁过程</h4><p>将栈中所有 <code>obj</code> 为要释放的锁对象的 <code>lock record</code> 的 <code>obj</code> 置为 null。（其实，还会查看锁是否是轻量级锁或重量级锁，来进行解锁操作）。</p>
+<h3 id="释放锁过程"><a href="#释放锁过程" class="headerlink" title="释放锁过程"></a>释放锁过程</h3><p>将栈中所有 <code>obj</code> 为要释放的锁对象的 <code>lock record</code> 的 <code>obj</code> 置为 null。（其实，还会查看锁是否是轻量级锁或重量级锁，来进行解锁操作）。</p>
 <p>注意，没有修改对象头中的 thread id。</p>
-<h3 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h3><h4 id="加锁过程-1"><a href="#加锁过程-1" class="headerlink" title="加锁过程"></a>加锁过程</h4><ol>
+<h2 id="轻量级锁"><a href="#轻量级锁" class="headerlink" title="轻量级锁"></a>轻量级锁</h2><h3 id="加锁过程-1"><a href="#加锁过程-1" class="headerlink" title="加锁过程"></a>加锁过程</h3><ol>
 <li>在线程栈中创建一个 <code>lock record</code>，将 <code>obj</code> 指向锁对象。</li>
 <li>用 CAS 尝试将 <code>lock record</code> 的地址存储在锁对象头的中。<ul>
 <li>成功，说明加锁成功，返回。</li>
@@ -326,27 +326,27 @@
 <ul>
 <li>如果只有两个线程 A 和 B，A 获得偏向锁，B申请锁，锁升级为轻量级锁。之后B获得的锁为轻量级锁，只有第三个线程竞争锁，才会膨胀Wie重量级锁。</li>
 </ul>
-<h4 id="解锁过程"><a href="#解锁过程" class="headerlink" title="解锁过程"></a>解锁过程</h4><ol>
+<h3 id="解锁过程"><a href="#解锁过程" class="headerlink" title="解锁过程"></a>解锁过程</h3><ol>
 <li>遍历线程栈，找到所有 <code>obj</code> 为当前锁对象的 <code>lock record</code>。<ul>
 <li>如果 <code>lock record</code> 的 <code>displaced_markword</code> 为 null，是重入，将 <code>obj</code> 设为 null，continue。</li>
 <li>如果不为 null，用 CAS 将锁对象头恢复为 <code>displaced_makrdword</code>，成功则退出，失败则膨胀重量级锁再进行解锁（可能是其他线程尝试加锁，膨胀为重量级锁，修改了对象头）。</li>
 </ul>
 </li>
 </ol>
-<h3 id="重量级锁"><a href="#重量级锁" class="headerlink" title="重量级锁"></a>重量级锁</h3><p>重量级锁使用 <code>Monitor</code> 实现。</p>
+<h2 id="重量级锁"><a href="#重量级锁" class="headerlink" title="重量级锁"></a>重量级锁</h2><p>重量级锁使用 <code>Monitor</code> 实现。</p>
 <ul>
 <li>owner 指向持有锁的线程。</li>
 <li>当一个线程尝试获得锁，如果该锁已经被占用，则会将该线程封装成一个 ObjectWaiter 对象插入到 cxq 的队列尾部，然后暂停当前线程。当持有锁的线程释放锁前，会将cxq中的所有元素移动到EntryList中去，并唤醒EntryList的队首线程。</li>
 <li>一个线程调用了<code>Object#wait</code>方法，会将该线程的 ObjectWaiter 从 EntryList 移除并加入到 WaitSet 中，然后释放锁。当 wait 的线程被 notify 之后，会将对应的 ObjectWaiter 从 WaitSet 移动到 EntryList 中。</li>
 </ul>
 <p><img src="/images/重量级锁.png" alt="重量级锁"></p>
-<h4 id="获取锁"><a href="#获取锁" class="headerlink" title="获取锁"></a>获取锁</h4><ol>
+<h3 id="获取锁"><a href="#获取锁" class="headerlink" title="获取锁"></a>获取锁</h3><ol>
 <li>尝试自旋获得锁。</li>
 <li>一定次数没有获得后，将当前线程插入到cxq队列的队首。</li>
 <li>park 当前线程。</li>
 <li>当被唤醒后再尝试获得锁（只会尝试一次，不会自旋了）。</li>
 </ol>
-<h4 id="释放锁"><a href="#释放锁" class="headerlink" title="释放锁"></a>释放锁</h4><ol>
+<h3 id="释放锁"><a href="#释放锁" class="headerlink" title="释放锁"></a>释放锁</h3><ol>
 <li><p>设置owner为null，即释放锁，这个时刻其他的线程能获取到锁。这里是一个非公平锁的优化。</p>
 </li>
 <li><p>如果当前没有等待的线程则直接返回就好了，因为不需要唤醒其他线程。或者如果说 succ 不为 null，代表当前已经有个”醒着的”继承人线程，那当前线程不需要唤醒任何线程。</p>
@@ -365,6 +365,17 @@
 </li>
 <li>取出 EntryList 的首元素，唤醒ObjectWaiter对象的线程。</li>
 </ol>
+<h1 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h1><blockquote>
+<p><a href="https://zhuanlan.zhihu.com/p/40211594" target="_blank" rel="noopener">面试必备之乐观锁与悲观锁</a></p>
+</blockquote>
+<h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><p>总是假设最坏的情况，每次拿数据时，都认为别人会修改。</p>
+<p>所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁。</p>
+<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><p>总是假设最好的情况，每次去拿数据时，都认为别人不会修改。</p>
+<p>所以不会上锁，但是在更新的时候会判断一下在此期间别人有没有去修改数据。</p>
+<h3 id="适应场景"><a href="#适应场景" class="headerlink" title="适应场景"></a>适应场景</h3><ul>
+<li>适合读多写少的场景。</li>
+<li>如果写操作很多，CAS 不断竞争失败，反而浪费了 CPU 资源。</li>
+</ul>
 
     </div>
 
@@ -457,7 +468,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#2-Java-并发机制的底层实现原理"><span class="nav-number">1.</span> <span class="nav-text">2. Java 并发机制的底层实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-锁总线与锁缓存"><span class="nav-number">1.1.</span> <span class="nav-text">1. 锁总线与锁缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#锁总线"><span class="nav-number">1.1.1.</span> <span class="nav-text">锁总线</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁缓存"><span class="nav-number">1.1.2.</span> <span class="nav-text">锁缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-volatile"><span class="nav-number">1.2.</span> <span class="nav-text">2. volatile</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#语义"><span class="nav-number">1.2.1.</span> <span class="nav-text">语义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.2.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用技巧"><span class="nav-number">1.2.3.</span> <span class="nav-text">使用技巧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-synchronized"><span class="nav-number">1.3.</span> <span class="nav-text">3. synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#语法"><span class="nav-number">1.3.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理-1"><span class="nav-number">1.3.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#锁的三种形式"><span class="nav-number">1.3.3.</span> <span class="nav-text">锁的三种形式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#偏向锁"><span class="nav-number">1.3.4.</span> <span class="nav-text">偏向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加锁过程"><span class="nav-number">1.3.4.1.</span> <span class="nav-text">加锁过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#撤销锁"><span class="nav-number">1.3.4.2.</span> <span class="nav-text">撤销锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#释放锁过程"><span class="nav-number">1.3.4.3.</span> <span class="nav-text">释放锁过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#轻量级锁"><span class="nav-number">1.3.5.</span> <span class="nav-text">轻量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#加锁过程-1"><span class="nav-number">1.3.5.1.</span> <span class="nav-text">加锁过程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解锁过程"><span class="nav-number">1.3.5.2.</span> <span class="nav-text">解锁过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#重量级锁"><span class="nav-number">1.3.6.</span> <span class="nav-text">重量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#获取锁"><span class="nav-number">1.3.6.1.</span> <span class="nav-text">获取锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#释放锁"><span class="nav-number">1.3.6.2.</span> <span class="nav-text">释放锁</span></a></li></ol></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#锁总线与锁缓存"><span class="nav-number">1.</span> <span class="nav-text">锁总线与锁缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#锁总线"><span class="nav-number">1.1.</span> <span class="nav-text">锁总线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁缓存"><span class="nav-number">1.2.</span> <span class="nav-text">锁缓存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#volatile"><span class="nav-number">2.</span> <span class="nav-text">volatile</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语义"><span class="nav-number">2.1.</span> <span class="nav-text">语义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用技巧"><span class="nav-number">2.3.</span> <span class="nav-text">使用技巧</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#synchronized"><span class="nav-number">3.</span> <span class="nav-text">synchronized</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#语法"><span class="nav-number">3.1.</span> <span class="nav-text">语法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理-1"><span class="nav-number">3.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#锁的三种形式"><span class="nav-number">3.3.</span> <span class="nav-text">锁的三种形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#偏向锁"><span class="nav-number">3.4.</span> <span class="nav-text">偏向锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁过程"><span class="nav-number">3.4.1.</span> <span class="nav-text">加锁过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#撤销锁"><span class="nav-number">3.4.2.</span> <span class="nav-text">撤销锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#释放锁过程"><span class="nav-number">3.4.3.</span> <span class="nav-text">释放锁过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#轻量级锁"><span class="nav-number">3.5.</span> <span class="nav-text">轻量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加锁过程-1"><span class="nav-number">3.5.1.</span> <span class="nav-text">加锁过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解锁过程"><span class="nav-number">3.5.2.</span> <span class="nav-text">解锁过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重量级锁"><span class="nav-number">3.6.</span> <span class="nav-text">重量级锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#获取锁"><span class="nav-number">3.6.1.</span> <span class="nav-text">获取锁</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#释放锁"><span class="nav-number">3.6.2.</span> <span class="nav-text">释放锁</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#乐观锁与悲观锁"><span class="nav-number">4.</span> <span class="nav-text">乐观锁与悲观锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#悲观锁"><span class="nav-number">4.1.</span> <span class="nav-text">悲观锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#乐观锁"><span class="nav-number">4.2.</span> <span class="nav-text">乐观锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#适应场景"><span class="nav-number">4.2.1.</span> <span class="nav-text">适应场景</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

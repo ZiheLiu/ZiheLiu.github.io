@@ -182,6 +182,115 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/http/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/计算机网络/http/" class="post-title-link" itemprop="url">HTTP 协议</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-05 17:55:00 / Modified: 19:28:15" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/计算机网络/http/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/http/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/61423830" target="_blank" rel="noopener">你猜一个 TCP 连接上面能发多少个 HTTP 请求</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/26559480" target="_blank" rel="noopener">一文读懂 HTTP/2 特性</a></li>
+</ul>
+<h1 id="HTTP是无状态的-V-S-Connection-keep-alive"><a href="#HTTP是无状态的-V-S-Connection-keep-alive" class="headerlink" title="HTTP是无状态的 V.S. Connection: keep-alive"></a>HTTP是无状态的 V.S. Connection: keep-alive</h1><ul>
+<li>无状态<ul>
+<li>指协议对于事务的处理没有记忆的能力，服务器不知道客户端的状态。具体来说，这一次向服务端发送的请求，与同一个客户端上一次发送的请求没有任何联系。</li>
+</ul>
+</li>
+<li>Connection: keep-alive<ul>
+<li>HTTP的传输层协议是TCP。当一个HTTP请求处理结束后，服务端和客户端之间的TCP连接并不会马上关闭，当一段时间内客户端再次发起HTTP请求时，会使用同一个TCP连接进行通信。</li>
+<li>keep-alive并不是代表TCP连接会永远存在，而是一定时间范围内的。 #TODO</li>
+<li>HTTP/1.1出现的，默认是开启的。</li>
+</ul>
+</li>
+</ul>
+<h1 id="对同一个服务端的多个HTTP的发送情况"><a href="#对同一个服务端的多个HTTP的发送情况" class="headerlink" title="对同一个服务端的多个HTTP的发送情况"></a>对同一个服务端的多个HTTP的发送情况</h1><h2 id="使用一个TCP连接，可以同时发送多个HTTP请求吗？"><a href="#使用一个TCP连接，可以同时发送多个HTTP请求吗？" class="headerlink" title="使用一个TCP连接，可以同时发送多个HTTP请求吗？"></a>使用一个TCP连接，可以同时发送多个HTTP请求吗？</h2><h3 id="http-1-1-无法发送多个，使用多个TCP连接来解决"><a href="#http-1-1-无法发送多个，使用多个TCP连接来解决" class="headerlink" title="http/1.1 无法发送多个，使用多个TCP连接来解决"></a>http/1.1 无法发送多个，使用多个TCP连接来解决</h3><p>默认情况下，一个TCP连接，同一时刻只能处理一个HTTP请求，两个请求不能有重叠。</p>
+<p>HTTP/1.1中规定了Pipelining，但是只存在于理想情况，实际比较复杂。</p>
+<blockquote>
+<p>一个支持持久连接的客户端可以在一个连接中发送多个请求（不需要等待任意请求的响应）。收到请求的服务器必须按照请求收到的顺序发送响应。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/计算机网络/http/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/tcp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -371,115 +480,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/计算机网络/代理/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/http/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/计算机网络/http/" class="post-title-link" itemprop="url">HTTP 协议</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 17:55:00 / Modified: 19:28:15" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/计算机网络/http/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/http/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/61423830" target="_blank" rel="noopener">你猜一个 TCP 连接上面能发多少个 HTTP 请求</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/26559480" target="_blank" rel="noopener">一文读懂 HTTP/2 特性</a></li>
-</ul>
-<h1 id="HTTP是无状态的-V-S-Connection-keep-alive"><a href="#HTTP是无状态的-V-S-Connection-keep-alive" class="headerlink" title="HTTP是无状态的 V.S. Connection: keep-alive"></a>HTTP是无状态的 V.S. Connection: keep-alive</h1><ul>
-<li>无状态<ul>
-<li>指协议对于事务的处理没有记忆的能力，服务器不知道客户端的状态。具体来说，这一次向服务端发送的请求，与同一个客户端上一次发送的请求没有任何联系。</li>
-</ul>
-</li>
-<li>Connection: keep-alive<ul>
-<li>HTTP的传输层协议是TCP。当一个HTTP请求处理结束后，服务端和客户端之间的TCP连接并不会马上关闭，当一段时间内客户端再次发起HTTP请求时，会使用同一个TCP连接进行通信。</li>
-<li>keep-alive并不是代表TCP连接会永远存在，而是一定时间范围内的。 #TODO</li>
-<li>HTTP/1.1出现的，默认是开启的。</li>
-</ul>
-</li>
-</ul>
-<h1 id="对同一个服务端的多个HTTP的发送情况"><a href="#对同一个服务端的多个HTTP的发送情况" class="headerlink" title="对同一个服务端的多个HTTP的发送情况"></a>对同一个服务端的多个HTTP的发送情况</h1><h2 id="使用一个TCP连接，可以同时发送多个HTTP请求吗？"><a href="#使用一个TCP连接，可以同时发送多个HTTP请求吗？" class="headerlink" title="使用一个TCP连接，可以同时发送多个HTTP请求吗？"></a>使用一个TCP连接，可以同时发送多个HTTP请求吗？</h2><h3 id="http-1-1-无法发送多个，使用多个TCP连接来解决"><a href="#http-1-1-无法发送多个，使用多个TCP连接来解决" class="headerlink" title="http/1.1 无法发送多个，使用多个TCP连接来解决"></a>http/1.1 无法发送多个，使用多个TCP连接来解决</h3><p>默认情况下，一个TCP连接，同一时刻只能处理一个HTTP请求，两个请求不能有重叠。</p>
-<p>HTTP/1.1中规定了Pipelining，但是只存在于理想情况，实际比较复杂。</p>
-<blockquote>
-<p>一个支持持久连接的客户端可以在一个连接中发送多个请求（不需要等待任意请求的响应）。收到请求的服务器必须按照请求收到的顺序发送响应。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/计算机网络/http/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -928,7 +928,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/SPI/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -942,7 +942,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
+            <a href="/2020/java/jvm/SPI/" class="post-title-link" itemprop="url">SPI 机制</a>
         </h1>
 
         <div class="post-meta">
@@ -959,123 +959,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:58:51" itemprop="dateModified" datetime="2020-03-05T00:58:51+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="LinkedHashMap-源码分析"><a href="#LinkedHashMap-源码分析" class="headerlink" title="LinkedHashMap 源码分析"></a>LinkedHashMap 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8" target="_blank" rel="noopener">搞懂 Java LinkedHashMap 源码</a></li>
-</ul>
-<h2 id="1-与-HashMap-的关系"><a href="#1-与-HashMap-的关系" class="headerlink" title="1. 与 HashMap 的关系"></a>1. 与 HashMap 的关系</h2><ul>
-<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
-</li>
-<li><p>使用双向链表，记录节点的访问顺序。</p>
-<ul>
-<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
-</li>
-<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="2-实现方式"><a href="#2-实现方式" class="headerlink" title="2. 实现方式"></a>2. 实现方式</h2><h3 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在节点中，添加 before 和 after，来实现双向链表。</p>
-<h3 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/4类加载器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/jvm/4类加载器/" class="post-title-link" itemprop="url">4. 类加载器</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 08:02:44" itemprop="dateModified" datetime="2020-03-05T08:02:44+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 08:03:39" itemprop="dateModified" datetime="2020-03-05T08:03:39+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1100,8 +984,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/jvm/4类加载器/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/4类加载器/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/jvm/SPI/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/SPI/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1117,25 +1001,29 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/51374915" target="_blank" rel="noopener">知乎-老大难的 Java ClassLoader 再不理解就老了</a></li>
-<li>《Java 核心技术-卷2-第九章》</li>
-<li>[<a href="https://www.hollischuang.com/archives/199" target="_blank" rel="noopener">深度分析Java的ClassLoader机制（源码级别）</a>]</li>
-<li>[<a href="https://www.hollischuang.com/archives/201" target="_blank" rel="noopener">Java类的加载、链接和初始化</a>]</li>
+<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408" target="_blank" rel="noopener">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
+<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3" target="_blank" rel="noopener">Java SPI机制详解</a></li>
+<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2" target="_blank" rel="noopener">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
 </ul>
-<h1 id="ClassLoader-的用途"><a href="#ClassLoader-的用途" class="headerlink" title="ClassLoader 的用途"></a>ClassLoader 的用途</h1><p>加载 .class 字节码的二进制文件，转换成内存形式的<code>Class</code> 对象。</p>
-<p>.class 文件可以来自于磁盘、jar包中、远程服务器的字节流。</p>
-<h1 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h1><p>虚拟机值加载程序执行是所需要的类文件。</p>
-<p>假设从 MyProgram.class 开始执行，虚拟机的执行步骤：</p>
-<ol>
-<li>加载 MyProgram.class 类文件的内容。</li>
-<li>类 MyProgram 中另静态域（非基本类型）、超类也会被加载。</li>
-<li>执行静态 main 方法。</li>
-<li>加载 main 方法、main 调用的方法中使用的类。</li>
-</ol>
-<h1 id="四种类加载器"><a href="#四种类加载器" class="headerlink" title="四种类加载器"></a>四种类加载器</h1>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
+</li>
+<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
+</li>
+</ul>
+<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
+<li><strong>服务</strong> 一般是系统定义好的接口，</li>
+<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
+<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
+<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/4类加载器/#more" rel="contents">
+              <a class="btn" href="/2020/java/jvm/SPI/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1255,6 +1143,127 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/jvm/2Java垃圾回收/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/io/内存映射文件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/io/内存映射文件/" class="post-title-link" itemprop="url">FileChannel与内存映射文件</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 14:29:19" itemprop="dateModified" datetime="2020-03-05T14:29:19+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/io/" itemprop="url" rel="index"><span itemprop="name">io</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/io/内存映射文件/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/io/内存映射文件/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76" target="_blank" rel="noopener">jdk/src/share/native/java/io/io_util.c</a></li>
+<li><a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html" target="_blank" rel="noopener">JNIFunctions</a></li>
+<li><a href="https://www.jianshu.com/p/a23ca155f949" target="_blank" rel="noopener">Java文件NIO读取的本质——FileInputStream与FileChannel对比</a></li>
+<li><a href="https://www.zhihu.com/question/48161206/answer/110863886" target="_blank" rel="noopener">Linux 中 mmap() 函数的内存映射问题理解？</a></li>
+<li><a href="https://blog.csdn.net/zhxdick/article/details/81130102" target="_blank" rel="noopener">JDK核心JAVA源码解析（5） - JAVA File MMAP原理解析</a></li>
+<li><a href="https://blog.csdn.net/yangguosb/article/details/77891275" target="_blank" rel="noopener">Linux零拷贝之mmap</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/91507035" target="_blank" rel="noopener">Java网络编程与NIO详解8：浅析mmap和Direct Buffer</a></li>
+<li><a href="https://www.cnkirito.moe/file-io-best-practise/" target="_blank" rel="noopener">文件 IO 操作的一些最佳实践</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/" target="_blank" rel="noopener">通过零拷贝实现有效数据传输</a></li>
+</ul>
+<h1 id="FileChannel-基本用法"><a href="#FileChannel-基本用法" class="headerlink" title="FileChannel 基本用法"></a>FileChannel 基本用法</h1><h2 id="创建-FileChannel"><a href="#创建-FileChannel" class="headerlink" title="创建 FileChannel"></a>创建 FileChannel</h2><p>使用 <code>FileChannel.open</code> 创建。</p>
+<p>其中 <code>OpenOption</code> 可以有：</p>
+<ul>
+<li>READ</li>
+<li>WRITE</li>
+<li>APPEND</li>
+<li>CREATE：如果文件不存在，则创建一个。</li>
+<li>CREATE_NEW：创建文件，如果存在抛出异常。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FileChannel ch = FileChannel.open(Path path, OpenOption... options);</span><br></pre></td></tr></table></figure>
+<p>也可以从 <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 中通过 <code>getChannel()</code> 方法得到。<br>这种 channel 的文件描述符和  <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 使用的是同一个，文件指针位置也是共享的。</p>
+<h2 id="读写数据"><a href="#读写数据" class="headerlink" title="读写数据"></a>读写数据</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/io/内存映射文件/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>

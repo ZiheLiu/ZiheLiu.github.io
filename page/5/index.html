@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:41" itemprop="dateModified" datetime="2020-03-05T00:57:41+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 21:19:20" itemprop="dateModified" datetime="2020-03-05T21:19:20+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,20 +254,20 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="6-ConcurrentHashMap-源码分析"><a href="#6-ConcurrentHashMap-源码分析" class="headerlink" title="6. ConcurrentHashMap 源码分析"></a>6. ConcurrentHashMap 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
 <li><a href="https://www.cnblogs.com/binarylei/p/10921214.html" target="_blank" rel="noopener">JUC源码分析-集合篇（一）ConcurrentHashMap</a></li>
 <li><a href="https://bugs.openjdk.java.net/browse/JDK-8215409" target="_blank" rel="noopener">probable bug in logic of ConcurrentHashMap.tryPresize()</a></li>
 <li><a href="https://bugs.openjdk.java.net/browse/JDK-8202422" target="_blank" rel="noopener">value of ‘sizeCtl’ in ConcurrentHashMap varies with the constructor called</a></li>
 </ul>
-<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>JDK 1.7 中，<code>ConcurrentHashMap</code> 使用分段锁 <code>ReentrantLock</code> 实现；</p>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>JDK 1.7 中，<code>ConcurrentHashMap</code> 使用分段锁 <code>ReentrantLock</code> 实现；</p>
 <p>而在 JDK 1.8 中，使用 CAS + <code>synchronized</code> 锁每个桶的第一个节点实现。</p>
-<h3 id="为什么换了实现方式"><a href="#为什么换了实现方式" class="headerlink" title="为什么换了实现方式"></a>为什么换了实现方式</h3><ol>
+<h2 id="为什么换了实现方式"><a href="#为什么换了实现方式" class="headerlink" title="为什么换了实现方式"></a>为什么换了实现方式</h2><ol>
 <li>JDK 1.8 中的 <code>synchronized</code> 已经足够优化。</li>
 <li>锁细化到每个桶一个，并发度更高。</li>
 <li>锁细化到每个桶一个，出现锁竞争的概率很小，<code>synchronized</code> 很小概率会膨胀为重量级锁。</li>
 <li><code>ReentrantLock</code> 尝试加锁失败就会加入等待队列，<code>synchronized</code> 首次进入重量级锁也会尝试自旋若干次。</li>
 </ol>
-<h3 id="volatile-CAS"><a href="#volatile-CAS" class="headerlink" title="volatile + CAS"></a>volatile + CAS</h3><h4 id="table"><a href="#table" class="headerlink" title="table"></a>table</h4>
+<h2 id="volatile-CAS"><a href="#volatile-CAS" class="headerlink" title="volatile + CAS"></a>volatile + CAS</h2><h3 id="table"><a href="#table" class="headerlink" title="table"></a>table</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] table;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> Node&lt;K,V&gt;[] nextTable;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> &lt;K,V&gt; <span class="function">Node&lt;K,V&gt; <span class="title">tabAt</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (Node&lt;K,V&gt;)U.getObjectVolatile(tab, ((<span class="keyword">long</span>)i &lt;&lt; ASHIFT) + ABASE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> &lt;K,V&gt; <span class="function"><span class="keyword">boolean</span> <span class="title">casTabAt</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> i,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    Node&lt;K,V&gt; c, Node&lt;K,V&gt; v)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> U.compareAndSwapObject(tab, ((<span class="keyword">long</span>)i &lt;&lt; ASHIFT) + ABASE, c, v);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> &lt;K,V&gt; <span class="function"><span class="keyword">void</span> <span class="title">setTabAt</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> i, Node&lt;K,V&gt; v)</span> </span>&#123;</span><br><span class="line">    U.putObjectVolatile(tab, ((<span class="keyword">long</span>)i &lt;&lt; ASHIFT) + ABASE, v);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/Java并发编程的艺术笔记/6ConcurrentHashMap源码分析/#more" rel="contents">
@@ -325,7 +325,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:42" itemprop="dateModified" datetime="2020-03-05T00:57:42+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 20:46:16" itemprop="dateModified" datetime="2020-03-05T20:46:16+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -366,14 +366,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="5-concurrenct-包中的锁"><a href="#5-concurrenct-包中的锁" class="headerlink" title="5. concurrenct 包中的锁"></a>5. concurrenct 包中的锁</h1><h2 id="1-Lock-接口"><a href="#1-Lock-接口" class="headerlink" title="1. Lock 接口"></a>1. Lock 接口</h2><h3 id="相比-synchronized-的优势"><a href="#相比-synchronized-的优势" class="headerlink" title="相比 synchronized 的优势"></a>相比 synchronized 的优势</h3><p><code>concurrent</code> 包中的 Lock 接口，比 <code>synchronized</code> 灵活，有如下的优势：</p>
+          <h1 id="Lock-接口"><a href="#Lock-接口" class="headerlink" title="Lock 接口"></a>Lock 接口</h1><h2 id="相比-synchronized-的优势"><a href="#相比-synchronized-的优势" class="headerlink" title="相比 synchronized 的优势"></a>相比 synchronized 的优势</h2><p><code>concurrent</code> 包中的 Lock 接口，比 <code>synchronized</code> 灵活，有如下的优势：</p>
 <ul>
 <li>可以非阻塞的获取锁</li>
 <li>获取锁过程中可以被中断。</li>
 <li>超时获取锁。</li>
 <li>使用 <code>AbstractQueuedSynchronizer</code> (<code>AQS</code>) 自定义锁。</li>
 </ul>
-<h3 id="主要的方法"><a href="#主要的方法" class="headerlink" title="主要的方法"></a>主要的方法</h3><ul>
+<h2 id="主要的方法"><a href="#主要的方法" class="headerlink" title="主要的方法"></a>主要的方法</h2><ul>
 <li><code>void lock()</code> </li>
 <li><code>void lockInterruptibly() throws InterruptedException</code> 可以被中断。</li>
 <li><code>boolean tryLock()</code> 非阻塞获取锁，能够获得返回 true，否则 false。</li>
@@ -381,8 +381,8 @@
 <li><code>void unlock()</code> 解锁。</li>
 <li><code>Condition newCondition()</code> 获取等待通知组件，只有获取了锁后，才可以调用 <code>condition.await()</code> 和 <code>condition.signal()</code>。</li>
 </ul>
-<h3 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="comment">// 获取锁不能在 try 里，否则获取失败、抛出异常时，还会去解锁。</span></span><br><span class="line">lock.lock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 更新对象</span></span><br><span class="line">    <span class="comment">//捕获异常</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    lock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="2-队列同步器-AbstractQueuedSynchronizer"><a href="#2-队列同步器-AbstractQueuedSynchronizer" class="headerlink" title="2. 队列同步器 AbstractQueuedSynchronizer"></a>2. 队列同步器 AbstractQueuedSynchronizer</h2>
+<h2 id="使用方式"><a href="#使用方式" class="headerlink" title="使用方式"></a>使用方式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Lock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="comment">// 获取锁不能在 try 里，否则获取失败、抛出异常时，还会去解锁。</span></span><br><span class="line">lock.lock();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 更新对象</span></span><br><span class="line">    <span class="comment">//捕获异常</span></span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    lock.unlock();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="队列同步器-AbstractQueuedSynchronizer"><a href="#队列同步器-AbstractQueuedSynchronizer" class="headerlink" title="队列同步器 AbstractQueuedSynchronizer"></a>队列同步器 AbstractQueuedSynchronizer</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/Java并发编程的艺术笔记/5concurrenct包中的锁/#more" rel="contents">
@@ -440,7 +440,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:42" itemprop="dateModified" datetime="2020-03-05T00:57:42+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 21:14:00" itemprop="dateModified" datetime="2020-03-05T21:14:00+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -481,13 +481,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="4-Java-并发编程基础"><a href="#4-Java-并发编程基础" class="headerlink" title="4. Java 并发编程基础"></a>4. Java 并发编程基础</h1><p>Java 的线程对应操作系统级别的线程。</p>
+          <p>Java 的线程对应操作系统级别的线程。</p>
 <p>执行 <code>main()</code> 方法的是主线程。</p>
-<h2 id="1-线程的状态"><a href="#1-线程的状态" class="headerlink" title="1. 线程的状态"></a>1. 线程的状态</h2><p>Java 线程的 6 个状态：</p>
+<h1 id="线程的状态"><a href="#线程的状态" class="headerlink" title="线程的状态"></a>线程的状态</h1><p>Java 线程的 6 个状态：</p>
 <p><img src="/images/Java线程的状态.png" alt="Java线程的状态"></p>
 <p>线程状态的迁移：</p>
 <p><img src="/images/Java线程状态的迁移.png" alt="Java线程状态的迁移"></p>
-<h2 id="2-Daemon-线程"><a href="#2-Daemon-线程" class="headerlink" title="2. Daemon 线程"></a>2. Daemon 线程</h2><p>当 JVM 中不存在非 Daemon 线程时，JVM 将会推出。</p>
+<h1 id="Daemon-线程"><a href="#Daemon-线程" class="headerlink" title="Daemon 线程"></a>Daemon 线程</h1><p>当 JVM 中不存在非 Daemon 线程时，JVM 将会推出。</p>
+<p>使用 <code>thread.setDaemon(true)</code> 来设置，只能在线程启动前设置。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/Java并发编程的艺术笔记/4Java并发编程基础/#more" rel="contents">
@@ -545,7 +546,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:43" itemprop="dateModified" datetime="2020-03-05T00:57:43+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 21:10:33" itemprop="dateModified" datetime="2020-03-05T21:10:33+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -586,13 +587,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="3-Java-内存模型"><a href="#3-Java-内存模型" class="headerlink" title="3. Java 内存模型"></a>3. Java 内存模型</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
 <li><a href="https://zhuanlan.zhihu.com/p/29881777" target="_blank" rel="noopener">Java内存模型（JMM）总结</a></li>
 </ul>
-<h2 id="1-Java-内存模型"><a href="#1-Java-内存模型" class="headerlink" title="1. Java 内存模型"></a>1. Java 内存模型</h2><h3 id="1-1-定义"><a href="#1-1-定义" class="headerlink" title="1.1 定义"></a>1.1 定义</h3><p>Java 内存模型（Java Memory Model（JMM））是虚拟机规范，用于屏蔽各种硬件和操作系统的差异，以使 Java 程序在各个平台达到一致的并发效果。</p>
-<h3 id="1-2-栈与堆"><a href="#1-2-栈与堆" class="headerlink" title="1.2 栈与堆"></a>1.2 栈与堆</h3><p>线程栈中的变量不能多线程访问。</p>
+<h1 id="Java-内存模型"><a href="#Java-内存模型" class="headerlink" title="Java 内存模型"></a>Java 内存模型</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>Java 内存模型（Java Memory Model（JMM））是虚拟机规范，用于屏蔽各种硬件和操作系统的差异，以使 Java 程序在各个平台达到一致的并发效果。</p>
+<h2 id="栈与堆"><a href="#栈与堆" class="headerlink" title="栈与堆"></a>栈与堆</h2><p>线程栈中的变量不能多线程访问。</p>
 <p>堆中的变量可以多线程访问。</p>
-<h3 id="1-3-happens-before-规则"><a href="#1-3-happens-before-规则" class="headerlink" title="1.3 happens-before 规则"></a>1.3 happens-before 规则</h3>
+<h2 id="happens-before-规则"><a href="#happens-before-规则" class="headerlink" title="happens-before 规则"></a>happens-before 规则</h2><p>JSR-133 内存模型，使用 happens-before 规则来阐述操作之间的可见性。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/Java并发编程的艺术笔记/3Java内存模型/#more" rel="contents">
@@ -650,7 +651,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 12:50:03" itemprop="dateModified" datetime="2020-03-05T12:50:03+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 20:56:59" itemprop="dateModified" datetime="2020-03-05T20:56:59+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -691,12 +692,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="2-Java-并发机制的底层实现原理"><a href="#2-Java-并发机制的底层实现原理" class="headerlink" title="2. Java 并发机制的底层实现原理"></a>2. Java 并发机制的底层实现原理</h1><h2 id="1-锁总线与锁缓存"><a href="#1-锁总线与锁缓存" class="headerlink" title="1. 锁总线与锁缓存"></a>1. 锁总线与锁缓存</h2><p>原子操作和 <code>volatile</code> 基于锁总线或锁缓存实现。</p>
-<h3 id="锁总线"><a href="#锁总线" class="headerlink" title="锁总线"></a>锁总线</h3><p>使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。</p>
-<h3 id="锁缓存"><a href="#锁缓存" class="headerlink" title="锁缓存"></a>锁缓存</h3><p>如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制来保证操作的原子性。</p>
+          <h1 id="锁总线与锁缓存"><a href="#锁总线与锁缓存" class="headerlink" title="锁总线与锁缓存"></a>锁总线与锁缓存</h1><p>原子操作和 <code>volatile</code> 基于锁总线或锁缓存实现。</p>
+<h2 id="锁总线"><a href="#锁总线" class="headerlink" title="锁总线"></a>锁总线</h2><p>使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。</p>
+<h2 id="锁缓存"><a href="#锁缓存" class="headerlink" title="锁缓存"></a>锁缓存</h2><p>如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制来保证操作的原子性。</p>
 <p><strong>缓存一致性机制</strong>，当一个CPU 对缓存中的数据进行操作后，通知其他 CPU 放弃储存在它们内部的缓存，或者从主内存中重新读取。使用 <a href="https://blog.csdn.net/qq_35642036/article/details/82801708" target="_blank" rel="noopener">MESI （修改、独占、共享、无效）协议</a>实现。</p>
 <p>如果操作的数据不能被缓存在 CPU 内、或操作的数据跨多个缓存行，则<strong>不会使用锁缓存</strong>，而是锁总线。</p>
-<h2 id="2-volatile"><a href="#2-volatile" class="headerlink" title="2. volatile"></a>2. volatile</h2>
+<h1 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h1><h2 id="语义"><a href="#语义" class="headerlink" title="语义"></a>语义</h2>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/Java并发编程的艺术笔记/2Java并发机制的底层实现原理/#more" rel="contents">
