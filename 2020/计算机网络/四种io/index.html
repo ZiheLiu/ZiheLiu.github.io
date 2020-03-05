@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="对于读/写 I/O 操作，流程分为两步（以读事件为例）：  等待数据准备好。（例如从网络来的数据写入网卡、再复制进内核）。  数据从内核空间复制到用户空间。   阻塞与非阻塞 I/O阻  I/O 和非阻塞 I/O 是看在调用 read()接口时，在阶段 1 数据没有准备好时，处理的方法。  阻塞 I/O 调用 read()` 接口在数据没有准备好时，会阻塞在这个系统调用出。（这个进程被放入了等待队">
+<meta name="keywords" content="network,io">
+<meta property="og:type" content="article">
+<meta property="og:title" content="同步&#x2F;异步IO与阻塞&#x2F;非阻塞IO">
+<meta property="og:url" content="http://ziheliu.github.io/2020/计算机网络/四种io/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="对于读/写 I/O 操作，流程分为两步（以读事件为例）：  等待数据准备好。（例如从网络来的数据写入网卡、再复制进内核）。  数据从内核空间复制到用户空间。   阻塞与非阻塞 I/O阻  I/O 和非阻塞 I/O 是看在调用 read()接口时，在阶段 1 数据没有准备好时，处理的方法。  阻塞 I/O 调用 read()` 接口在数据没有准备好时，会阻塞在这个系统调用出。（这个进程被放入了等待队">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/阻塞io.jpg">
+<meta property="og:image" content="http://ziheliu.github.io/images/非阻塞io.jpg">
+<meta property="og:image" content="http://ziheliu.github.io/images/异步io.jpg">
+<meta property="og:updated_time" content="2020-03-05T11:21:34.403Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="同步&#x2F;异步IO与阻塞&#x2F;非阻塞IO">
+<meta name="twitter:description" content="对于读/写 I/O 操作，流程分为两步（以读事件为例）：  等待数据准备好。（例如从网络来的数据写入网卡、再复制进内核）。  数据从内核空间复制到用户空间。   阻塞与非阻塞 I/O阻  I/O 和非阻塞 I/O 是看在调用 read()接口时，在阶段 1 数据没有准备好时，处理的方法。  阻塞 I/O 调用 read()` 接口在数据没有准备好时，会阻塞在这个系统调用出。（这个进程被放入了等待队">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/阻塞io.jpg">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/计算机网络/四种io/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>同步/异步IO与阻塞/非阻塞IO | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/四种io/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          同步/异步IO与阻塞/非阻塞IO
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-05 19:18:00 / Modified: 19:21:34" itemprop="dateCreated datePublished" datetime="2020-03-05T19:18:00+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/计算机网络/四种io/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/四种io/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>对于读/写 I/O 操作，流程分为两步（以读事件为例）：</p>
+<ol>
+<li><p>等待数据准备好。（例如从网络来的数据写入网卡、再复制进内核）。</p>
+</li>
+<li><p>数据从内核空间复制到用户空间。</p>
+</li>
+</ol>
+<h1 id="阻塞与非阻塞-I-O"><a href="#阻塞与非阻塞-I-O" class="headerlink" title="阻塞与非阻塞 I/O"></a>阻塞与非阻塞 I/O</h1><p>阻  I/O 和非阻塞 I/O 是看在调用 <code>read()</code>接口时，在阶段 1 数据没有准备好时，处理的方法。</p>
+<ul>
+<li>阻塞 I/O 调用 read()` 接口在数据没有准备好时，会阻塞在这个系统调用出。（这个进程被放入了等待队列）。</li>
+<li>非阻塞 I/O 调用 <code>read()</code> 接口在数据没有准备好时，会直接返回失败。</li>
+</ul>
+<p><img src="/images/阻塞io.jpg" alt="阻塞I/O"><br><img src="/images/非阻塞io.jpg" alt="非阻塞I/O"></p>
+<h1 id="同步与异步-I-O"><a href="#同步与异步-I-O" class="headerlink" title="同步与异步 I/O"></a>同步与异步 I/O</h1><p>同步 I/O 和异步 I/O 是看在有数据可读时，是否要等待从内核拷贝到用户空间的过程。</p>
+<ul>
+<li>同步 I/O 在有数据可读时，会等待从内核拷贝到用户的过程。</li>
+<li><p>异步 I/O 在有数据可读时，会继续做其他的，等内核已经拷贝数据到用户空间，再进行数据的处理。</p>
+<p><img src="/images/异步io.jpg" alt="异步I/O"></p>
+</li>
+</ul>
+<h1 id="Netty-使用的-NIO，为什么说自己是异步事件驱动的"><a href="#Netty-使用的-NIO，为什么说自己是异步事件驱动的" class="headerlink" title="Netty 使用的 NIO，为什么说自己是异步事件驱动的"></a>Netty 使用的 NIO，为什么说自己是异步事件驱动的</h1><p>Netty 的网络模型是<strong>同步非阻塞</strong>的，并不是 AIO 异步的网络模型。</p>
+<p>Netty 说的异步，是伪异步。异步事件驱动框架体现在所有的 I/O 操作是异步的，所有的 I/O 调用会立即返回，并不保证调用成功与否，但是调用会返回 <code>ChannelFuture</code>，Netty 会通过<code>ChannelFuture</code> 通知你调用是成功了还是失败了亦或是取消了。</p>
+<h1 id="为什么-Netty-使用-NIO-而不是-AIO"><a href="#为什么-Netty-使用-NIO-而不是-AIO" class="headerlink" title="为什么 Netty 使用 NIO 而不是 AIO"></a>为什么 Netty 使用 NIO 而不是 AIO</h1><blockquote>
+<p><a href="https://www.jianshu.com/p/df1d6d8c3f9d" target="_blank" rel="noopener">为什么Netty使用NIO而不是AIO？</a></p>
+</blockquote>
+<ul>
+<li>Netty的目标主要是Linux系统，AIO在linux上是使用Epoll实现，没有很好实现AIO，因此在性能上没有明显的优势。</li>
+<li>被JDK封装了一层不容易深度优化。</li>
+<li>Netty整体架构是reactor模型, 而AIO是proactor模型, 混合在一起会非常混乱。</li>
+<li>AIO还有个缺点是接收数据需要预先分配缓存, 而不是NIO那种需要接收时才需要分配缓存, 所以对<strong>连接数量非常大但流量小</strong>的情况, 内存浪费很多。</li>
+</ul>
+<h1 id="Reactor和Preactor模式"><a href="#Reactor和Preactor模式" class="headerlink" title="Reactor和Preactor模式"></a>Reactor和Preactor模式</h1><p>Reactor模式是针对同步IO网络模式，Preactor模式是针对异步IO网络模式。</p>
+<h2 id="Reactor模式组成"><a href="#Reactor模式组成" class="headerlink" title="Reactor模式组成"></a>Reactor模式组成</h2><blockquote>
+<p><a href="https://www.cnblogs.com/amei0/p/8117660.html" target="_blank" rel="noopener">IO多路复用之Reactor</a></p>
+</blockquote>
+<ul>
+<li><p>描述符 handle 。由操作系统提供的资源，用于识别每一个事件，如Socket描述符、文件描述符、信号的值等。在Linux中，它用一个整数来表示。事件可以来自外部，如来自客户端的连接请求、数据等。事件也可以来自内部，如信号、定时器事件。</p>
+</li>
+<li><p>同步事件多路分离器（event demultiplexer）。事件的到来是随机的、异步的，无法预知程序何时收到一个客户连接请求或收到一个信号。所以程序要循环等待并处理事件，这就是事件循环。在事件循环中，等待事件一般使用I/O复用技术实现。在linux系统上一般是select、poll、epol_waitl等系统调用，用来等待一个或多个事件的发生。I/O框架库一般将各种I/O复用系统调用封装成统一的接口，称为事件多路分离器。调用者会被阻塞，直到分离器分离的描述符集上有事件发生。</p>
+</li>
+<li><p>事件处理器（event handler）。I/O框架库提供的事件处理器通常是由一个或多个模板函数组成的接口。这些模板函数描述了和应用程序相关的对某个事件的操作，用户需要继承它来实现自己的事件处理器，即具体事件处理器。因此，事件处理器中的回调函数一般声明为虚函数，以支持用户拓展。</p>
+</li>
+<li><p>具体的事件处理器（concrete event handler）。是事件处理器接口的实现。它实现了应用程序提供的某个服务。每个具体的事件处理器总和一个描述符相关。它使用描述符来识别事件、识别应用程序提供的服务。</p>
+</li>
+<li><p>Reactor 管理器（reactor）。定义了一些接口，用于应用程序控制事件调度，以及应用程序注册、删除事件处理器和相关的描述符。它是事件处理器的调度核心。 Reactor管理器使用同步事件分离器来等待事件的发生。一旦事件发生，Reactor管理器先是分离每个事件，然后调度事件处理器，最后调用相关的模 板函数来处理这个事件。</p>
+</li>
+</ul>
+<p>总的来说，Reactor管理器调用事件分离器等待事件的发生，事件发生后Reactor管理器被唤醒，调度事件处理器链进行事件的处理。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/network/" rel="tag"># network</a>
+              <a href="/tags/io/" rel="tag"># io</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/计算机网络/3网络层/" rel="prev" title="3. 网络层">
+      <i class="fa fa-chevron-left"></i> 3. 网络层
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/algorithm/加密与哈希/" rel="next" title="加密与哈希">
+      加密与哈希 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#阻塞与非阻塞-I-O"><span class="nav-number">1.</span> <span class="nav-text">阻塞与非阻塞 I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#同步与异步-I-O"><span class="nav-number">2.</span> <span class="nav-text">同步与异步 I/O</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-使用的-NIO，为什么说自己是异步事件驱动的"><span class="nav-number">3.</span> <span class="nav-text">Netty 使用的 NIO，为什么说自己是异步事件驱动的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么-Netty-使用-NIO-而不是-AIO"><span class="nav-number">4.</span> <span class="nav-text">为什么 Netty 使用 NIO 而不是 AIO</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reactor和Preactor模式"><span class="nav-number">5.</span> <span class="nav-text">Reactor和Preactor模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor模式组成"><span class="nav-number">5.1.</span> <span class="nav-text">Reactor模式组成</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">46</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/计算机网络/四种io/";
+    this.page.identifier = "2020/计算机网络/四种io/";
+    this.page.title = "同步/异步IO与阻塞/非阻塞IO";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="8. BlockingQueue 简介0. 引用 SynchronousQueue原理解析  1. 介绍阻塞队列 BlockingQueue 继承自 Queue，添加了阻塞入队、阻塞出队的功能。  put(e)：入队时，如果队列已满，则阻塞直到队列不满。 take()：出队时，如果队列为空，则阻塞直到队列不空。  BlockingQueue 提供的方法：    操作 返回特殊值 超时退出 抛出异常">
+  <meta name="description" content="8. BlockingQueue 简介0. 引用 SynchronousQueue原理解析  1. 介绍阻塞队列 BlockingQueue 继承自 Queue，添加了阻塞入队、阻塞出队的功能。  put(e)：入队时，如果队列已满，则阻塞直到队列不满。 take()：出队时，如果队列为空，则阻塞直到队列不空。  BlockingQueue 提供的方法：     操作 返回特殊值 超时退出 抛出异">
 <meta name="keywords" content="java,concurrency">
 <meta property="og:type" content="article">
 <meta property="og:title" content="8. BlockingQueue 简介">
 <meta property="og:url" content="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="8. BlockingQueue 简介0. 引用 SynchronousQueue原理解析  1. 介绍阻塞队列 BlockingQueue 继承自 Queue，添加了阻塞入队、阻塞出队的功能。  put(e)：入队时，如果队列已满，则阻塞直到队列不满。 take()：出队时，如果队列为空，则阻塞直到队列不空。  BlockingQueue 提供的方法：    操作 返回特殊值 超时退出 抛出异常">
+<meta property="og:description" content="8. BlockingQueue 简介0. 引用 SynchronousQueue原理解析  1. 介绍阻塞队列 BlockingQueue 继承自 Queue，添加了阻塞入队、阻塞出队的功能。  put(e)：入队时，如果队列已满，则阻塞直到队列不满。 take()：出队时，如果队列为空，则阻塞直到队列不空。  BlockingQueue 提供的方法：     操作 返回特殊值 超时退出 抛出异">
 <meta property="og:locale" content="default">
 <meta property="og:updated_time" content="2020-03-04T16:57:36.244Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="8. BlockingQueue 简介">
-<meta name="twitter:description" content="8. BlockingQueue 简介0. 引用 SynchronousQueue原理解析  1. 介绍阻塞队列 BlockingQueue 继承自 Queue，添加了阻塞入队、阻塞出队的功能。  put(e)：入队时，如果队列已满，则阻塞直到队列不满。 take()：出队时，如果队列为空，则阻塞直到队列不空。  BlockingQueue 提供的方法：    操作 返回特殊值 超时退出 抛出异常">
+<meta name="twitter:description" content="8. BlockingQueue 简介0. 引用 SynchronousQueue原理解析  1. 介绍阻塞队列 BlockingQueue 继承自 Queue，添加了阻塞入队、阻塞出队的功能。  put(e)：入队时，如果队列已满，则阻塞直到队列不满。 take()：出队时，如果队列为空，则阻塞直到队列不空。  BlockingQueue 提供的方法：     操作 返回特殊值 超时退出 抛出异">
 
 <link rel="canonical" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/">
 
@@ -267,6 +267,7 @@
 <li><code>take()</code>：出队时，如果队列为空，则阻塞直到队列不空。</li>
 </ul>
 <p><code>BlockingQueue</code> 提供的方法：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -301,6 +302,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <h2 id="2-7-个阻塞队列"><a href="#2-7-个阻塞队列" class="headerlink" title="2. 7 个阻塞队列"></a>2. 7 个阻塞队列</h2><ol>
 <li>ArrayBlockingQueue：数组组成、有界、一把公平/非公平锁。</li>
 <li>LinkedBlockingQueue：链表组成、有界、两把非公平锁。</li>
@@ -311,6 +313,7 @@
 <li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。TODO</li>
 </ol>
 <p>这些阻塞队列一般都是由 <code>ReentrantLock</code> 锁 + <code>Condition</code> 实现的。</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -373,6 +376,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <h3 id="1-ArrayBlockingQueue"><a href="#1-ArrayBlockingQueue" class="headerlink" title="1. ArrayBlockingQueue"></a>1. ArrayBlockingQueue</h3><ul>
 <li>由固定长度数组组成。构造函数传入容量。</li>
 <li>使用 <code>ReentrantLock lock</code> 一把锁控制入队、出队操作，并发度低于 <code>LinkedBlockingQueue</code>。构造函数可以传入是否使用公平锁。<ul>
@@ -393,6 +397,7 @@
 <li>使用 <code>lock</code> 的两个 <code>Condition</code> 等待队列。</li>
 </ul>
 <h3 id="7-LinkedTransferQueue"><a href="#7-LinkedTransferQueue" class="headerlink" title="7. LinkedTransferQueue"></a>7. LinkedTransferQueue</h3><p>与 <code>SynchronousQueue</code> 的异同点：</p>
+<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -420,6 +425,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p><code>LinkedTransferQueue</code> 的</p>
 <ul>
 <li><p><code>offer(e)</code> 、 <code>poll()</code> 与 <code>LinkedBlockingQueue</code> 功能相同。</p>
@@ -535,20 +541,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-count">46</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">11</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
