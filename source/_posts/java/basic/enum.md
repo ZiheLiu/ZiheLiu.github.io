@@ -15,8 +15,6 @@ typora-root-url: ../../../
 
 ### 基础
 
-test
-
 使用 `enum`  关键字，类似于定义类的方式。
 
 ```java
