@@ -10,9 +10,7 @@ categories:
 typora-root-url: ../../../
 ---
 
-# 12. ThreadLocalRandom
-
-## 1. Random
+# Random
 
 `Random` 类在生成随机数时，所有线程 CAS 竞争同一个 `seed`。
 
@@ -30,7 +28,7 @@ protected int next(int bits) {
 }
 ```
 
-## 2. ThreadLocalRandom
+# ThreadLocalRandom
 
 ```java
 package java.util.concurrent;

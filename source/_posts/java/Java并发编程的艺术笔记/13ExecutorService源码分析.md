@@ -10,15 +10,14 @@ categories:
 typora-root-url: ../../../
 ---
 
-# 13. ExecutorService 源码分析
 
-## 0. 引用
+# 引用
 
 - [[JUC线程池服务ExecutorService接口实现源码分析](http://www.throwable.club/2019/07/27/java-concurrency-executor-service/)](http://www.throwable.club/2019/07/27/java-concurrency-executor-service/)
 
-## 1. FutureTask
+# FutureTask
 
-### 主要接口
+## 主要接口
 
 ```java
 public interface RunnableFuture<V> extends Runnable, Future<V> {
@@ -58,7 +57,7 @@ public interface Future<V> {
         throws InterruptedException, ExecutionException, TimeoutException;
 }
 ```
-### 构造函数
+## 构造函数
 
 `FutureTask` 一般是 `AbstractExecutorService` 在 `submit()` 时候创建的。
 
@@ -110,11 +109,11 @@ public class Executors {
 }
 ```
 
-### 状态转化
+## 状态转化
 
 ![FutureTask状态转化](/images/FutureTask状态转化.svg)
 
-### 调用函数的执行流程
+## 调用函数的执行流程
 
 ![FutureTask执行流程](/images/FutureTask执行流程.svg)
 
@@ -123,9 +122,9 @@ public class Executors {
 - 使用 `LockSupport.park()/unpark()` 来阻塞和唤醒调用 `get()` 的线程。
 - `finishCompletion()` 最后会执行 `done()` 钩子函数。
 
-## 2. AbstractExecutorService
+# AbstractExecutorService
 
-### submit()
+## submit()
 
 ```java
 // ThreadPoolExecutor 的父类。
@@ -180,7 +179,7 @@ public abstract class AbstractExecutorService implements ExecutorService {
 
 这样工作线程就执行到了传入的 `Callable` 的 `task`。
 
-### cancelAll()
+## cancelAll()
 
 ```java
 // 取消所有的Future实例
@@ -198,19 +197,19 @@ private static <T> void cancelAll(ArrayList<Future<T>> futures, int j) {
 
 循环遍历传入的 FutureTask 的实例列表，调用每一个实例的 `cancel(true)` 方法。
 
-### invokeAny()
+## invokeAny()
 
-#### 语法
+### 语法
 
 `<T> T invokeAny(Collection<? extends Callable<T>> tasks)` 函数会执行列表中的任意一个任务。可能会执行多个任务，但是只会返回第一个执行完的结果。
 
-#### 基本原理
+### 基本原理
 
 - 使用一个 `BlockingQueue`，在任务执行完后，会放入队列。
 - 遍历 `tasks`，如果非阻塞出队失败（即还没有任务执行完），就 `submit()` 当前遍历到的 `task`。
 - 如果都遍历完了，就阻塞出队。
 
-#### 实际的实现
+### 实际的实现
 
 - 使用一个内部类 `ExecutorCompletionService`，它内置了一个 `LinkedBlockingQueue completionQueue`。
 
@@ -263,7 +262,7 @@ public class ExecutorCompletionService<V> implements CompletionService<V> {
 }
 ```
 
-### invokeAll()
+## invokeAll()
 
 `<T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> tasks)` 函数会执行列表中的所有任务。
 
