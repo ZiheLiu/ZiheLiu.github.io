@@ -30,7 +30,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ziheliu.github.io/images/对象头.jpeg">
 <meta property="og:image" content="http://ziheliu.github.io/images/重量级锁.png">
-<meta property="og:updated_time" content="2020-03-05T04:50:03.865Z">
+<meta property="og:updated_time" content="2020-03-04T16:57:44.420Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2. Java 并发机制的底层实现原理">
 <meta name="twitter:description" content="2. Java 并发机制的底层实现原理1. 锁总线与锁缓存原子操作和 volatile 基于锁总线或锁缓存实现。 锁总线使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。 锁缓存如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声">
@@ -220,7 +220,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 12:50:03" itemprop="dateModified" datetime="2020-03-05T12:50:03+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 00:57:44" itemprop="dateModified" datetime="2020-03-05T00:57:44+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -473,20 +473,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -567,7 +567,22 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
+
+  
 
   
 

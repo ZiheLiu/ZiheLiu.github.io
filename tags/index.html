@@ -204,10 +204,10 @@
       <div class="post-body">
           <div class="tag-cloud">
             <div class="tag-cloud-title">
-              5 tags in total
+              10 tags in total
             </div>
             <div class="tag-cloud-tags">
-              <a href="/tags/concurrency/" style="font-size: 25.5px; color: #404040">concurrency</a> <a href="/tags/io/" style="font-size: 16.5px; color: #9d9d9d">io</a> <a href="/tags/java/" style="font-size: 30px; color: #111">java</a> <a href="/tags/jvm/" style="font-size: 21px; color: #6f6f6f">jvm</a> <a href="/tags/netty/" style="font-size: 12px; color: #ccc">netty</a>
+              <a href="/tags/algorithm/" style="font-size: 12px; color: #ccc">algorithm</a> <a href="/tags/concurrency/" style="font-size: 26.4px; color: #363636">concurrency</a> <a href="/tags/io/" style="font-size: 15.6px; color: #a7a7a7">io</a> <a href="/tags/java/" style="font-size: 30px; color: #111">java</a> <a href="/tags/jvm/" style="font-size: 22.8px; color: #5c5c5c">jvm</a> <a href="/tags/netty/" style="font-size: 12px; color: #ccc">netty</a> <a href="/tags/network/" style="font-size: 19.2px; color: #818181">network</a> <a href="/tags/record/" style="font-size: 12px; color: #ccc">record</a> <a href="/tags/操作系统/" style="font-size: 12px; color: #ccc">操作系统</a> <a href="/tags/进程/" style="font-size: 12px; color: #ccc">进程</a>
             </div>
           </div>
         
@@ -294,20 +294,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -388,7 +388,22 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
+
+  
 
   
 

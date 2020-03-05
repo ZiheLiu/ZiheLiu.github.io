@@ -301,17 +301,17 @@
 </ul>
 <h2 id="堆外内存到堆内内存"><a href="#堆外内存到堆内内存" class="headerlink" title="堆外内存到堆内内存"></a>堆外内存到堆内内存</h2><p>在 Java 中读写数据时，因为系统调用 <code>read()</code> 和 <code>write</code>，需要提供要操作的内存地址。而 Java 的堆内内存的变量的内存地址是不固定的，在一次 GC 中，可能进行重排/复制等操作。所以读取数据，需要先创建一个临时的内存区域来加载数据，再从临时区域拷贝到堆内内存。</p>
 <p><code>FileInputStream.read()</code>  调用 native 的 <a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76" target="_blank" rel="noopener">readBytes 方法</a>。可以看到，在 JNI 方法中，申请了一块 <code>buf</code> 字符数组，读取数据后，使用 <a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html" target="_blank" rel="noopener">env.SetByteArrayRegion</a> 把 <code>buf</code> 内容拷贝 Java 的 byteArray中。</p>
-<p>经历的拷贝过程：磁盘 –&gt; 内核页缓冲 –&gt; JNI 临时内存 –&gt; Java 堆内内存。</p>
+<p>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; JNI 临时内存 —&gt; Java 堆内内存。</p>
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">jint</span><br><span class="line">readBytes(JNIEnv *env, jobject <span class="keyword">this</span>, jbyteArray bytes,</span><br><span class="line">          jint off, jint len, jfieldID fid)</span><br><span class="line">&#123;</span><br><span class="line">    jint nread;</span><br><span class="line">    <span class="keyword">char</span> stackBuf[BUF_SIZE];</span><br><span class="line">    <span class="keyword">char</span> *buf = <span class="literal">NULL</span>;</span><br><span class="line">    FD fd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len &gt; BUF_SIZE) &#123;</span><br><span class="line">        buf = <span class="built_in">malloc</span>(len);</span><br><span class="line">        <span class="keyword">if</span> (buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="literal">NULL</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = stackBuf;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fd = GET_FD(<span class="keyword">this</span>, fid);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        JNU_ThrowIOException(env, <span class="string">"Stream Closed"</span>);</span><br><span class="line">        nread = <span class="number">-1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nread = (jint)IO_Read(fd, buf, len);</span><br><span class="line">        <span class="keyword">if</span> (nread &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            (*env)-&gt;SetByteArrayRegion(env, bytes, off, nread, (jbyte *)buf);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_ERR) &#123;</span><br><span class="line">            JNU_ThrowIOExceptionWithLastError(env, <span class="string">"Read error"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_INTR) &#123;</span><br><span class="line">            JNU_ThrowByName(env, <span class="string">"java/io/InterruptedIOException"</span>, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">/* EOF */</span></span><br><span class="line">            nread = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (buf != stackBuf) &#123;</span><br><span class="line">        <span class="built_in">free</span>(buf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>FileChannel.read()</code> 方法，会有两种情况。</p>
 <ul>
-<li><code>read</code> 传入的是 <code>DirectByteBuffer</code>，因为堆外内存一般不会 GC（什么时候GC？TODO），所以有固定的内存地址，不需要先复制到临时内存中。<br>经历的拷贝过程：磁盘 –&gt; 内核页缓冲 –&gt; Java 堆外内存。</li>
-<li><code>read</code> 传入的是 <code>ByteBuffer</code>，需要先存储到临时的堆外内存，再拷贝到堆内内存。<br>经历的拷贝过程：磁盘 –&gt; 内核页缓冲 –&gt; Java 堆外内存 –&gt; Java 堆外内存。</li>
+<li><code>read</code> 传入的是 <code>DirectByteBuffer</code>，因为堆外内存一般不会 GC（什么时候GC？TODO），所以有固定的内存地址，不需要先复制到临时内存中。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存。</li>
+<li><code>read</code> 传入的是 <code>ByteBuffer</code>，需要先存储到临时的堆外内存，再拷贝到堆内内存。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存 —&gt; Java 堆外内存。</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(FileDescriptor var0, ByteBuffer var1, <span class="keyword">long</span> var2, NativeDispatcher var4)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (var1.isReadOnly()) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Read-only buffer"</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (var1 <span class="keyword">instanceof</span> DirectBuffer) &#123; <span class="comment">// 如果是堆外内存，不需要申请暂时的内存区域</span></span><br><span class="line">    <span class="keyword">return</span> readIntoNativeBuffer(var0, var1, var2, var4);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> var7;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">int</span> var6 = readIntoNativeBuffer(var0, var5, var2, var4);</span><br><span class="line">      var5.flip();</span><br><span class="line">      <span class="keyword">if</span> (var6 &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        var1.put(var5);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      var7 = var6;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      Util.offerFirstTemporaryDirectBuffer(var5);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var7;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h1 id="mmap-原理"><a href="#mmap-原理" class="headerlink" title="mmap 原理"></a>mmap 原理</h1><h2 id="创建和读写过程"><a href="#创建和读写过程" class="headerlink" title="创建和读写过程"></a>创建和读写过程</h2><p><code>mmap</code> 系统调用，会建立一个 <code>vm_area_struct</code> 的数据结构，这个数据结构表示了进程虚拟地址空间中的一段，它把磁盘文件的区域和虚拟地址空间中的一段连接了起来。但是这时候物理内存中还是没有内容的，而 mmu 是在虚拟地址空间和物理内存地址之间建立映射的。</p>
 <p>在访问到这段虚拟地址空间时，由于只是建立了映射，而实际的页面还没有放置到页框中，所以会产生一个缺页中断陷入内核，然后会首先在硬盘的swap页面中寻找这个页面是否被交换出去，如果没有找到这个页面，那么会依照mmap建立的vm_area_struct这个数据结构把磁盘中的文件读到物理内存中，这样就可以访问了。</p>
-<p>所以，使用 <code>mmap</code> 经历的拷贝过程：磁盘 –&gt; Java 堆外内存。</p>
+<p>所以，使用 <code>mmap</code> 经历的拷贝过程：磁盘 —&gt; Java 堆外内存。</p>
 <h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><p><code>mmap</code> 创建的堆外内存，不会受 <code>-XX:MaxDirectMemorySize</code> 限制。</p>
 <p>这个参数只有在使用 <code>ByteBuffer.allocateDirect</code> 的时候，才会检查，而在使用 <code>allocateMemory</code> JNI 方法和 <code>mmap</code> 的时候，不会检查。</p>
 <p>但是 <code>mmap</code> 一次的大小不能超过 <code>Integer.MAX_INT</code> （约 2 G）。因为 <code>mmap</code> 最后会调用如下的 JNI 方法，其中的地址会被转为 int。猜测是因为 Java 为了跨平台，并不知道平台是 32 G 还是 64 G的。</p>
@@ -320,12 +320,12 @@
 <li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/" target="_blank" rel="noopener">通过零拷贝实现有效数据传输</a></li>
 </ul>
 <p>把数据从一个文件拷贝到另外一个文件。</p>
-<p>传统的数据传输，需要先调用 <code>in.read()</code>，在调用 <code>out.write()</code>。需要 4 次拷贝、4 次内核/用户态切换。磁盘 –&gt; 读内核页缓冲区 –&gt; 用户空间 –&gt; 写内核页缓冲区 –&gt; 写入磁盘。</p>
+<p>传统的数据传输，需要先调用 <code>in.read()</code>，在调用 <code>out.write()</code>。需要 4 次拷贝、4 次内核/用户态切换。磁盘 —&gt; 读内核页缓冲区 —&gt; 用户空间 —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
 <p>传统方法的数据拷贝：</p>
 <p><img src="/images/传统-拷贝.gif" alt="传统-拷贝"></p>
 <p>传统方法的上下文切换：</p>
 <p><img src="/images/传统-上下文切换.gif" alt="传统-上下文切换"></p>
-<p>而 <code>FileChannel.transformTo</code> 可以无需 用户空间的接入，之即完成数据的传输。需要 3 次拷贝、2次切换：磁盘 –&gt; 读内核页缓冲区  –&gt; 写内核页缓冲区 –&gt; 写入磁盘。</p>
+<p>而 <code>FileChannel.transformTo</code> 可以无需 用户空间的接入，之即完成数据的传输。需要 3 次拷贝、2次切换：磁盘 —&gt; 读内核页缓冲区  —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
 <p>这个操作依赖底层操作系统对零拷贝的支持；在 UNIX 和各种 Linux 系统中，此调用被传递到 <code>sendfile()</code> 系统调用中。</p>
 <p>transformTo 的数据拷贝：</p>
 <p><img src="/images/transferTo-拷贝.gif" alt="transferTo-拷贝"></p>
@@ -353,12 +353,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/io/io流/" rel="prev" title="I/O流相关类">
-      <i class="fa fa-chevron-left"></i> I/O流相关类
+    <a href="/2020/java/jvm/SPI/" rel="prev" title="SPI 机制">
+      <i class="fa fa-chevron-left"></i> SPI 机制
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/java/jvm/2Java垃圾回收/" rel="next" title="2. Java垃圾收集器与内存分配分配策略">
-      2. Java垃圾收集器与内存分配分配策略 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/java/jvm/3类加载机制/" rel="next" title="3. 类加载机制">
+      3. 类加载机制 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -442,20 +442,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -536,7 +536,22 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
+
+  
 
   
 

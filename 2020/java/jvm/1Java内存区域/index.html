@@ -394,8 +394,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/basic/java基础知识汇总/" rel="prev" title="Java 基础知识汇总">
-      <i class="fa fa-chevron-left"></i> Java 基础知识汇总
+    <a href="/2020/java/jvm/2Java垃圾回收/" rel="prev" title="2. Java垃圾收集器与内存分配分配策略">
+      <i class="fa fa-chevron-left"></i> 2. Java垃圾收集器与内存分配分配策略
     </a></div>
       <div class="post-nav-item">
     <a href="/2020/java/jvm/4类加载器/" rel="next" title="4. 类加载器">
@@ -483,20 +483,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">36</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -577,7 +577,22 @@
 
 
 
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
 
+
+  
 
   
 
