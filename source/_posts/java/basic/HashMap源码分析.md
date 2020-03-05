@@ -9,15 +9,13 @@ categories:
 typora-root-url: ../../../
 ---
 
-# HashMap 源码分析
-
-## 引用
+# 引用
 
 - [深入理解HashMap: 关键源码逐行分析之hash算法](https://segmentfault.com/a/1190000015798586)
 
-## 组成
+# 组成
 
-### 节点
+## 节点
 
 ```java
 static class Node<K,V> implements Map.Entry<K,V> {
@@ -33,7 +31,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
 - 基本：hash 值、key值、value值。
 - 多个值存在一个位置：链表 `next`。
 
-### table
+## table
 
 ```java
 Node<K,V>[] table;
@@ -41,7 +39,7 @@ Node<K,V>[] table;
 
 节点存储在 `Node` 数组中。
 
-### 节点的 key 如何映射到 table 的下标
+## 节点的 key 如何映射到 table 的下标
 
 ```java
 static final int hash(Object key) {
@@ -56,7 +54,7 @@ int index = hash(key) & (table.length() - 1);
 2. table.length() 为 2 的 m 次幂，把第一步的 hash 值取低 m 位，来作为数组的下标。
 3. key 可以是 null，这时 hash 值是 0。
 
-## 构造函数
+# 构造函数
 
 ```java
 static final float DEFAULT_LOAD_FACTOR = 0.75f;
@@ -89,7 +87,7 @@ public HashMap() {
   - 在 `table` 创建后，如果负载超过 `threshold`，进行 `resize` 扩容。阈值的初始值和变化请看 resize() 源码分析处。
 - `table` 的长度为 2 的次幂。
 
-### tableSizeFor()
+## tableSizeFor()
 
 如果构造函数指定了 `initialCapacity`，调用 `tableSizeFor` 转化为大于等于 `initialCapacity` 的最小的 2 的次幂。
 
@@ -112,7 +110,7 @@ static final int tableSizeFor(int cap) {
 }
 ```
 
-### putMapEntries()
+## putMapEntries()
 
 ```java
 public HashMap(Map<? extends K, ? extends V> m) {
@@ -145,14 +143,14 @@ final void putMapEntries(Map<? extends K, ? extends V> m, boolean evict) {
 
 构造函数调用 `putMapEntries`，只会进入第一个分支。把初始容量变为 `要加入元素个数 / loadFactor`。
 
-## resize()
+# resize()
 
-### 触发时机
+## 触发时机
 
 - 初始化` table` 时。
 - 元素个数超过 `threshold` 时进行扩容。
 
-### 源码分析
+## 源码分析
 
 ```java
 final Node<K,V>[] resize() {
@@ -241,7 +239,7 @@ final Node<K,V>[] resize() {
 }
 ```
 
-#### 第一部分 容量和阈值的变化
+### 第一部分 容量和阈值的变化
 
 容量指 `table` 数组的长度。
 
@@ -256,11 +254,13 @@ final Node<K,V>[] resize() {
   - 容量为原容量的 2 倍。
   - 阈值为原阈值的 2 倍。
 
-#### 第二部分 红黑树拆分
+### 第二部分 红黑树拆分
 
-TODO
+拆成两棵红黑树。
 
-#### 第三部分 链表拆分
+并检查每一棵红黑树的节点数，如果节点数少于阈值，转成树。
+
+### 第三部分 链表拆分
 
 - `e.hash & oldCap == 0` 的节点组成 low 链表，存入 `newTable[j]` 位置。
 - `e.hash & oldCap != 0` 的节点组成 high 链表，存入 `newTable[j + oldCap]` 位置。
@@ -274,7 +274,7 @@ TODO
 - 如果 `e.hash` 的第 5 位是 0，则 `e.hash & 0b1_1111` 与 `e.hash & 0b0_1111` 相等，所以还存储在 `j` 处。
 - 如果 `e.hash` 的第 5 位是1，则 `e.hash & 0b1_1111` 与 `(e.hash & 0b0_1111) + 0b1_0000`相等，所以存储在 `j + oldCap` 处。
 
-## put()
+# put()
 
 ```java
 public V put(K key, V value) {
@@ -363,7 +363,7 @@ static final int MIN_TREEIFY_CAPACITY = 64;
 - 如果找到了节点，并且不是 `putIfAbsent()` 调用的，更新节点的值。
 - 如果是新增了节点，查看节点数目是否多于阈值，进行扩容。
 
-## get()
+# get()
 
 ```java
 public V get(Object key) {

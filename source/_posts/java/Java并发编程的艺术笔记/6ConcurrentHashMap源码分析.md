@@ -7,33 +7,31 @@ tags:
 categories:
 	- java	
 	- concurrency
-typora-root-url: ../../../../
+typora-root-url: ../../../
 ---
 
-# 6. ConcurrentHashMap 源码分析
-
-## 0. 引用
+# 引用
 
 - [JUC源码分析-集合篇（一）ConcurrentHashMap](https://www.cnblogs.com/binarylei/p/10921214.html)
 - [probable bug in logic of ConcurrentHashMap.tryPresize()](https://bugs.openjdk.java.net/browse/JDK-8215409)
 - [value of 'sizeCtl' in ConcurrentHashMap varies with the constructor called](https://bugs.openjdk.java.net/browse/JDK-8202422)
 
-## 1. 介绍
+# 介绍
 
 JDK 1.7 中，`ConcurrentHashMap` 使用分段锁 `ReentrantLock` 实现；
 
 而在 JDK 1.8 中，使用 CAS + `synchronized` 锁每个桶的第一个节点实现。
 
-### 为什么换了实现方式
+## 为什么换了实现方式
 
 1. JDK 1.8 中的 `synchronized` 已经足够优化。
 2. 锁细化到每个桶一个，并发度更高。
 3. 锁细化到每个桶一个，出现锁竞争的概率很小，`synchronized` 很小概率会膨胀为重量级锁。
 4. `ReentrantLock` 尝试加锁失败就会加入等待队列，`synchronized` 首次进入重量级锁也会尝试自旋若干次。
 
-###  volatile + CAS
+##  volatile + CAS
 
-#### table
+### table
 
 ```java
 
@@ -61,7 +59,7 @@ static final <K,V> void setTabAt(Node<K,V>[] tab, int i, Node<K,V> v) {
 - 而为数组的元素赋值并不保证 `volatile` 的效果。
 - 所以使用了` Unsafe` 的 `volatile` 的相关函数来从 `table` 赋值和取值。
 
-#### Node
+### Node
 
 ```java
 static class Node<K,V> implements Map.Entry<K,V> {
@@ -83,7 +81,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
 
 - `val` 和 `next` 是会改变的，所以需要使用 `volatile` 保证 可见性、避免重排序。
 
-### key 和 value 不能是 null
+## key 和 value 不能是 null
 
 > - [Why does ConcurrentHashMap prevent null keys and values?](https://stackoverflow.com/questions/698638/why-does-concurrenthashmap-prevent-null-keys-and-values)
 
@@ -93,7 +91,7 @@ static class Node<K,V> implements Map.Entry<K,V> {
 
 但是在多线程版本中，用 `map.containsKey(key)` 和 `map.get(key)` 不是原子的。
 
-## 2. 构造函数
+# 构造函数
 
 ```java
 public ConcurrentHashMap() {
@@ -139,7 +137,7 @@ public ConcurrentHashMap(int initialCapacity,
 - 第 2 个构造函数中，`sizeCtl` 这里设置为了 `initialCapacity * 1.5`，应该设置为 `initialCapacity / 0.75` 才对，是一个 bug。https://bugs.openjdk.java.net/browse/JDK-8202422。JSR 166 中，更新为第 3 个构造函数的版本。
 - 没有初始化 `table`。
 
-## 3. put()
+# put()
 
 ```java
 public V put(K key, V value) {
@@ -247,7 +245,7 @@ final V putVal(K key, V value, boolean onlyIfAbsent) {
 - `helpTransfer()` 帮助扩容。
 - `addCount()` 增加元素。
 
-### initTable()
+## initTable()
 
 ```java
 private final Node<K,V>[] initTable() {
@@ -281,7 +279,7 @@ private final Node<K,V>[] initTable() {
 - 初始化后，数组长度为构造函数传入的初始容量、或默认值16.
 - 初始化后，阈值 sizeCtl 为数组长度的 3/4。
 
-###  treeifyBin()
+##  treeifyBin()
 
 ```java
 private final void treeifyBin(Node<K,V>[] tab, int index) {
@@ -320,7 +318,7 @@ private final void treeifyBin(Node<K,V>[] tab, int index) {
   - -2 表示是红黑树
   - 大于等于 0，存储的是链表的节点。
 
-### tryPresize()
+## tryPresize()
 
 ```java
 // putVal() 调用时，传入的 size 是数组长度的两倍。
@@ -389,7 +387,7 @@ private static final int RESIZE_STAMP_SHIFT = 16;
 - 只有第一个 CAS `sizeCtl` 为 (rs << RESIZE_STAMP_SHIFT) + 2  的线程可以进行  transfer 扩容。
 - 帮助扩容的线程是通过 `helpTransfer()` 进入的（在 `putVal()` 时，发现对应的桶在扩容触发），每个帮助的线程会把 `sizeCtl `+ 1。
 
-### helpTransfer()
+## helpTransfer()
 
 ```java
 // putVal() 时，发现桶在 transfer，调用 helpTransfer() 来帮助扩容。
@@ -420,7 +418,7 @@ final Node<K,V>[] helpTransfer(Node<K,V>[] tab, Node<K,V> f) {
 }
 ```
 
-### transfer()
+## transfer()
 
 第一个 `transfer()` 的线程传入的是 `transfer(tab, null)`。
 
@@ -536,7 +534,7 @@ private final void transfer(Node<K,V>[] tab, Node<K,V>[] nextTab) {
 }
 ```
 
-## size()
+# size()
 
 ```java
 public int size() {
@@ -561,7 +559,7 @@ final long sumCount() {
 
 计数并没有使用一个 `AtomicLong`，这样会使每次操作都有竞争，降低并发。
 
-### addCount()
+## addCount()
 
 ```java
 //基础值，没有竞争时会使用这个值
@@ -629,9 +627,9 @@ private final void addCount(long x, int check) {
 2. 如果存在竞争，且 counter 数组长度小于 CPU 核数，申请volatile锁，加倍 counter 数组长度。
 3. 如果在 counter CAS 尝试失败、长度小且申请volatile锁失败，对 baseCount 尝试 CAS 计数。
 
-## 5. 扩容总结
+# 扩容总结
 
-### 触发实际
+## 触发时机
 
 - 在添加节点 `addCount()` 后，如果元素数目超过阈值，会进行 `tansfer` 扩容。
 
@@ -640,7 +638,7 @@ private final void addCount(long x, int check) {
 
 其中 `tryPresize()` 和 `helpTransfer` 最后都会调用 `transfer()`。
 
-### 扩容过程
+## 扩容过程
 
 - 每个线程，每次申请扩容 `stride` 个桶，从右到左进行扩容。
 
@@ -654,7 +652,7 @@ private final void addCount(long x, int check) {
 - 在所有扩容结束后
   - 设置 `sizeCtl` 阈值 为新数组长度的 3/4。
 
-## 6. get()
+# get()
 
 ```java
 public V get(Object key) {

@@ -10,11 +10,9 @@ categories:
 typora-root-url: ../../../../
 ---
 
-# 5. concurrenct 包中的锁
+#  Lock 接口
 
-## 1. Lock 接口
-
-### 相比 synchronized 的优势
+## 相比 synchronized 的优势
 
 `concurrent` 包中的 Lock 接口，比 `synchronized` 灵活，有如下的优势：
 
@@ -23,7 +21,7 @@ typora-root-url: ../../../../
 - 超时获取锁。
 - 使用 `AbstractQueuedSynchronizer` (`AQS`) 自定义锁。
 
-### 主要的方法
+## 主要的方法
 
 - `void lock()` 
 - `void lockInterruptibly() throws InterruptedException` 可以被中断。
@@ -32,7 +30,7 @@ typora-root-url: ../../../../
 - `void unlock()` 解锁。
 - `Condition newCondition()` 获取等待通知组件，只有获取了锁后，才可以调用 `condition.await()` 和 `condition.signal()`。
 
-### 使用方式
+## 使用方式
 
 ```java
 Lock lock = new ReentrantLock();
@@ -46,9 +44,9 @@ try {
 }
 ```
 
-## 2. 队列同步器 AbstractQueuedSynchronizer
+# 队列同步器 AbstractQueuedSynchronizer
 
-### 简介
+## 简介
 
 AQS 用来构建锁和其他同步组件。`ReentrantLock`、`ReentrantReadWriteLock` 和 `CountDownLatch`。
 
@@ -56,13 +54,13 @@ AQS 用来构建锁和其他同步组件。`ReentrantLock`、`ReentrantReadWrite
 
 内置了 同步队列，我们只需要实现如何更新 `state`，就可以实现自定义的锁。
 
-### 使用方式
+## 使用方式
 
 1. 类 `MyLock` 实现 `Lock` 接口。
 2. 类 `MyLock` 的内部类 `Sync` 继承 `AQS`，重写响应的方法。
 3. 类 `MyLock` 中的方法调用 `Sync` 的方法。
 
-#### AQS 可重写的方法
+### AQS 可重写的方法
 
 - `protected boolean tryAcquire(int arg)`
 - `protected boolean tryRelease(int arg)`
@@ -73,9 +71,7 @@ AQS 用来构建锁和其他同步组件。`ReentrantLock`、`ReentrantReadWrite
 - `protected boolean tryReleaseShared(int arg)`
 - `protected boolean isHeldExclusively()` 是否在独占模式下被线程占用。
 
-#### AQS 可以使用的方法
-
-![image-20200226152753493](/Users/liuzihe/Library/Application Support/typora-user-images/image-20200226152753493.png)
+### AQS 可以使用的方法
 
 - 独占模式获取锁
   - `public void acquire(int arg)`
@@ -91,7 +87,7 @@ AQS 用来构建锁和其他同步组件。`ReentrantLock`、`ReentrantReadWrite
 - 获取等待在同步队列上的线程集合
   - `public Collection<Thread> getQueuedThreads()`
 
-### 三个要点
+## 三个要点
 
 - 状态
   - 使用 `volatile int state` 来描述同步资源的状态
@@ -101,13 +97,13 @@ AQS 用来构建锁和其他同步组件。`ReentrantLock`、`ReentrantReadWrite
   - 更新 `state`、头结点、尾节点，都是用的 CAS 完成。
   - 这里没有使用 AtomicXXX 相关类，而是直接用了 unsafe 方法，来提供性能。
 
-## 3. AQS 独占锁的获取源码分析
+# AQS 独占锁的获取源码分析
 
-### 引用
+## 引用
 
 - [逐行分析AQS源码(1)——独占锁的获取](https://segmentfault.com/a/1190000015739343)
 
-### acquire()
+## acquire()
 
 ```java
 public final void acquire(int arg) {
@@ -125,7 +121,7 @@ static void selfInterrupt() {
 3. 使用 `acquireQueued()` 在被唤醒时，死循环获取同步状态。
 4. 因为是不可中断的，整个过程记录中断状态，在获取到同步状态后，如果被中断了，则调用 `Thread.currentThread().interrupt();` 中断线程。
 
-### addWaiter()
+## addWaiter()
 
 ```java
 private Node addWaiter(Node mode) {
@@ -165,7 +161,7 @@ private Node enq(final Node node) {
    1. 如果队列为空，添加一个空的头结点，**continue**。
    2. 如果队列不为空、且 CAS 添加节点到尾部成功，则返回。
 
-###  acquireQueued()
+##  acquireQueued()
 
 ```java
 final boolean acquireQueued(final Node node, int arg) {
@@ -195,7 +191,7 @@ final boolean acquireQueued(final Node node, int arg) {
 2. 否则，使用 `LockSupport.park(this);` 阻塞线程，并记录中断状态。
 3. 在被唤醒的时候，从步骤 1 开始重复。
 
-### shouldParkAfterFailedAcquire()
+## shouldParkAfterFailedAcquire()
 
 ```java
 private static boolean shouldParkAfterFailedAcquire(Node pred, Node node) {
@@ -238,13 +234,13 @@ static final int PROPAGATE = -3;
 
 - 前驱结点状态是 0，说明没有设置过，CAS 更新为 SIGNAL。返回 false。
 
-## 4. AQS 独占锁的释放源码分析
+# AQS 独占锁的释放源码分析
 
-### 引用
+## 引用
 
 - [逐行分析AQS源码(2)——独占锁的释放](https://segmentfault.com/a/1190000015752512)
 
-### release()
+## release()
 
 ```java
 public final boolean release(int arg) {
@@ -261,7 +257,7 @@ public final boolean release(int arg) {
 1. 释放同步资源状态。
 2. 如果同步队列不为空、且头结点的 `waitStatus` 不为 0（头结点的后继节点在等待被唤醒），则使用 `unparkSuccessor()` 唤醒头结点的后继节点。
 
-### unparkSuccessor()
+## unparkSuccessor()
 
 ```java
 private void unparkSuccessor(Node node) {
@@ -309,12 +305,12 @@ private Node enq(final Node node) {
 }
 ```
 
-## 5. AQS 共享锁的获取源码分析
+# AQS 共享锁的获取源码分析
 
-### 引用
+## 引用
 - [逐行分析AQS源码(3)——共享锁的获取与释放](https://segmentfault.com/a/1190000016447307)
 
-### acquireShared()
+## acquireShared()
 
 ```java
 public final void acquireShared(int arg) {
@@ -326,7 +322,7 @@ public final void acquireShared(int arg) {
 1. 尝试获取同步资源，成功则返回。
 2. 失败调用 `doAcquireShared(arg);`。
 
-### doAcquireShared()
+## doAcquireShared()
 
 ```java
 private void doAcquireShared(int arg) {
@@ -371,7 +367,7 @@ final boolean isShared() {
 2. 在获取同步资源成功后，使用 `setHeadAndPropagate()`，而不是 `setHead()`。
    - 除了更新自己为头结点，还要唤醒后继节点。
 
-### setHeadAndPropagate()
+## setHeadAndPropagate()
 
 ```java
 private void setHeadAndPropagate(Node node, int propagate) {
@@ -391,13 +387,13 @@ private void setHeadAndPropagate(Node node, int propagate) {
    - 这里不用 CAS 设置，因为在获取共享锁的时候，也只有自己是头结点的后继节点才能进入这里，也就是说获取锁是“串行”调用 `setHead()` 的。
 2. 如果 `tryAcquireShared()` 大于0，自己的 `waitStatus` 不是 0 和 CANCELLED，自己的后继节点存在且为共享模式，则调用 `doReleaseShared()` 唤醒后继节点。
 
-## 5. AQS 共享锁的释放源码分析
+# AQS 共享锁的释放源码分析
 
-### 引用
+## 引用
 
 - [逐行分析AQS源码(3)——共享锁的获取与释放](https://segmentfault.com/a/1190000016447307)
 
-### releaseShared()
+## releaseShared()
 
 ```java
 public final boolean releaseShared(int arg) {
@@ -412,7 +408,7 @@ public final boolean releaseShared(int arg) {
 1. 释放同步资源。
 2. 调用 `doReleaseShared()` 来唤醒后继节点。
 
-### doReleaseShared()
+## doReleaseShared()
 
 ```java
 private void doReleaseShared() {
@@ -439,13 +435,13 @@ private void doReleaseShared() {
 
 注意，因为可能有多个线程在执行这个函数，在唤醒前，要先 CAS 使头结点的状态清0成功，才可以唤醒头结点的后继节点。
 
-## 6. ReentrantLock 重入锁
+# ReentrantLock 重入锁
 
-### 状态
+## 状态
 
 `state` 值表示锁被获取的次数。
 
-### 非公平锁获取
+## 非公平锁获取
 
 ```java
 final boolean nonfairTryAcquire(int acquires) {
@@ -476,7 +472,7 @@ final boolean nonfairTryAcquire(int acquires) {
 1. 如果没有人持有锁、且当前线程获取锁成功，把当前线程设为 `exclusiveOwnerThread`。
 2. 如果是自己线程持有锁，`state` 加 1。
 
-### 公平锁获取
+## 公平锁获取
 
 ```java
 // FairSync
@@ -505,21 +501,21 @@ protected final boolean tryAcquire(int acquires) {
 
 这样每个线程都必须先入同步队列（除了队列为空时），才有可能获取锁。
 
-#### 与非公平锁对比
+### 与非公平锁对比
 
 - 对于非公平锁，假设线程 A 持有锁、线程 B 在同步队列中，在 A 释放锁时，线程 C 请求获取锁，可能会比同步队列的头结点 B 更早获取到锁。
 
 - 对于公平锁，线程 C 无法在队列为空时获取到锁。
 
-## 7. ReentrantReadWriteLock 读写锁
+# ReentrantReadWriteLock 读写锁
 
-### 状态
+## 状态
 
 `state` 前 16 位表示获取读锁的次数。
 
 `state` 后 16 位表示获取写锁的次数。
 
-### 写锁的获取
+## 写锁的获取
 
 ```java
 protected final boolean tryAcquire(int acquires) {
@@ -555,11 +551,11 @@ protected final boolean tryAcquire(int acquires) {
    1. 如果是非公平锁，尝试 CAS 加锁。
    2.  如果是公平锁，同步队列为空、或头结点是自己线程才可以尝试 CAS 加锁。
 
-### 读锁的获取
+## 读锁的获取
 
 可以使用 `readHoldCount()` 来获取本线程持有读锁的次数，使用 `ThreadLocal` 来计数。
 
-### 锁降级
+## 锁降级
 
 持有写锁的线程，可以在释放写锁之前获取读锁。
 
@@ -567,7 +563,7 @@ protected final boolean tryAcquire(int acquires) {
 
 否则先释放写锁再获取读锁的话，在释放后可能其他线程获取了读锁，使得线程读到的值不是本线程写的值。
 
-## 8. LockSupport
+# LockSupport
 
 - `LockSupport.park()` 阻塞当前线程。
   - 可以被中断，中断后 `Thread.interrupted()` 返回 true。
@@ -575,9 +571,9 @@ protected final boolean tryAcquire(int acquires) {
   - 如果 thread 被 `park` 阻塞了，唤醒它。
   - 如果 thread 没有被 `park`，下次 `park` 不会阻塞线程。
 
-## 9. Condition
+# Condition
 
-### 数据结构
+## 数据结构
 
 ```java
 public class ConditionObject implements Condition, java.io.Serializable {
@@ -590,7 +586,7 @@ public class ConditionObject implements Condition, java.io.Serializable {
 
 每个 `Conditoin` 对象都存储了自己的等待队列的链表。
 
-### await()
+## await()
 
 ```java
 public final void await() throws InterruptedException {
@@ -619,7 +615,7 @@ public final void await() throws InterruptedException {
 4. 在被唤醒后，调用 `acquireQueued` 方法，尝试获取锁资源。
 5. 被中断，会抛出 InterruptedException。
 
-### signal()
+## signal()
 
 ```java
 public final void signal() {
@@ -663,7 +659,7 @@ final boolean transferForSignal(Node node) {
 2. 把等待队列的头节点移除、加入到同步队列中。
 3. 使用 `LockSupport.unpark()` 唤醒节点中的线程。
 
-### signalAll()
+## signalAll()
 
 1. 会把等待队列的所有节点移除、加入到同步队列中。
 2. 唤醒所有节点中的线程。
