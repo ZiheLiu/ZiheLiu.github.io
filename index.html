@@ -182,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/1Java内存区域/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/3类加载机制/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -196,7 +196,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/jvm/1Java内存区域/" class="post-title-link" itemprop="url">1. Java内存区域</a>
+            <a href="/2020/java/jvm/3类加载机制/" class="post-title-link" itemprop="url">3. 类加载机制</a>
         </h1>
 
         <div class="post-meta">
@@ -205,16 +205,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+              <time title="Created: 2020-03-05 10:42:00 / Modified: 11:43:09" itemprop="dateCreated datePublished" datetime="2020-03-05T10:42:00+08:00">2020-03-05</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 07:57:42" itemprop="dateModified" datetime="2020-03-05T07:57:42+08:00">2020-03-05</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -238,8 +232,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/jvm/1Java内存区域/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/1Java内存区域/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/jvm/3类加载机制/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/3类加载机制/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -255,25 +249,16 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机 - 第三版》</li>
+<li>《深入理解 Java 虚拟机-第三版》</li>
 </ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
-<ol>
-<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
-</li>
-<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
-</li>
-</ol>
-<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
-<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
-<p>较小的内存空间。</p>
-<ul>
-<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
-<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
-</ul>
+<h1 id="类加载时机"><a href="#类加载时机" class="headerlink" title="类加载时机"></a>类加载时机</h1><h2 id="类的生命周期"><a href="#类的生命周期" class="headerlink" title="类的生命周期"></a>类的生命周期</h2><p>类的生命周期如下图。</p>
+<p><img src="/images/类的生命周期.png" alt="类的生命周期"></p>
+<p>加载、验证、准备、初始化、卸载 这五个阶段的顺序是确定的。</p>
+<p>解析阶段，在某些情况下可以在初始化阶段之后再开始，来支持 Java 运行时绑定特性。</p>
+<h2 id="何时进行"><a href="#何时进行" class="headerlink" title="何时进行"></a>何时进行</h2><h3 id="类初始化时机"><a href="#类初始化时机" class="headerlink" title="类初始化时机"></a>类初始化时机</h3>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/1Java内存区域/#more" rel="contents">
+              <a class="btn" href="/2020/java/jvm/3类加载机制/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -297,7 +282,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/SPI/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/java基础知识汇总/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -311,7 +296,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/jvm/SPI/" class="post-title-link" itemprop="url">SPI 机制</a>
+            <a href="/2020/java/basic/java基础知识汇总/" class="post-title-link" itemprop="url">Java 基础知识汇总</a>
         </h1>
 
         <div class="post-meta">
@@ -328,7 +313,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 08:03:39" itemprop="dateModified" datetime="2020-03-05T08:03:39+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 00:58:54" itemprop="dateModified" datetime="2020-03-05T00:58:54+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -340,7 +325,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
                 </span>
             </span>
 
@@ -353,8 +338,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/jvm/SPI/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/SPI/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/basic/java基础知识汇总/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/java基础知识汇总/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -369,30 +354,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408" target="_blank" rel="noopener">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
-<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3" target="_blank" rel="noopener">Java SPI机制详解</a></li>
-<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2" target="_blank" rel="noopener">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
-</ul>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
-<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
-</li>
-<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
-</li>
-</ul>
-<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
-<li><strong>服务</strong> 一般是系统定义好的接口，</li>
-<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
-<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
-<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
-</ul>
-</li>
-</ul>
-<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
+          <h1 id="Java-基础知识汇总"><a href="#Java-基础知识汇总" class="headerlink" title="Java 基础知识汇总"></a>Java 基础知识汇总</h1><p>Java 区分大小写。</p>
+<p>源代码的文件名必须与公共类的名字相同。</p>
+<p>main 方法必须声明为 public。</p>
+<p>允许在运行时确定数组的长度。</p>
+<p>javabeans TODO</p>
+<h2 id="3-继承"><a href="#3-继承" class="headerlink" title="3. 继承"></a>3. 继承</h2><p>“is-a” 关系是继承的一个明显特征。</p>
+<p>继承使用 <code>extends</code> 来表示。</p>
+<p>Java 只存在公有继承。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/SPI/#more" rel="contents">
+              <a class="btn" href="/2020/java/basic/java基础知识汇总/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -536,448 +508,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/HashMap源码分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/basic/HashMap源码分析/" class="post-title-link" itemprop="url">HashMap源码分析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:58:59" itemprop="dateModified" datetime="2020-03-05T00:58:59+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/basic/HashMap源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/HashMap源码分析/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="HashMap-源码分析"><a href="#HashMap-源码分析" class="headerlink" title="HashMap 源码分析"></a>HashMap 源码分析</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
-<li><a href="https://segmentfault.com/a/1190000015798586" target="_blank" rel="noopener">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
-</ul>
-<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>节点 <code>Node</code> 存储：</p>
-<ul>
-<li>基本：hash 值、key值、value值。</li>
-<li>多个值存在一个位置：链表 <code>next</code>。</li>
-</ul>
-<h3 id="table"><a href="#table" class="headerlink" title="table"></a>table</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/basic/HashMap源码分析/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:58:51" itemprop="dateModified" datetime="2020-03-05T00:58:51+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="LinkedHashMap-源码分析"><a href="#LinkedHashMap-源码分析" class="headerlink" title="LinkedHashMap 源码分析"></a>LinkedHashMap 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8" target="_blank" rel="noopener">搞懂 Java LinkedHashMap 源码</a></li>
-</ul>
-<h2 id="1-与-HashMap-的关系"><a href="#1-与-HashMap-的关系" class="headerlink" title="1. 与 HashMap 的关系"></a>1. 与 HashMap 的关系</h2><ul>
-<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
-</li>
-<li><p>使用双向链表，记录节点的访问顺序。</p>
-<ul>
-<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
-</li>
-<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="2-实现方式"><a href="#2-实现方式" class="headerlink" title="2. 实现方式"></a>2. 实现方式</h2><h3 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在节点中，添加 before 和 after，来实现双向链表。</p>
-<h3 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/enum/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/basic/enum/" class="post-title-link" itemprop="url">Enum</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 01:10:27" itemprop="dateModified" datetime="2020-03-05T01:10:27+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/basic/enum/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/enum/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Enum"><a href="#Enum" class="headerlink" title="Enum"></a>Enum</h1><h2 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h2><h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>使用 <code>enum</code>  关键字，类似于定义类的方式。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE,</span><br><span class="line">    BANANA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="自定义构造函数"><a href="#自定义构造函数" class="headerlink" title="自定义构造函数"></a>自定义构造函数</h3><p>可以自定义构造函数，传递额外的信息。注意 <code>Fruit</code> 类的第一个语句必须是枚举变量的定义。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE(<span class="number">10</span>),</span><br><span class="line">    BANANA(<span class="number">3</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">enum</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> price)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="2-原理"><a href="#2-原理" class="headerlink" title="2. 原理"></a>2. 原理</h2><p>编译器会把 <code>enum</code> 类转化为 <code>Enum&lt;E extends Enum&lt;E&gt;&gt;</code> 的子类。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/basic/enum/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/4类加载器/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/jvm/4类加载器/" class="post-title-link" itemprop="url">4. 类加载器</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 08:02:44" itemprop="dateModified" datetime="2020-03-05T08:02:44+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/jvm/4类加载器/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/4类加载器/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/51374915" target="_blank" rel="noopener">知乎-老大难的 Java ClassLoader 再不理解就老了</a></li>
-<li>《Java 核心技术-卷2-第九章》</li>
-<li>[<a href="https://www.hollischuang.com/archives/199" target="_blank" rel="noopener">深度分析Java的ClassLoader机制（源码级别）</a>]</li>
-<li>[<a href="https://www.hollischuang.com/archives/201" target="_blank" rel="noopener">Java类的加载、链接和初始化</a>]</li>
-</ul>
-<h1 id="ClassLoader-的用途"><a href="#ClassLoader-的用途" class="headerlink" title="ClassLoader 的用途"></a>ClassLoader 的用途</h1><p>加载 .class 字节码的二进制文件，转换成内存形式的<code>Class</code> 对象。</p>
-<p>.class 文件可以来自于磁盘、jar包中、远程服务器的字节流。</p>
-<h1 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h1><p>虚拟机值加载程序执行是所需要的类文件。</p>
-<p>假设从 MyProgram.class 开始执行，虚拟机的执行步骤：</p>
-<ol>
-<li>加载 MyProgram.class 类文件的内容。</li>
-<li>类 MyProgram 中另静态域（非基本类型）、超类也会被加载。</li>
-<li>执行静态 main 方法。</li>
-<li>加载 main 方法、main 调用的方法中使用的类。</li>
-</ol>
-<h1 id="四种类加载器"><a href="#四种类加载器" class="headerlink" title="四种类加载器"></a>四种类加载器</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/4类加载器/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/2Java垃圾回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1097,7 +627,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/java基础知识汇总/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/SPI/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -1111,7 +641,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/basic/java基础知识汇总/" class="post-title-link" itemprop="url">Java 基础知识汇总</a>
+            <a href="/2020/java/jvm/SPI/" class="post-title-link" itemprop="url">SPI 机制</a>
         </h1>
 
         <div class="post-meta">
@@ -1128,7 +658,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:58:54" itemprop="dateModified" datetime="2020-03-05T00:58:54+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 08:03:39" itemprop="dateModified" datetime="2020-03-05T08:03:39+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1140,7 +670,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -1153,8 +683,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/basic/java基础知识汇总/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/java基础知识汇总/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/jvm/SPI/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/SPI/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1169,17 +699,145 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Java-基础知识汇总"><a href="#Java-基础知识汇总" class="headerlink" title="Java 基础知识汇总"></a>Java 基础知识汇总</h1><p>Java 区分大小写。</p>
-<p>源代码的文件名必须与公共类的名字相同。</p>
-<p>main 方法必须声明为 public。</p>
-<p>允许在运行时确定数组的长度。</p>
-<p>javabeans TODO</p>
-<h2 id="3-继承"><a href="#3-继承" class="headerlink" title="3. 继承"></a>3. 继承</h2><p>“is-a” 关系是继承的一个明显特征。</p>
-<p>继承使用 <code>extends</code> 来表示。</p>
-<p>Java 只存在公有继承。</p>
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408" target="_blank" rel="noopener">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
+<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3" target="_blank" rel="noopener">Java SPI机制详解</a></li>
+<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2" target="_blank" rel="noopener">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
+</ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
+</li>
+<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
+</li>
+</ul>
+<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
+<li><strong>服务</strong> 一般是系统定义好的接口，</li>
+<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
+<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
+<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/basic/java基础知识汇总/#more" rel="contents">
+              <a class="btn" href="/2020/java/jvm/SPI/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/4类加载器/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/jvm/4类加载器/" class="post-title-link" itemprop="url">4. 类加载器</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 08:02:44" itemprop="dateModified" datetime="2020-03-05T08:02:44+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/jvm/4类加载器/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/4类加载器/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/51374915" target="_blank" rel="noopener">知乎-老大难的 Java ClassLoader 再不理解就老了</a></li>
+<li>《Java 核心技术-卷2-第九章》</li>
+<li>[<a href="https://www.hollischuang.com/archives/199" target="_blank" rel="noopener">深度分析Java的ClassLoader机制（源码级别）</a>]</li>
+<li>[<a href="https://www.hollischuang.com/archives/201" target="_blank" rel="noopener">Java类的加载、链接和初始化</a>]</li>
+</ul>
+<h1 id="ClassLoader-的用途"><a href="#ClassLoader-的用途" class="headerlink" title="ClassLoader 的用途"></a>ClassLoader 的用途</h1><p>加载 .class 字节码的二进制文件，转换成内存形式的<code>Class</code> 对象。</p>
+<p>.class 文件可以来自于磁盘、jar包中、远程服务器的字节流。</p>
+<h1 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h1><p>虚拟机值加载程序执行是所需要的类文件。</p>
+<p>假设从 MyProgram.class 开始执行，虚拟机的执行步骤：</p>
+<ol>
+<li>加载 MyProgram.class 类文件的内容。</li>
+<li>类 MyProgram 中另静态域（非基本类型）、超类也会被加载。</li>
+<li>执行静态 main 方法。</li>
+<li>加载 main 方法、main 调用的方法中使用的类。</li>
+</ol>
+<h1 id="四种类加载器"><a href="#四种类加载器" class="headerlink" title="四种类加载器"></a>四种类加载器</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/jvm/4类加载器/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1330,6 +988,333 @@
   
   
 
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:58:51" itemprop="dateModified" datetime="2020-03-05T00:58:51+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LinkedHashMap-源码分析"><a href="#LinkedHashMap-源码分析" class="headerlink" title="LinkedHashMap 源码分析"></a>LinkedHashMap 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8" target="_blank" rel="noopener">搞懂 Java LinkedHashMap 源码</a></li>
+</ul>
+<h2 id="1-与-HashMap-的关系"><a href="#1-与-HashMap-的关系" class="headerlink" title="1. 与 HashMap 的关系"></a>1. 与 HashMap 的关系</h2><ul>
+<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
+</li>
+<li><p>使用双向链表，记录节点的访问顺序。</p>
+<ul>
+<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
+</li>
+<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-实现方式"><a href="#2-实现方式" class="headerlink" title="2. 实现方式"></a>2. 实现方式</h2><h3 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在节点中，添加 before 和 after，来实现双向链表。</p>
+<h3 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/HashMap源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/HashMap源码分析/" class="post-title-link" itemprop="url">HashMap源码分析</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:58:59" itemprop="dateModified" datetime="2020-03-05T00:58:59+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/HashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/HashMap源码分析/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="HashMap-源码分析"><a href="#HashMap-源码分析" class="headerlink" title="HashMap 源码分析"></a>HashMap 源码分析</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
+<li><a href="https://segmentfault.com/a/1190000015798586" target="_blank" rel="noopener">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
+</ul>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>节点 <code>Node</code> 存储：</p>
+<ul>
+<li>基本：hash 值、key值、value值。</li>
+<li>多个值存在一个位置：链表 <code>next</code>。</li>
+</ul>
+<h3 id="table"><a href="#table" class="headerlink" title="table"></a>table</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/HashMap源码分析/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/enum/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/enum/" class="post-title-link" itemprop="url">Enum</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 01:10:27" itemprop="dateModified" datetime="2020-03-05T01:10:27+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/enum/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/enum/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Enum"><a href="#Enum" class="headerlink" title="Enum"></a>Enum</h1><h2 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h2><h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>使用 <code>enum</code>  关键字，类似于定义类的方式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE,</span><br><span class="line">    BANANA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自定义构造函数"><a href="#自定义构造函数" class="headerlink" title="自定义构造函数"></a>自定义构造函数</h3><p>可以自定义构造函数，传递额外的信息。注意 <code>Fruit</code> 类的第一个语句必须是枚举变量的定义。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE(<span class="number">10</span>),</span><br><span class="line">    BANANA(<span class="number">3</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">enum</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> price)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-原理"><a href="#2-原理" class="headerlink" title="2. 原理"></a>2. 原理</h2><p>编译器会把 <code>enum</code> 类转化为 <code>Enum&lt;E extends Enum&lt;E&gt;&gt;</code> 的子类。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/enum/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
   </div>
 
   
@@ -1402,7 +1387,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">29</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
