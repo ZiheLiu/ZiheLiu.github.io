@@ -22,25 +22,25 @@
 
   <meta property="og:type" content="website">
 <meta property="og:title" content="ZiheLiu">
-<meta property="og:url" content="http://ziheliu.github.io/archives/index.html">
+<meta property="og:url" content="http://ziheliu.github.io/page/4/index.html">
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:locale" content="default">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ZiheLiu">
 
-<link rel="canonical" href="http://ziheliu.github.io/archives/">
+<link rel="canonical" href="http://ziheliu.github.io/page/4/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
+    isHome : true,
     isPost : false
   };
 </script>
 
-  <title>Archive | ZiheLiu</title>
+  <title>ZiheLiu</title>
   
 
 
@@ -177,231 +177,122 @@
           <div class="content">
             
 
-  
-  
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
+  <div class="posts-expand">
         
-        <span class="collection-header">OK! 31 posts in total. Keep on posting.</span>
-      </div>
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/1并发编程的挑战/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/Java并发编程的艺术笔记/1并发编程的挑战/" class="post-title-link" itemprop="url">1. 并发编程的挑战</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:01" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:01+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 12:49:31" itemprop="dateModified" datetime="2020-03-05T12:49:31+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/1并发编程的挑战/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/1并发编程的挑战/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <h1 class="collection-header">2020</h1>
+          <h1 id="上下文切换"><a href="#上下文切换" class="headerlink" title="上下文切换"></a>上下文切换</h1><p>在切换线程时，需要保存上一线程状态，加载下一线程状态，即进行<strong>上下文切换</strong>。</p>
+<p>因此线程由创建和上下文切换的开销，多线程并发执行的速度，并不一定比单线程快。</p>
+<h2 id="减少上下文切换的方法"><a href="#减少上下文切换的方法" class="headerlink" title="减少上下文切换的方法"></a>减少上下文切换的方法</h2><ul>
+<li>无锁并发编程。避免使用锁。例如数据 Hash 分段，不同线程处理不同段的数据。</li>
+<li>CAS 算法。</li>
+<li>使用最少线程。避免创建不需要的线程。</li>
+<li>协程。在单线程里实现多任务的调度。</li>
+</ul>
+<h1 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h1><p>两个线程持有锁，并且等待对方持有的锁。</p>
+<p>例如，thread1 持有 str1，thread2 持有 str2：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">  String str1 = <span class="string">"str1"</span>;</span><br><span class="line">  String str2 = <span class="string">"str2"</span>;</span><br><span class="line"></span><br><span class="line">  Thread thread1 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (str1) &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">2000</span>);</span><br><span class="line">      &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">synchronized</span> (str2) &#123;</span><br><span class="line">        System.out.println(<span class="string">"thread1"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, <span class="string">"thread1"</span>);</span><br><span class="line"></span><br><span class="line">  Thread thread2 = <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (str2) &#123;</span><br><span class="line">      <span class="keyword">synchronized</span> (str1) &#123;</span><br><span class="line">        System.out.println(<span class="string">"thread2"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;, <span class="string">"thread2"</span>);</span><br><span class="line"></span><br><span class="line">  thread1.start();</span><br><span class="line">  thread2.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以使用 <code>jstack</code> 命令，查看各个线程的状态、持有的锁、等待的锁、发现死锁：</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/1并发编程的挑战/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-05T14:33:57+08:00"
-              content="2020-03-05">
-          03-05
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/netty/netty记录/" itemprop="url">
-            <span itemprop="name">Netty记录</span>
-          </a>
-      </h2>
-
-    </header>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
   </article>
+  
+  
+  
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-05T10:42:00+08:00"
-              content="2020-03-05">
-          03-05
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/jvm/3类加载机制/" itemprop="url">
-            <span itemprop="name">3. 类加载机制</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/jvm/SPI/" itemprop="url">
-            <span itemprop="name">SPI 机制</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/jvm/4类加载器/" itemprop="url">
-            <span itemprop="name">4. 类加载器</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/jvm/1Java内存区域/" itemprop="url">
-            <span itemprop="name">1. Java内存区域</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/basic/java基础知识汇总/" itemprop="url">
-            <span itemprop="name">Java 基础知识汇总</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/basic/enum/" itemprop="url">
-            <span itemprop="name">Enum</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/jvm/2Java垃圾回收/" itemprop="url">
-            <span itemprop="name">2. Java垃圾收集器与内存分配分配策略</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/io/内存映射文件/" itemprop="url">
-            <span itemprop="name">FileChannel与内存映射文件</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-03-04T14:48:52+08:00"
-              content="2020-03-04">
-          03-04
-        </time>
-      </div>
-
-      <h2 class="post-title">
-          <a class="post-title-link" href="/2020/java/io/io流/" itemprop="url">
-            <span itemprop="name">I/O流相关类</span>
-          </a>
-      </h2>
-
-    </header>
-  </article>
-
-
-    </div>
   </div>
-  
-  
-  
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/archives/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
   </nav>
 
 

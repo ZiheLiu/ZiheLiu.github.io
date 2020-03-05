@@ -182,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/1Java内存区域/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/HashMap源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -196,7 +196,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/jvm/1Java内存区域/" class="post-title-link" itemprop="url">1. Java内存区域</a>
+            <a href="/2020/java/basic/HashMap源码分析/" class="post-title-link" itemprop="url">HashMap源码分析</a>
         </h1>
 
         <div class="post-meta">
@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 07:57:42" itemprop="dateModified" datetime="2020-03-05T07:57:42+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 00:58:59" itemprop="dateModified" datetime="2020-03-05T00:58:59+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -225,7 +225,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
                 </span>
             </span>
 
@@ -238,8 +238,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/jvm/1Java内存区域/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/1Java内存区域/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/basic/HashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/HashMap源码分析/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -254,26 +254,135 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机 - 第三版》</li>
+          <h1 id="HashMap-源码分析"><a href="#HashMap-源码分析" class="headerlink" title="HashMap 源码分析"></a>HashMap 源码分析</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
+<li><a href="https://segmentfault.com/a/1190000015798586" target="_blank" rel="noopener">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
 </ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
-<ol>
-<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
-</li>
-<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
-</li>
-</ol>
-<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
-<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
-<p>较小的内存空间。</p>
+<h2 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h2><h3 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>节点 <code>Node</code> 存储：</p>
 <ul>
-<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
-<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
+<li>基本：hash 值、key值、value值。</li>
+<li>多个值存在一个位置：链表 <code>next</code>。</li>
 </ul>
+<h3 id="table"><a href="#table" class="headerlink" title="table"></a>table</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/1Java内存区域/#more" rel="contents">
+              <a class="btn" href="/2020/java/basic/HashMap源码分析/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:58:51" itemprop="dateModified" datetime="2020-03-05T00:58:51+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="LinkedHashMap-源码分析"><a href="#LinkedHashMap-源码分析" class="headerlink" title="LinkedHashMap 源码分析"></a>LinkedHashMap 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8" target="_blank" rel="noopener">搞懂 Java LinkedHashMap 源码</a></li>
+</ul>
+<h2 id="1-与-HashMap-的关系"><a href="#1-与-HashMap-的关系" class="headerlink" title="1. 与 HashMap 的关系"></a>1. 与 HashMap 的关系</h2><ul>
+<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
+</li>
+<li><p>使用双向链表，记录节点的访问顺序。</p>
+<ul>
+<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
+</li>
+<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-实现方式"><a href="#2-实现方式" class="headerlink" title="2. 实现方式"></a>2. 实现方式</h2><h3 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在节点中，添加 before 和 after，来实现双向链表。</p>
+<h3 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -669,7 +778,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:47" itemprop="dateModified" datetime="2020-03-05T00:57:47+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 12:47:10" itemprop="dateModified" datetime="2020-03-05T12:47:10+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -710,13 +819,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="13-ExecutorService-源码分析"><a href="#13-ExecutorService-源码分析" class="headerlink" title="13. ExecutorService 源码分析"></a>13. ExecutorService 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
 <li><a href="http://www.throwable.club/2019/07/27/java-concurrency-executor-service/" target="_blank" rel="noopener"><a href="http://www.throwable.club/2019/07/27/java-concurrency-executor-service/" target="_blank" rel="noopener">JUC线程池服务ExecutorService接口实现源码分析</a></a></li>
 </ul>
-<h2 id="1-FutureTask"><a href="#1-FutureTask" class="headerlink" title="1. FutureTask"></a>1. FutureTask</h2><h3 id="主要接口"><a href="#主要接口" class="headerlink" title="主要接口"></a>主要接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Runnable</span>, <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;    </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 取消任务。</span></span><br><span class="line">  	<span class="comment">//		1. mayInterruptIfRunning 用于控制是否要中断任务。</span></span><br><span class="line">  	<span class="comment">//				注意，任务可能不响应中断。</span></span><br><span class="line">  	<span class="comment">//		2. 会唤醒所有调用 get() 的线程。</span></span><br><span class="line">  	<span class="comment">//		3. 调用 get() 的线程抛出 CancellationException。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 任务是否被取消了。</span></span><br><span class="line">  	<span class="comment">//	状态是否为 CANCELLED、INTERRUPTING、INTERRUPTED。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancelled</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 任务是否结束了.</span></span><br><span class="line">  	<span class="comment">//	包括正常和异常的情况。</span></span><br><span class="line">  	<span class="comment">//	状态是否不等于 NEW。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 永久阻塞获取结果，响应中断</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 带超时的阻塞获取结果，响应中断</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><p><code>FutureTask</code> 一般是 <code>AbstractExecutorService</code> 在 <code>submit()</code> 时候创建的。</p>
+<h1 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h1><h2 id="主要接口"><a href="#主要接口" class="headerlink" title="主要接口"></a>主要接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Runnable</span>, <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;    </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 取消任务。</span></span><br><span class="line">  	<span class="comment">//		1. mayInterruptIfRunning 用于控制是否要中断任务。</span></span><br><span class="line">  	<span class="comment">//				注意，任务可能不响应中断。</span></span><br><span class="line">  	<span class="comment">//		2. 会唤醒所有调用 get() 的线程。</span></span><br><span class="line">  	<span class="comment">//		3. 调用 get() 的线程抛出 CancellationException。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 任务是否被取消了。</span></span><br><span class="line">  	<span class="comment">//	状态是否为 CANCELLED、INTERRUPTING、INTERRUPTED。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancelled</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 任务是否结束了.</span></span><br><span class="line">  	<span class="comment">//	包括正常和异常的情况。</span></span><br><span class="line">  	<span class="comment">//	状态是否不等于 NEW。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 永久阻塞获取结果，响应中断</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 带超时的阻塞获取结果，响应中断</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p><code>FutureTask</code> 一般是 <code>AbstractExecutorService</code> 在 <code>submit()</code> 时候创建的。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FutureTask</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 适配使用Callable类型任务的场景</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">FutureTask</span><span class="params">(Callable&lt;V&gt; callable)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (callable == <span class="keyword">null</span>)</span><br><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">      <span class="keyword">this</span>.callable = callable;</span><br><span class="line">      <span class="keyword">this</span>.state = NEW;       </span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 适配使用Runnable类型任务和已经提供了最终计算结果的场景</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">FutureTask</span><span class="params">(Runnable runnable, V result)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">this</span>.callable = Executors.callable(runnable, result);</span><br><span class="line">      <span class="keyword">this</span>.state = NEW;      </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Callable</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function">V <span class="title">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Executors</span> </span>&#123;</span><br><span class="line">  <span class="comment">// 将 Runnable 包装为 Callable，返回值是传入的 result。</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">Callable&lt;T&gt; <span class="title">callable</span><span class="params">(Runnable task, T result)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (task == <span class="keyword">null</span>)</span><br><span class="line">          <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">new</span> RunnableAdapter&lt;T&gt;(task, result);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Runnable 到 Callable 的适配器。</span></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">RunnableAdapter</span>&lt;<span class="title">T</span>&gt; <span class="keyword">implements</span> <span class="title">Callable</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">final</span> Runnable task;</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">final</span> T result;</span><br><span class="line">      RunnableAdapter(Runnable task, T result) &#123;</span><br><span class="line">          <span class="keyword">this</span>.task = task;</span><br><span class="line">          <span class="keyword">this</span>.result = result;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> T <span class="title">call</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          task.run();</span><br><span class="line">          <span class="keyword">return</span> result;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">super</span>.toString() + <span class="string">"[Wrapped task = "</span> + task + <span class="string">"]"</span>;</span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="状态转化"><a href="#状态转化" class="headerlink" title="状态转化"></a>状态转化</h3>
+<h2 id="状态转化"><a href="#状态转化" class="headerlink" title="状态转化"></a>状态转化</h2><p><img src="/images/FutureTask状态转化.svg" alt="FutureTask状态转化"></p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/java/Java并发编程的艺术笔记/13ExecutorService源码分析/#more" rel="contents">
@@ -774,7 +883,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:48" itemprop="dateModified" datetime="2020-03-05T00:57:48+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 12:46:33" itemprop="dateModified" datetime="2020-03-05T12:46:33+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -815,9 +924,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="12-ThreadLocalRandom"><a href="#12-ThreadLocalRandom" class="headerlink" title="12. ThreadLocalRandom"></a>12. ThreadLocalRandom</h1><h2 id="1-Random"><a href="#1-Random" class="headerlink" title="1. Random"></a>1. Random</h2><p><code>Random</code> 类在生成随机数时，所有线程 CAS 竞争同一个 <code>seed</code>。</p>
+          <h1 id="Random"><a href="#Random" class="headerlink" title="Random"></a>Random</h1><p><code>Random</code> 类在生成随机数时，所有线程 CAS 竞争同一个 <code>seed</code>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> AtomicLong seed;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">int</span> <span class="title">next</span><span class="params">(<span class="keyword">int</span> bits)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> oldseed, nextseed;</span><br><span class="line">    AtomicLong seed = <span class="keyword">this</span>.seed;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        oldseed = seed.get();</span><br><span class="line">        nextseed = (oldseed * multiplier + addend) &amp; mask;</span><br><span class="line">    &#125; <span class="keyword">while</span> (!seed.compareAndSet(oldseed, nextseed));</span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>)(nextseed &gt;&gt;&gt; (<span class="number">48</span> - bits));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="2-ThreadLocalRandom"><a href="#2-ThreadLocalRandom" class="headerlink" title="2. ThreadLocalRandom"></a>2. ThreadLocalRandom</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.util.concurrent;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalRandom</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ThreadLocalRandom <span class="title">current</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (UNSAFE.getInt(Thread.currentThread(), PROBE) == <span class="number">0</span>)</span><br><span class="line">            localInit();</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">localInit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> p = probeGenerator.addAndGet(PROBE_INCREMENT);</span><br><span class="line">        <span class="keyword">int</span> probe = (p == <span class="number">0</span>) ? <span class="number">1</span> : p; <span class="comment">// skip 0</span></span><br><span class="line">        <span class="keyword">long</span> seed = mix64(seeder.getAndAdd(SEEDER_INCREMENT));</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        UNSAFE.putLong(t, SEED, seed);</span><br><span class="line">        UNSAFE.putInt(t, PROBE, probe);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 使用 probe 作为 hash 值，出现竞争时，调整 probe。</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">advanceProbe</span><span class="params">(<span class="keyword">int</span> probe)</span> </span>&#123;</span><br><span class="line">        probe ^= probe &lt;&lt; <span class="number">13</span>;   <span class="comment">// xorshift</span></span><br><span class="line">        probe ^= probe &gt;&gt;&gt; <span class="number">17</span>;</span><br><span class="line">        probe ^= probe &lt;&lt; <span class="number">5</span>;</span><br><span class="line">        UNSAFE.putInt(Thread.currentThread(), PROBE, probe);</span><br><span class="line">        <span class="keyword">return</span> probe;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// Unsafe mechanics</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> sun.misc.Unsafe UNSAFE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> SEED;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> PROBE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> SECONDARY;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            UNSAFE = sun.misc.Unsafe.getUnsafe();</span><br><span class="line">            Class&lt;?&gt; tk = Thread.class;</span><br><span class="line">            SEED = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomSeed"</span>));</span><br><span class="line">            PROBE = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomProbe"</span>));</span><br><span class="line">            SECONDARY = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomSecondarySeed"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> java.util;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** The current seed for a ThreadLocalRandom */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"tlr"</span>)</span><br><span class="line">    <span class="keyword">long</span> threadLocalRandomSeed;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Probe hash value; nonzero if threadLocalRandomSeed initialized */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"tlr"</span>)</span><br><span class="line">    <span class="keyword">int</span> threadLocalRandomProbe;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Secondary seed isolated from public ThreadLocalRandom sequence */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"tlr"</span>)</span><br><span class="line">    <span class="keyword">int</span> threadLocalRandomSecondarySeed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="ThreadLocalRandom"><a href="#ThreadLocalRandom" class="headerlink" title="ThreadLocalRandom"></a>ThreadLocalRandom</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> java.util.concurrent;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadLocalRandom</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ThreadLocalRandom <span class="title">current</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (UNSAFE.getInt(Thread.currentThread(), PROBE) == <span class="number">0</span>)</span><br><span class="line">            localInit();</span><br><span class="line">        <span class="keyword">return</span> instance;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">localInit</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> p = probeGenerator.addAndGet(PROBE_INCREMENT);</span><br><span class="line">        <span class="keyword">int</span> probe = (p == <span class="number">0</span>) ? <span class="number">1</span> : p; <span class="comment">// skip 0</span></span><br><span class="line">        <span class="keyword">long</span> seed = mix64(seeder.getAndAdd(SEEDER_INCREMENT));</span><br><span class="line">        Thread t = Thread.currentThread();</span><br><span class="line">        UNSAFE.putLong(t, SEED, seed);</span><br><span class="line">        UNSAFE.putInt(t, PROBE, probe);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 使用 probe 作为 hash 值，出现竞争时，调整 probe。</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">advanceProbe</span><span class="params">(<span class="keyword">int</span> probe)</span> </span>&#123;</span><br><span class="line">        probe ^= probe &lt;&lt; <span class="number">13</span>;   <span class="comment">// xorshift</span></span><br><span class="line">        probe ^= probe &gt;&gt;&gt; <span class="number">17</span>;</span><br><span class="line">        probe ^= probe &lt;&lt; <span class="number">5</span>;</span><br><span class="line">        UNSAFE.putInt(Thread.currentThread(), PROBE, probe);</span><br><span class="line">        <span class="keyword">return</span> probe;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">    <span class="comment">// Unsafe mechanics</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> sun.misc.Unsafe UNSAFE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> SEED;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> PROBE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> SECONDARY;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            UNSAFE = sun.misc.Unsafe.getUnsafe();</span><br><span class="line">            Class&lt;?&gt; tk = Thread.class;</span><br><span class="line">            SEED = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomSeed"</span>));</span><br><span class="line">            PROBE = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomProbe"</span>));</span><br><span class="line">            SECONDARY = UNSAFE.objectFieldOffset</span><br><span class="line">                (tk.getDeclaredField(<span class="string">"threadLocalRandomSecondarySeed"</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">package</span> java.util;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Thread</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** The current seed for a ThreadLocalRandom */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"tlr"</span>)</span><br><span class="line">    <span class="keyword">long</span> threadLocalRandomSeed;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Probe hash value; nonzero if threadLocalRandomSeed initialized */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"tlr"</span>)</span><br><span class="line">    <span class="keyword">int</span> threadLocalRandomProbe;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Secondary seed isolated from public ThreadLocalRandom sequence */</span></span><br><span class="line">    <span class="meta">@sun</span>.misc.Contended(<span class="string">"tlr"</span>)</span><br><span class="line">    <span class="keyword">int</span> threadLocalRandomSecondarySeed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li><p>每个线程第一次调用 <code>current()</code> 会分配 <code>seed</code> 和 <code>probe</code> 给 <code>Thread</code>。</p>
 <ul>
@@ -882,7 +991,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:48" itemprop="dateModified" datetime="2020-03-05T00:57:48+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 12:51:05" itemprop="dateModified" datetime="2020-03-05T12:51:05+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1187,127 +1296,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/" class="post-title-link" itemprop="url">8.5 DelayQueue 源码分析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:10" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:10+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:37" itemprop="dateModified" datetime="2020-03-05T00:57:37+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="8-5-DelayQueue-源码分析"><a href="#8-5-DelayQueue-源码分析" class="headerlink" title="8.5 DelayQueue 源码分析"></a>8.5 DelayQueue 源码分析</h1><h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1. 数据结构"></a>1. 数据结构</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayQueue</span>&lt;<span class="title">E</span> <span class="keyword">extends</span> <span class="title">Delayed</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PriorityQueue&lt;E&gt; q = <span class="keyword">new</span> PriorityQueue&lt;E&gt;();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">transient</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">  	<span class="comment">// 出队线程阻塞在这里。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition available = lock.newCondition();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> Thread leader = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Condition signalled when a newer element becomes available</span></span><br><span class="line"><span class="comment">     * at the head of the queue or a new thread may need to</span></span><br><span class="line"><span class="comment">     * become leader.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DelayQueue</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Delayed</span> <span class="keyword">extends</span> <span class="title">Comparable</span>&lt;<span class="title">Delayed</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回还要延迟多久，</span></span><br><span class="line">  	<span class="comment">// 小于等于 0 时，说明时间到了。</span></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>使用 <code>PriorityQueue</code> + <code>ReentrantLock</code> 实现。</li>
-<li>内部元素必须实现 <code>Delayed</code> 接口，等待队列的元素是按照节点的  <code>compareTo()</code> 从小到大出队的。</li>
-<li>使用 <code>leader</code> 每次头结点变化时，唤醒一个元素，使其有超时等待，其他线程无限等待。</li>
-</ol>
-<h2 id="2-入队-offer-e"><a href="#2-入队-offer-e" class="headerlink" title="2. 入队 offer(e)"></a>2. 入队 offer(e)</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无界，所以 put(e) 也是直接调用 offer(e)。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 2. 入优先队列。</span></span><br><span class="line">        q.offer(e);</span><br><span class="line">      	<span class="comment">// 3. 如果这次入队的元素最小，有了赋予一次 leader 的机会，唤醒等待队列上的一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (q.peek() == e) &#123;</span><br><span class="line">            leader = <span class="keyword">null</span>;</span><br><span class="line">            available.signal();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-阻塞出队-take"><a href="#3-阻塞出队-take" class="headerlink" title="3. 阻塞出队 take()"></a>3. 阻塞出队 take()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            E first = q.peek();</span><br><span class="line">          	<span class="comment">// 2. 如果队列为空，阻塞。</span></span><br><span class="line">            <span class="keyword">if</span> (first == <span class="keyword">null</span>)</span><br><span class="line">                available.await();</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">long</span> delay = first.getDelay(NANOSECONDS);</span><br><span class="line">              	<span class="comment">// 3. 如果首节点过期，返回。</span></span><br><span class="line">                <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> q.poll();</span><br><span class="line">                first = <span class="keyword">null</span>; <span class="comment">// don't retain ref while waiting</span></span><br><span class="line">                <span class="comment">// 4.1 如果 leader 不为 null，说明其他线程抢到了这次赋予 leader 的机会。</span></span><br><span class="line">              	<span class="comment">//		例如本线程是等待队列里被唤醒的，但是赋值 leader 前，</span></span><br><span class="line">              	<span class="comment">//		有了一个新的 take() 抢先完成了赋值 leader 的机会。</span></span><br><span class="line">              	<span class="keyword">if</span> (leader != <span class="keyword">null</span>)</span><br><span class="line">                    available.await();</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                  	<span class="comment">// 4.2 得到了赋值 leader 的机会，不忙等、而是等待 delay 时间。</span></span><br><span class="line">                    Thread thisThread = Thread.currentThread();</span><br><span class="line">                    leader = thisThread;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        available.awaitNanos(delay);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                      	<span class="comment">// 5. 清空 leader。</span></span><br><span class="line">                        <span class="keyword">if</span> (leader == thisThread)</span><br><span class="line">                            leader = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 6. 如果本线程取出一个元素后，队列里还有元素，</span></span><br><span class="line">      	<span class="comment">//			则又有赋予 leader 的权限了。唤醒一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (leader == <span class="keyword">null</span> &amp;&amp; q.peek() != <span class="keyword">null</span>)</span><br><span class="line">            available.signal();</span><br><span class="line">      	<span class="comment">// 7. 释放锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>在以下两个情况，会有一次赋值 <code>leader</code> 的机会，唤醒一个等待队列上的出队线程。<ul>
-<li>在入队操作后，如果本次入队的是最小元素。</li>
-<li>出队操作后，如果队列还有元素。</li>
-</ul>
-</li>
-<li>争夺到 <code>leader</code> 机会的出队线程，进行有超时的等待。</li>
-<li>队列没有元素时，所有出队线程都是无限等待。</li>
-</ul>
-<h2 id="4-非阻塞出队-poll"><a href="#4-非阻塞出队-poll" class="headerlink" title="4. 非阻塞出队 poll()"></a>4. 非阻塞出队 poll()</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1375,20 +1368,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-count">31</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
