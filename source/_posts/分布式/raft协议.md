@@ -78,8 +78,59 @@ typora-root-url: ../../
 
 # 选举约束
 
-选举约束：lastLog的term越大谁越新，如果term相同，谁的lastLog的index越大谁越新。
+选举约束：被选举出来的 leader 必须要包含所有已经提交的 entries。
 
-约束2：当前term的leader不能“直接”提交之前term的entries 必须要等到当前term有entry过半了，才顺便一起将之前term的entries进行提交。
+Raft 的简单实现：lastLog的term越大谁越新，如果term相同，谁的lastLog的index越大谁越新。
+
+但是这样的实现，可能会出现日志覆盖的情况（见[Raft协议详解](https://zhuanlan.zhihu.com/p/27207160)）。
+
+所以 Raft 添加了约束2：当前term的leader不能“直接”提交之前term的entries，必须要等到**当前** term 有entry过半了，才**顺便**一起将之前term的entries进行提交。
 
 不能覆盖已经提交的请求（因为领导者要半数节点同意才可以，而同意需要领导者的上一条的term和index最大）
+
+# 网络分区
+
+> - [PingCAP-线性一致性和 Raft](https://pingcap.com/blog-cn/linearizability-and-raft/)
+> - [etcd 中线性一致性读的具体实现](https://zhengyinyong.com/post/etcd-linearizable-read-implementation/#什么是线性一致性读)
+> 
+
+A - D 五个节点，A 为 Leader。
+
+某一时刻，网络分区为 AB和CDE。CDE由于心跳超时，假设 C 成为新的 Leader。
+
+这样，CDE 认为 C 是 Leader，而 AB 仍然认为 A 是 Leader。
+
+这个时候，就产生了**网络分区**。
+
+## 写请求
+
+Client 可以把读写请求发送到集群的任意节点，节点会把请求转发给 Leader。
+
+网络分区对于写请求没有影响。
+
+- 因为 Client 如果向 AB 请求写入，没有办法产生过半数的同意，所以没有办法**提交**这个写请求。
+
+- 只有 Client 向 CDE 请求写入，才能被**提交**。
+
+## 读请求
+
+从 AB 读可能读到旧的数据。
+
+### ReadIndex
+
+使用 ReadIndex 解决这个问题，主要是第 2 步。
+
+1. 记录当前的 commit index，称为 ReadIndex
+2. 向 Follower 发起一次心跳，如果大多数节点回复了，那就能确定现在仍然是 Leader
+3. 等待状态机**至少**应用到 ReadIndex 记录的 Log
+4. 执行读请求，将结果返回给 Client
+
+1 和 3 步是为了保证线性一致性读。
+
+- 线性一致性读：当存储系统已将写操作提交成功，那此时读出的数据应是最新的数据、
+
+### LeaseRead
+
+这样每次读请求，都要发起一次心跳，网络消耗很大。使用 LeaseRead 来优化。
+
+基本的思路是 Leader 取一个比 Election Timeout 小的租期，在租期不会发生选举，确保 Leader 不会变，所以可以跳过 ReadIndex 的第二步，也就降低了延时。
