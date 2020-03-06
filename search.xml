@@ -91,8 +91,8 @@
         <category>golang</category>
       </categories>
       <tags>
-        <tag>record</tag>
         <tag>golang</tag>
+        <tag>record</tag>
       </tags>
   </entry>
   <entry>
@@ -736,6 +736,39 @@
       </tags>
   </entry>
   <entry>
+    <title>正向代理、反向代理、透明代理</title>
+    <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E4%BB%A3%E7%90%86/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/68560128" target="_blank" rel="noopener">彻底理解正向代理、反向代理、透明代理</a></li>
+<li><a href="https://foofish.net/proxy-and-reverse-proxy.html" target="_blank" rel="noopener">正向代理与反向代理</a></li>
+<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理" target="_blank" rel="noopener">Shadowsocks原理详解</a></li>
+<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html" target="_blank" rel="noopener">HTTP协议和SOCKS5协议</a></li>
+</ul>
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
+<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
+<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
+<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1><p>Shadowsocks的处理方式是将Socks 5客户端与Socks5服务器的连接提前，Socks5协议的交互完全是在本地进行的，在网络中传输的完全是利用加密算法加密后的密文，这就很好的进行了去特征化，使得传输的数据不是很容易的被特征识别，本人认为这是Shadowsocks的最大的创新了，具体的流程如下：</p>
+<pre class="mermaid">graph LR
+    subgraph client 
+        Socks5客户端 --> Socks5
+        Socks5 --> sslocal
+    end
+    subgraph server
+        sslocal -->|密文| ssserver
+        ssserver -->|正常请求| 目标主机
+    end</pre>
+
+<p>socks5本身只是个代理提供转发，不提供加密的功能，所以不提供安全性，安全性只能由客户端自己提供，比如如果客户端使用SSL, 那么该网络连接就有了安全性。？</p>
+]]></content>
+      <categories>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>network</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>TCP 协议</title>
     <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/tcp/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -825,39 +858,6 @@
 </li>
 </ul>
 <h1 id="UDP最大长度"><a href="#UDP最大长度" class="headerlink" title="UDP最大长度"></a>UDP最大长度</h1><p>最好不超过链路层的MTU(最大传输单元) 1500字节</p>
-]]></content>
-      <categories>
-        <category>network</category>
-      </categories>
-      <tags>
-        <tag>network</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>正向代理、反向代理、透明代理</title>
-    <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E4%BB%A3%E7%90%86/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/68560128" target="_blank" rel="noopener">彻底理解正向代理、反向代理、透明代理</a></li>
-<li><a href="https://foofish.net/proxy-and-reverse-proxy.html" target="_blank" rel="noopener">正向代理与反向代理</a></li>
-<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理" target="_blank" rel="noopener">Shadowsocks原理详解</a></li>
-<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html" target="_blank" rel="noopener">HTTP协议和SOCKS5协议</a></li>
-</ul>
-<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
-<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
-<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
-<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
-<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1><p>Shadowsocks的处理方式是将Socks 5客户端与Socks5服务器的连接提前，Socks5协议的交互完全是在本地进行的，在网络中传输的完全是利用加密算法加密后的密文，这就很好的进行了去特征化，使得传输的数据不是很容易的被特征识别，本人认为这是Shadowsocks的最大的创新了，具体的流程如下：</p>
-<pre class="mermaid">graph LR
-    subgraph client 
-        Socks5客户端 --> Socks5
-        Socks5 --> sslocal
-    end
-    subgraph server
-        sslocal -->|密文| ssserver
-        ssserver -->|正常请求| 目标主机
-    end</pre>
-
-<p>socks5本身只是个代理提供转发，不提供加密的功能，所以不提供安全性，安全性只能由客户端自己提供，比如如果客户端使用SSL, 那么该网络连接就有了安全性。？</p>
 ]]></content>
       <categories>
         <category>network</category>
@@ -1128,8 +1128,8 @@
         <category>netty</category>
       </categories>
       <tags>
-        <tag>netty</tag>
         <tag>record</tag>
+        <tag>netty</tag>
       </tags>
   </entry>
   <entry>
@@ -1421,10 +1421,10 @@
   <entry>
     <title>LinkedHashMap 源码分析</title>
     <url>/2020/java/basic/LinkedHashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="LinkedHashMap-源码分析"><a href="#LinkedHashMap-源码分析" class="headerlink" title="LinkedHashMap 源码分析"></a>LinkedHashMap 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
 <li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8" target="_blank" rel="noopener">搞懂 Java LinkedHashMap 源码</a></li>
 </ul>
-<h2 id="1-与-HashMap-的关系"><a href="#1-与-HashMap-的关系" class="headerlink" title="1. 与 HashMap 的关系"></a>1. 与 HashMap 的关系</h2><ul>
+<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
 <li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
 </li>
 <li><p>使用双向链表，记录节点的访问顺序。</p>
@@ -1436,11 +1436,11 @@
 </ul>
 </li>
 </ul>
-<h2 id="2-实现方式"><a href="#2-实现方式" class="headerlink" title="2. 实现方式"></a>2. 实现方式</h2><h3 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在节点中，添加 before 和 after，来实现双向链表。</p>
-<h3 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>相比 <code>HashMap</code>，在创建节点后，会把节点加入到链表尾部。</p>
-<h3 id="双向链表操作"><a href="#双向链表操作" class="headerlink" title="双向链表操作"></a>双向链表操作</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// unlink</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">        head = a;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span>)</span><br><span class="line">        tail = b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeInsertion</span><span class="params">(<span class="keyword">boolean</span> evict)</span> </span>&#123; <span class="comment">// possibly remove eldest</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    <span class="keyword">if</span> (evict &amp;&amp; (first = head) != <span class="keyword">null</span> &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key = first.key;</span><br><span class="line">        removeNode(hash(key), key, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">        p.after = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">            head = a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            b.after = a;</span><br><span class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">            a.before = b;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            last = b;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="双向链表操作"><a href="#双向链表操作" class="headerlink" title="双向链表操作"></a>双向链表操作</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// unlink</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">        head = a;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span>)</span><br><span class="line">        tail = b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeInsertion</span><span class="params">(<span class="keyword">boolean</span> evict)</span> </span>&#123; <span class="comment">// possibly remove eldest</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    <span class="keyword">if</span> (evict &amp;&amp; (first = head) != <span class="keyword">null</span> &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key = first.key;</span><br><span class="line">        removeNode(hash(key), key, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">        p.after = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">            head = a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            b.after = a;</span><br><span class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">            a.before = b;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            last = b;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li>在调用 <code>remove()</code> 时，使用 <code>afterNodeRemoval()</code> 把节点从链表删除。</li>
 <li>在调用 <code>get()</code>、<code>put</code> 更新已经存在的节点，使用 <code>afterNodeAccess()</code> 把节点挪到链表尾部。</li>
@@ -1461,11 +1461,11 @@
   <entry>
     <title>Enum</title>
     <url>/2020/java/basic/enum/</url>
-    <content><![CDATA[<h1 id="Enum"><a href="#Enum" class="headerlink" title="Enum"></a>Enum</h1><h2 id="1-定义"><a href="#1-定义" class="headerlink" title="1. 定义"></a>1. 定义</h2><h3 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h3><p>使用 <code>enum</code>  关键字，类似于定义类的方式。</p>
+    <content><![CDATA[<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>使用 <code>enum</code>  关键字，类似于定义类的方式。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE,</span><br><span class="line">    BANANA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="自定义构造函数"><a href="#自定义构造函数" class="headerlink" title="自定义构造函数"></a>自定义构造函数</h3><p>可以自定义构造函数，传递额外的信息。注意 <code>Fruit</code> 类的第一个语句必须是枚举变量的定义。</p>
+<h2 id="自定义构造函数"><a href="#自定义构造函数" class="headerlink" title="自定义构造函数"></a>自定义构造函数</h2><p>可以自定义构造函数，传递额外的信息。注意 <code>Fruit</code> 类的第一个语句必须是枚举变量的定义。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE(<span class="number">10</span>),</span><br><span class="line">    BANANA(<span class="number">3</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">enum</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> price)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="2-原理"><a href="#2-原理" class="headerlink" title="2. 原理"></a>2. 原理</h2><p>编译器会把 <code>enum</code> 类转化为 <code>Enum&lt;E extends Enum&lt;E&gt;&gt;</code> 的子类。</p>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>编译器会把 <code>enum</code> 类转化为 <code>Enum&lt;E extends Enum&lt;E&gt;&gt;</code> 的子类。</p>
 <p>例如，上述的 <code>Fruit</code> 枚举类，反编译后如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> <span class="keyword">extends</span> <span class="title">Enum</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Fruit[] values()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> (Fruit[])$VALUES.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Fruit <span class="title">valueOf</span><span class="params">(String name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (Fruit)Enum.valueOf(Fruit, name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Fruit</span><span class="params">(String name, <span class="keyword">int</span> ordinal, <span class="keyword">int</span> price)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, ordinal);</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPrice</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit ORANGE;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit BANANA;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit $VALUES[];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> </span><br><span class="line">    &#123;</span><br><span class="line">        ORANGE = <span class="keyword">new</span> Fruit(<span class="string">"ORANGE"</span>, <span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line">        BANANA = <span class="keyword">new</span> Fruit(<span class="string">"BANANA"</span>, <span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line">        $VALUES = (<span class="keyword">new</span> Fruit[] &#123;</span><br><span class="line">            ORANGE, BANANA</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>主要进行的工作：</p>
@@ -1475,7 +1475,7 @@
 <li>枚举量列表存储在静态常量 <code>$VALUES</code> 中。</li>
 <li>为 <code>Fruit</code> 类添加 <code>final</code> 修饰符。</li>
 </ol>
-<h2 id="3-常用函数"><a href="#3-常用函数" class="headerlink" title="3. 常用函数"></a>3. 常用函数</h2><p>根据反编译后的类、超类 <code>Enum</code> ，可以发现如下的常用函数：</p>
+<h1 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h1><p>根据反编译后的类、超类 <code>Enum</code> ，可以发现如下的常用函数：</p>
 <ol>
 <li><code>static Fruit valueOf(String name)</code>  返回和传入 <code>name</code> 匹配的枚举量。如果不能匹配，抛出 <code>IllegalArgumentException</code> 。</li>
 <li><code>String name()</code> 、<code>String toString()</code>  返回 <code>name</code> 。</li>
@@ -1484,19 +1484,19 @@
 <li><code>int compareTo(Fruit other)</code>  返回 <code>ordinal - other.ordinal</code> 。</li>
 </ol>
 <p>比较两个枚举量是否相等，用 <code>==</code> 即可，即比较两个枚举常量的地址是否相同。<br>当然，用 <code>equals</code> 也可以，因为 <code>Enum</code> 的 <code>equals</code> 函数就是直接 <code>return this == other</code> 。</p>
-<h2 id="4-switch-中的枚举量"><a href="#4-switch-中的枚举量" class="headerlink" title="4. switch 中的枚举量"></a>4. switch 中的枚举量</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>可以在 <code>switch</code> 中使用枚举量。注意 <code>case</code> 中不需要写 <code>Fruit.XXXX</code> ，直接 <code>XXXX</code> 即可。</p>
+<h1 id="switch-中的枚举量"><a href="#switch-中的枚举量" class="headerlink" title="switch 中的枚举量"></a>switch 中的枚举量</h1><h2 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h2><p>可以在 <code>switch</code> 中使用枚举量。注意 <code>case</code> 中不需要写 <code>Fruit.XXXX</code> ，直接 <code>XXXX</code> 即可。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Fruit fruit = Fruit.BANANA;</span><br><span class="line"><span class="keyword">switch</span> (fruit) &#123;</span><br><span class="line">  <span class="keyword">case</span> BANANA:</span><br><span class="line">    System.out.println(<span class="string">"banana"</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> ORANGE:</span><br><span class="line">    System.out.println(<span class="string">"orange"</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>编译器会把代码进行转换，创建一个 SwitchMap 类 <code>Main$1</code> ，使用 <code>ordinal</code> 进行比较。</p>
+<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>编译器会把代码进行转换，创建一个 SwitchMap 类 <code>Main$1</code> ，使用 <code>ordinal</code> 进行比较。</p>
 <p>反编译后如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Main$1.class</span></span><br><span class="line"><span class="comment">// $FF: synthetic class</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span>$1 </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// $FF: synthetic field</span></span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span>[] $SwitchMap$Fruit = <span class="keyword">new</span> <span class="keyword">int</span>[Fruit.values().length];</span><br><span class="line"></span><br><span class="line">   <span class="keyword">static</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         $SwitchMap$Fruit[Fruit.BANANA.ordinal()] = <span class="number">1</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (NoSuchFieldError var2) &#123;</span><br><span class="line">         ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         $SwitchMap$Fruit[Fruit.ORANGE.ordinal()] = <span class="number">2</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (NoSuchFieldError var1) &#123;</span><br><span class="line">         ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Main.class</span></span><br><span class="line"><span class="keyword">import</span> Main.1;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      Fruit fruit = Fruit.BANANA;</span><br><span class="line">      <span class="keyword">switch</span>(<span class="number">1</span>.$SwitchMap$Fruit[fruit.ordinal()]) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">         System.out.println(<span class="string">"banana"</span>);</span><br><span class="line">         <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">         System.out.println(<span class="string">"orange"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="5-枚举类的序列化"><a href="#5-枚举类的序列化" class="headerlink" title="5. 枚举类的序列化"></a>5. 枚举类的序列化</h2><h3 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h3><ul>
+<h1 id="枚举类的序列化"><a href="#枚举类的序列化" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
 <li><a href="https://github.com/hollischuang/toBeTopJavaer/blob/master/basics/java-basic/enum-serializable.md" target="_blank" rel="noopener">枚举的序列化如何实现</a></li>
 </ul>
-<h3 id="类似枚举类的序列化问题"><a href="#类似枚举类的序列化问题" class="headerlink" title="类似枚举类的序列化问题"></a>类似枚举类的序列化问题</h3><p>在 Java 没有枚举类的时候，一般用如下的方法实现枚举类。</p>
+<h2 id="类似枚举类的序列化问题"><a href="#类似枚举类的序列化问题" class="headerlink" title="类似枚举类的序列化问题"></a>类似枚举类的序列化问题</h2><p>在 Java 没有枚举类的时候，一般用如下的方法实现枚举类。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> ORANGE = <span class="keyword">new</span> Fruit(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BANANA = <span class="keyword">new</span> Fruit(<span class="number">1</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> value;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.value = value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>例子如下。在反序列化的时候，虽然构造函数是私有的，但是反序列化仍然会创造一个新的对象。<br>这个对象的 <code>value</code> 也是 0，但是没有办法使用 <code>==</code> 与 <code>Fruit.ORANGE</code> 进行比较了。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">objectOutputStream.write(Fruit.ORANGE);</span><br><span class="line">objectOutputStream.close();</span><br><span class="line">Fruit orange = (Fruit) objectInputStream.read();</span><br><span class="line">aseertt(orange == Fruit.ORANGE); <span class="comment">// Error</span></span><br></pre></td></tr></table></figure>
-<h3 id="枚举类的序列化"><a href="#枚举类的序列化" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h3><p>枚举类在序列化的时候，对于 <code>Enum</code> 子类的对象，只会把 <code>name</code> 属性输出。</p>
+<h2 id="枚举类的序列化-1"><a href="#枚举类的序列化-1" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h2><p>枚举类在序列化的时候，对于 <code>Enum</code> 子类的对象，只会把 <code>name</code> 属性输出。</p>
 <p>在反序列化的时候，会调用 <code>Enum valueof(String name)</code> 方法对读取的 <code>name</code> 进行查找，而不会创建新的 枚举对象。</p>
 <p>并且类 <code>Enum</code> 把 方法 <code>readObject</code> 和 <code>readObjectNoData</code> 都设为了私有，这样 <code>enum</code> 类无法自定义序列化过程。</p>
 ]]></content>
@@ -1511,47 +1511,62 @@
   <entry>
     <title>Java 基础知识汇总</title>
     <url>/2020/java/basic/java%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86%E6%B1%87%E6%80%BB/</url>
-    <content><![CDATA[<h1 id="Java-基础知识汇总"><a href="#Java-基础知识汇总" class="headerlink" title="Java 基础知识汇总"></a>Java 基础知识汇总</h1><p>Java 区分大小写。</p>
+    <content><![CDATA[<p>Java 区分大小写。</p>
 <p>源代码的文件名必须与公共类的名字相同。</p>
 <p>main 方法必须声明为 public。</p>
 <p>允许在运行时确定数组的长度。</p>
 <p>javabeans TODO</p>
-<h2 id="3-继承"><a href="#3-继承" class="headerlink" title="3. 继承"></a>3. 继承</h2><p>“is-a” 关系是继承的一个明显特征。</p>
+<h1 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h1><p>“is-a” 关系是继承的一个明显特征。</p>
 <p>继承使用 <code>extends</code> 来表示。</p>
 <p>Java 只存在公有继承。</p>
 <p>超类不能使用子类定义的方法和域。</p>
 <p>子类方法不能访问超类的 <code>private</code> 域，只能通过公有的接口访问。</p>
-<h3 id="3-1-super-关键字"><a href="#3-1-super-关键字" class="headerlink" title="3.1.super 关键字"></a>3.1.<code>super</code> 关键字</h3><h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><ul>
+<h2 id="super-关键字"><a href="#super-关键字" class="headerlink" title="super 关键字"></a><code>super</code> 关键字</h2><h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><ul>
 <li>调用超类的方法。</li>
 <li>调用超类的构造函数。只能出现在子类函数的第一条语句。</li>
 </ul>
-<h4 id="与-this-的不同"><a href="#与-this-的不同" class="headerlink" title="与 this 的不同"></a>与 <code>this</code> 的不同</h4><ul>
+<h3 id="与-this-的不同"><a href="#与-this-的不同" class="headerlink" title="与 this 的不同"></a>与 <code>this</code> 的不同</h3><ul>
 <li>不是对象的引用。</li>
 <li>用来指示编译器调用超类方法的关键字。</li>
 </ul>
-<h3 id="3-2-多态与动态绑定"><a href="#3-2-多态与动态绑定" class="headerlink" title="3.2. 多态与动态绑定"></a>3.2. 多态与动态绑定</h3><h4 id="3-2-1-多态"><a href="#3-2-1-多态" class="headerlink" title="3.2.1 多态"></a>3.2.1 多态</h4><h5 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h5><p>一个对象变量可以指示多种实际类型的现象（一个 <code>ClassA</code> 变量可以引用 <code>ClassA</code> 类对象、它的子类对象）。</p>
-<h5 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h5><ul>
+<h2 id="多态与动态绑定"><a href="#多态与动态绑定" class="headerlink" title="多态与动态绑定"></a>多态与动态绑定</h2><h3 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h3><h4 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h4><p>一个对象变量可以指示多种实际类型的现象（一个 <code>ClassA</code> 变量可以引用 <code>ClassA</code> 类对象、它的子类对象）。</p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><ul>
 <li>虚拟机知道变量实际引用的对象类型，可以正确地调用相应的方法。</li>
-<li>TODO</li>
+<li>TODO<ul>
+<li>静态类型（外观类型），实际类型</li>
+<li>重载。静态分派。<ul>
+<li>编译器阶段。取决于传入参数数量、类型（包括第一个静态类型参数）。</li>
 </ul>
-<h5 id="子类数组"><a href="#子类数组" class="headerlink" title="子类数组"></a>子类数组</h5><p><strong>子类</strong>数组的引用可以隐式转化成<strong>父类</strong>数组的引用。</p>
+</li>
+<li>重写。动态分派。<ul>
+<li>运行阶段。<code>invokevirtual</code> 指令先找第一个参数的动态类型里的方法，再向上找。<ul>
+<li>会用虚表优化。</li>
+</ul>
+</li>
+<li>因为使用域时，没有<code>invokevirtual</code>指令。所以只能使用静态类型的域。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="子类数组"><a href="#子类数组" class="headerlink" title="子类数组"></a>子类数组</h4><p><strong>子类</strong>数组的引用可以隐式转化成<strong>父类</strong>数组的引用。</p>
 <p>但是数组会记住创建它们的真实元素类型，只允许类型兼容的引用存储到数组中。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Child[] children = <span class="keyword">new</span> Child[<span class="number">10</span>];</span><br><span class="line">Parent[] parents = children; <span class="comment">// 合法</span></span><br><span class="line">parents[<span class="number">0</span>] = <span class="keyword">new</span> Parent(); <span class="comment">// throw ArrayStoreException</span></span><br></pre></td></tr></table></figure>
-<h5 id="强制类型转换"><a href="#强制类型转换" class="headerlink" title="强制类型转换"></a>强制类型转换</h5><p>超类转化为子类，需要进行强制类型转换。</p>
+<h4 id="强制类型转换"><a href="#强制类型转换" class="headerlink" title="强制类型转换"></a>强制类型转换</h4><p>超类转化为子类，需要进行强制类型转换。</p>
 <p>如果转换失败，throw ClassCastException。</p>
 <p>在转换之前，最好用 <code>item instanceof ClassType</code> 来检测。</p>
-<h4 id="3-2-2-动态绑定"><a href="#3-2-2-动态绑定" class="headerlink" title="3.2.2 动态绑定"></a>3.2.2 动态绑定</h4><ul>
+<h3 id="3-2-2-动态绑定"><a href="#3-2-2-动态绑定" class="headerlink" title="3.2.2 动态绑定"></a>3.2.2 动态绑定</h3><ul>
 <li>在运行时能够自动选择调用哪个方法的现象。</li>
 <li>动态绑定是默认的处理方式。</li>
 </ul>
-<h4 id="3-2-3-方法调用的过程"><a href="#3-2-3-方法调用的过程" class="headerlink" title="3.2.3 方法调用的过程"></a>3.2.3 方法调用的过程</h4><p>调用 <code>item.func(param)</code>：</p>
+<h3 id="3-2-3-方法调用的过程"><a href="#3-2-3-方法调用的过程" class="headerlink" title="3.2.3 方法调用的过程"></a>3.2.3 方法调用的过程</h3><p>调用 <code>item.func(param)</code>：</p>
 <ol>
 <li>编译器获得所有可能的候选方法。根据对象的声明类型（<code>item</code> 的实际类型）、方法名，找到类的所有 <code>func</code> 方法、超类的所有 <code>public</code> 修饰的 <code>func</code> 方法。</li>
 <li>匹配提供的参数类型（除了一个隐式参数）。TODO</li>
 <li>如果是 <code>private</code>、<code>static</code>、<code>final</code> 方法，是<strong>静态绑定</strong>，无法被继承，编译器知道应用调用的确切方法。否则，编译器采用动态绑定的方式生成一条调用 <code>func</code> 的指令。</li>
 <li>在程序运行时，如果 <code>item.func</code> 是动态绑定方式调用的，虚拟机找到与 <code>item</code> 所引用对象的实际类型 <code>D</code> 最合适的类的 <code>func</code>方法。首先看类 <code>D</code> 是否有对应的方法，再看超类，以此类推。<br>为了节约开销，虚拟机会为每一个类生成方法表，不需要每次都进行动态搜索。</li>
 </ol>
-<h3 id="3-3-重载-overload-和-覆写-override"><a href="#3-3-重载-overload-和-覆写-override" class="headerlink" title="3.3 重载 overload 和 覆写 override"></a>3.3 重载 overload 和 覆写 override</h3><p>函数的签名：方法名  + 参数列表。注意，<strong>返回值</strong>不属于签名！</p>
+<h2 id="重载-overload-和-覆写-override"><a href="#重载-overload-和-覆写-override" class="headerlink" title="重载 overload 和 覆写 override"></a>重载 overload 和 覆写 override</h2><p>函数的签名：方法名  + 参数列表。注意，<strong>返回值</strong>不属于签名！</p>
 <p>因此，</p>
 <ul>
 <li>重载时，不可以声明两个函数名、参数列表都相同，只有返回值不同的函数。</li>
@@ -1560,12 +1575,12 @@
 <p>对于覆写的方法，加上 <code>@override</code> 修饰，如果这个方法没有真的覆写父类的方法，编译错误。</p>
 <p>覆写方法的访问权限要大于等于原方法的权限。（本来是public，子类的方法也必须是public）。</p>
 <p>覆写方法可以指定更加严格的返回类型。</p>
-<h3 id="3-4-final-类和方法，内联"><a href="#3-4-final-类和方法，内联" class="headerlink" title="3.4 final 类和方法，内联"></a>3.4 final 类和方法，内联</h3><h5 id="final-关键字"><a href="#final-关键字" class="headerlink" title="final 关键字"></a>final 关键字</h5><p><code>final</code> 修饰的方法，子类不可以覆盖它。</p>
+<h3 id="3-4-final-类和方法，内联"><a href="#3-4-final-类和方法，内联" class="headerlink" title="3.4 final 类和方法，内联"></a>3.4 final 类和方法，内联</h3><h4 id="final-关键字"><a href="#final-关键字" class="headerlink" title="final 关键字"></a>final 关键字</h4><p><code>final</code> 修饰的方法，子类不可以覆盖它。</p>
 <p><code>final</code> 修饰的类，不能有子类继承它。</p>
 <ul>
 <li>其中方法自动被 <code>final</code> 修饰，但是域不会。</li>
 </ul>
-<h5 id="内联"><a href="#内联" class="headerlink" title="内联"></a>内联</h5><ul>
+<h4 id="内联"><a href="#内联" class="headerlink" title="内联"></a>内联</h4><ul>
 <li><p>如果一个方法没有被覆盖并且很短，编译器会优化它，进行内联。</p>
 </li>
 <li><p>虚拟机的即时编译器，检测方法没有真正的覆盖、并且被频繁调用，会对它进行内联处理。</p>
@@ -1576,11 +1591,11 @@
 <ul>
 <li>使用分支转移（函数调用），会扰乱 CPU 预取指令的策略。</li>
 </ul>
-<h3 id="3-5-abstract-关键字"><a href="#3-5-abstract-关键字" class="headerlink" title="3.5 abstract 关键字"></a>3.5 abstract 关键字</h3><p><code>abstract</code> 修饰的方法，不需要有函数体。</p>
+<h2 id="abstract-关键字"><a href="#abstract-关键字" class="headerlink" title="abstract 关键字"></a>abstract 关键字</h2><p><code>abstract</code> 修饰的方法，不需要有函数体。</p>
 <p>有抽象方法的类，必须用 <code>abstract</code> 修饰。但是 <code>abstract</code> 修饰的类，不一样要有抽象方法。</p>
 <p>子类如果没有实现全部的抽象方法，必须也用 <code>abstract</code> 修饰类。</p>
 <p>抽象类可以包含具有函数体的方法。</p>
-<h3 id="3-6-Object-类"><a href="#3-6-Object-类" class="headerlink" title="3.6 Object 类"></a>3.6 Object 类</h3><ul>
+<h2 id="Object-类"><a href="#Object-类" class="headerlink" title="Object 类"></a>Object 类</h2><ul>
 <li><p>是所有类的超类。</p>
 </li>
 <li><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Object obj = <span class="keyword">new</span> Employee(<span class="string">"name"</span>, <span class="number">100</span>);</span><br><span class="line">((Employee) obj).func();</span><br></pre></td></tr></table></figure>
@@ -1588,7 +1603,7 @@
 <li><p>数组也扩展了 Object 类。</p>
 </li>
 </ul>
-<h4 id="equals-函数"><a href="#equals-函数" class="headerlink" title="equals 函数"></a>equals 函数</h4><p>Java语言规范要求 <code>equals</code> 方法具有 5 个特性：</p>
+<h3 id="equals-函数"><a href="#equals-函数" class="headerlink" title="equals 函数"></a>equals 函数</h3><p>Java语言规范要求 <code>equals</code> 方法具有 5 个特性：</p>
 <ol>
 <li>自反性</li>
 <li>对称性</li>
@@ -1606,39 +1621,39 @@
 <li>进行域的比较。</li>
 </ol>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object otherObject)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span> == otherObject) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (otherObject == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 或者 不同子类可以进行比较</span></span><br><span class="line">  <span class="comment">// if (!(otherOBject instance of ParentClass)) &#123;</span></span><br><span class="line">  <span class="comment">// 	return false;</span></span><br><span class="line">  <span class="comment">// &#125;</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">this</span>.getClass() != otherObject.getClass()) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  Item other = (Item) otherObject;</span><br><span class="line">  <span class="keyword">return</span> num == other.num;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="hashCode-函数"><a href="#hashCode-函数" class="headerlink" title="hashCode 函数"></a>hashCode 函数</h4><p><code>equals</code> 函数 与 <code>hashCode</code> 函数的定义必须一致。</p>
+<h3 id="hashCode-函数"><a href="#hashCode-函数" class="headerlink" title="hashCode 函数"></a>hashCode 函数</h3><p><code>equals</code> 函数 与 <code>hashCode</code> 函数的定义必须一致。</p>
 <ul>
 <li>如果 <code>x.equals(y)== true</code> ，那么 <code>x.hashCode()== y.hashCode()</code>。</li>
 </ul>
 <p>静态方法 <code>Object.hashCode(item)</code>，如果 item 是 null，会返回0，否则调用 item 的 hashCode 方法。</p>
 <p>静态方法 <code>Object.hash(item1, item2, ...)</code> 可以提供多个参数。</p>
 <p>类的 <code>hashCode()</code> 方法，默认返回引用的地址。</p>
-<h4 id="toString-函数"><a href="#toString-函数" class="headerlink" title="toString 函数"></a>toString 函数</h4><p>对象与一个字符串通过 <code>+</code> 连接起来，会自动调用对象的 <code>toString()</code> 函数。</p>
+<h3 id="toString-函数"><a href="#toString-函数" class="headerlink" title="toString 函数"></a>toString 函数</h3><p>对象与一个字符串通过 <code>+</code> 连接起来，会自动调用对象的 <code>toString()</code> 函数。</p>
 <p><code>&quot;&quot; + x</code> 与 <code>x.toString()</code> 等同，但是 <code>x</code> 是基本类型时，不能用 <code>x.toString()</code>。</p>
 <p>默认方法，输出 类型 + 散列码。</p>
-<h3 id="4-包装类、自动装箱和拆箱"><a href="#4-包装类、自动装箱和拆箱" class="headerlink" title="4. 包装类、自动装箱和拆箱"></a>4. 包装类、自动装箱和拆箱</h3><h4 id="包装类"><a href="#包装类" class="headerlink" title="包装类"></a>包装类</h4><p>8 个类：Long、Integer、Short、Byte，Double、Float，Boolean，Void。</p>
+<h2 id="包装类、自动装箱和拆箱"><a href="#包装类、自动装箱和拆箱" class="headerlink" title="包装类、自动装箱和拆箱"></a>包装类、自动装箱和拆箱</h2><h3 id="包装类"><a href="#包装类" class="headerlink" title="包装类"></a>包装类</h3><p>8 个类：Long、Integer、Short、Byte，Double、Float，Boolean，Void。</p>
 <p>这些类的值是 <code>final</code> 的，不可变。</p>
 <p>类也是 <code>final</code> 的，不可被继承。</p>
 <p>因为是类，所以进行算数运算时，可能 throw NullPointerException。</p>
-<h4 id="自动拆箱和装箱"><a href="#自动拆箱和装箱" class="headerlink" title="自动拆箱和装箱"></a>自动拆箱和装箱</h4><p>发生在编译期间，编译器补全拆箱和装箱的代码。</p>
-<h4 id="性能差"><a href="#性能差" class="headerlink" title="性能差"></a>性能差</h4><ul>
+<h3 id="自动拆箱和装箱"><a href="#自动拆箱和装箱" class="headerlink" title="自动拆箱和装箱"></a>自动拆箱和装箱</h3><p>发生在编译期间，编译器补全拆箱和装箱的代码。</p>
+<h3 id="性能差"><a href="#性能差" class="headerlink" title="性能差"></a>性能差</h3><ul>
 <li><p><code>ArrayList&lt;Integer&gt;</code> 的每个值包在一个对象里，性能远低于 <code>int[]</code>。</p>
 </li>
 <li><p>算数运算可能进行频繁的拆箱、装箱。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Integer n = <span class="number">1</span>;</span><br><span class="line">Double x = <span class="number">2.0</span>;</span><br><span class="line">System.out.println(ok ? n : x); <span class="comment">// n 先拆箱，再转为 double，再装箱为 Double</span></span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h4 id="相等判断"><a href="#相等判断" class="headerlink" title="相等判断"></a>相等判断</h4><p>包装类在比较时，最好使用 <code>equals</code>。</p>
+<h3 id="相等判断"><a href="#相等判断" class="headerlink" title="相等判断"></a>相等判断</h3><p>包装类在比较时，最好使用 <code>equals</code>。</p>
 <p>因为 <code>==</code> 可能无法得到预期的结果。</p>
 <p>boolean/byte/char &lt;= 127/-128-127的short和int，会被包装到固定的对象中。此时，值相等，用 <code>==</code> 判断也会相等。</p>
-<h3 id="5-参数数量可变方法"><a href="#5-参数数量可变方法" class="headerlink" title="5. 参数数量可变方法"></a>5. 参数数量可变方法</h3><p>函数最后一个参数可以是 <code>ClassName... args</code>，编译器会替换为 <code>ClassName[] args</code>。<code>func(item1, item2)</code> 会替换为 <code>func(ClassName[] {item1, item2})</code>。</p>
-<h3 id="6-枚举类"><a href="#6-枚举类" class="headerlink" title="6. 枚举类"></a>6. 枚举类</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Size &#123;</span><br><span class="line">  SMALL,</span><br><span class="line">  MEDIUM,</span><br><span class="line">  LARGE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="参数数量可变方法"><a href="#参数数量可变方法" class="headerlink" title="参数数量可变方法"></a>参数数量可变方法</h2><p>函数最后一个参数可以是 <code>ClassName... args</code>，编译器会替换为 <code>ClassName[] args</code>。<code>func(item1, item2)</code> 会替换为 <code>func(ClassName[] {item1, item2})</code>。</p>
+<h2 id="枚举类"><a href="#枚举类" class="headerlink" title="枚举类"></a>枚举类</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Size &#123;</span><br><span class="line">  SMALL,</span><br><span class="line">  MEDIUM,</span><br><span class="line">  LARGE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>实际上，<code>Size</code> 是定义了一个类。<code>SMALL</code>、<code>MEDIUM</code>、<code>LARGE</code> 是类 <code>Size</code> 的三个实例。比较枚举的值，使用 <code>==</code> 即可。</p>
 <p>因为它是类，所以可以添加 <code>private</code> 构造函数。<br><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> Size &#123;</span><br><span class="line">  SMALL(<span class="number">0</span>),</span><br><span class="line">  MEDIUM(<span class="number">1</span>),</span><br><span class="line">  LARGE(<span class="number">2</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> value;</span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">Size</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.value = value;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
-<h2 id="4-接口"><a href="#4-接口" class="headerlink" title="4. 接口"></a>4. 接口</h2><h3 id="4-0-相关函数"><a href="#4-0-相关函数" class="headerlink" title="4.0 相关函数"></a>4.0 相关函数</h3><h4 id="Arrays-sort"><a href="#Arrays-sort" class="headerlink" title="Arrays.sort"></a>Arrays.sort</h4><p>调用 <code>Arrays.sort(items)</code>，数组中的元素必须实现了 <code>Comparable&lt;T&gt;</code>。</p>
+<h1 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h1><h2 id="相关函数"><a href="#相关函数" class="headerlink" title="相关函数"></a>相关函数</h2><h3 id="Arrays-sort"><a href="#Arrays-sort" class="headerlink" title="Arrays.sort"></a>Arrays.sort</h3><p>调用 <code>Arrays.sort(items)</code>，数组中的元素必须实现了 <code>Comparable&lt;T&gt;</code>。</p>
 <p>调用 <code>Arrays.sort(items, comparator)</code>，提供一个实现了 <code>Comparator&lt;T&gt;</code> 接口的对象即可。</p>
-<h4 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h4><p><code>instanceof</code> 可以检查一个对象是否实现了一个接口。</p>
-<h4 id="Cloneable"><a href="#Cloneable" class="headerlink" title="Cloneable"></a>Cloneable</h4><p><code>Object.clone</code> 方法</p>
+<h3 id="instanceof"><a href="#instanceof" class="headerlink" title="instanceof"></a>instanceof</h3><p><code>instanceof</code> 可以检查一个对象是否实现了一个接口。</p>
+<h3 id="Cloneable"><a href="#Cloneable" class="headerlink" title="Cloneable"></a>Cloneable</h3><p><code>Object.clone</code> 方法</p>
 <ul>
 <li>是浅拷贝。</li>
 <li>如果要深拷贝，需要再克隆每个非基本变量域。</li>
@@ -1648,11 +1663,11 @@
 </li>
 </ul>
 <p><code>Cloneable</code> 是一个空的接口，<strong>标记接口</strong>，作用是允许在类型查询中使用 <code>instanceof</code>。</p>
-<h3 id="4-1-接口的特性"><a href="#4-1-接口的特性" class="headerlink" title="4.1 接口的特性"></a>4.1 接口的特性</h3><h4 id="接口的方法和域"><a href="#接口的方法和域" class="headerlink" title="接口的方法和域"></a>接口的方法和域</h4><p>接口的所有<strong>方法</strong>自动属于 <code>public</code>。</p>
+<h2 id="接口的特性"><a href="#接口的特性" class="headerlink" title="接口的特性"></a>接口的特性</h2><h3 id="接口的方法和域"><a href="#接口的方法和域" class="headerlink" title="接口的方法和域"></a>接口的方法和域</h3><p>接口的所有<strong>方法</strong>自动属于 <code>public</code>。</p>
 <p>接口的所有<strong>域</strong>都会自动属于 <code>public static final</code>。所以接口只能有常量，不能有实例域。</p>
 <p>Java SE 8 中，接口可以有<strong>静态方法</strong>。避免使用伴随类（例如，Collection 接口 + Collections 抽象类）。</p>
 <p>使用 <code>defualt</code> 修饰方法，可以为接口方法提供默认实现。实现类可以不实现这些方法。</p>
-<h4 id="默认方法冲突规则"><a href="#默认方法冲突规则" class="headerlink" title="默认方法冲突规则"></a>默认方法冲突规则</h4><ol>
+<h3 id="默认方法冲突规则"><a href="#默认方法冲突规则" class="headerlink" title="默认方法冲突规则"></a>默认方法冲突规则</h3><ol>
 <li>类实现的<strong>两个接口</strong>有相同签名的方法<ul>
 <li>只要其中一个方法有默认实现，就会编译错误。</li>
 </ul>
@@ -1662,27 +1677,27 @@
 </ul>
 </li>
 </ol>
-<h4 id="继承和实现相关"><a href="#继承和实现相关" class="headerlink" title="继承和实现相关"></a>继承和实现相关</h4><p>接口可以被其他接口继承 <code>extends</code>。</p>
-<h5 id="为什么有了抽象类，还需要接口？"><a href="#为什么有了抽象类，还需要接口？" class="headerlink" title="为什么有了抽象类，还需要接口？"></a>为什么有了抽象类，还需要接口？</h5><p>一个类可以实现多个接口，但是只能继承一个类。</p>
-<h2 id="5-lambda-表达式"><a href="#5-lambda-表达式" class="headerlink" title="5. lambda 表达式"></a>5. lambda 表达式</h2><h3 id="5-1-语法"><a href="#5-1-语法" class="headerlink" title="5.1 语法"></a>5.1 语法</h3><p>代码块 + 必须传入代码块的变量的规范。</p>
+<h3 id="继承和实现相关"><a href="#继承和实现相关" class="headerlink" title="继承和实现相关"></a>继承和实现相关</h3><p>接口可以被其他接口继承 <code>extends</code>。</p>
+<h4 id="为什么有了抽象类，还需要接口？"><a href="#为什么有了抽象类，还需要接口？" class="headerlink" title="为什么有了抽象类，还需要接口？"></a>为什么有了抽象类，还需要接口？</h4><p>一个类可以实现多个接口，但是只能继承一个类。</p>
+<h1 id="lambda-表达式"><a href="#lambda-表达式" class="headerlink" title="lambda 表达式"></a>lambda 表达式</h1><h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><p>代码块 + 必须传入代码块的变量的规范。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">(String first, String second) -&gt; &#123;</span><br><span class="line">  <span class="keyword">return</span> first.length() - second.length();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>如果可以推导出参数的类型，可以省略类型。</p>
 <p>如果参数只有一个，并且可以推导类型，可以省略 <code>()</code>。</p>
 <p>不用指定返回类型，从上下文推导出的。</p>
 <p>如果代码块只有一个语句，可以省略<code>{}</code>、<code>return</code> 关键字。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">(first, second) -&gt; first.length() - second.length();</span><br></pre></td></tr></table></figure>
-<h3 id="5-2-函数式接口"><a href="#5-2-函数式接口" class="headerlink" title="5.2 函数式接口"></a>5.2 函数式接口</h3><h4 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h4><p>对于只有一个<strong>抽象方法</strong>的接口，需要接口的对象时，可以提供一个 lambda 表达式。</p>
+<h2 id="函数式接口"><a href="#函数式接口" class="headerlink" title="函数式接口"></a>函数式接口</h2><h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>对于只有一个<strong>抽象方法</strong>的接口，需要接口的对象时，可以提供一个 lambda 表达式。</p>
 <p>在这个对象上调用这个方法时，会执行 lambda 表达式的体。</p>
 <p>可以在这个接口定义时，增加 <code>@FunctionalInterface</code> 注解。好处：</p>
 <ul>
 <li>如果有多于一个的抽象方法，会编译错误。</li>
 <li>javadoc 会指出这个借口是函数式接口。</li>
 </ul>
-<h4 id="Object-相关"><a href="#Object-相关" class="headerlink" title="Object 相关"></a>Object 相关</h4><p>注意，lambda 表达式只能赋值给一个接口变量，不能复制给 <code>Object</code>（因为 <code>Object</code> 不是一个接口）。</p>
-<h4 id="BiFunction"><a href="#BiFunction" class="headerlink" title="BiFunction"></a>BiFunction</h4><p><code>java.util.function</code> 提供了很多通用函数接口，例如 <code>BiFunction&lt;T, U, R&gt;</code> 描述参数类型为 <code>T</code>和 <code>U</code> 而且返回类型为 <code>R</code> 的函数。</p>
+<h3 id="Object-相关"><a href="#Object-相关" class="headerlink" title="Object 相关"></a>Object 相关</h3><p>注意，lambda 表达式只能赋值给一个接口变量，不能复制给 <code>Object</code>（因为 <code>Object</code> 不是一个接口）。</p>
+<h3 id="BiFunction"><a href="#BiFunction" class="headerlink" title="BiFunction"></a>BiFunction</h3><p><code>java.util.function</code> 提供了很多通用函数接口，例如 <code>BiFunction&lt;T, U, R&gt;</code> 描述参数类型为 <code>T</code>和 <code>U</code> 而且返回类型为 <code>R</code> 的函数。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">BiFunction&lt;T, U, R&gt; func = (first, second) -&gt; first.length() - second.length();</span><br></pre></td></tr></table></figure>
 <p>但是使用接口和函数式接口的地方不能传递一个 <code>BiFunction</code>。</p>
-<h3 id="5-3-方法引用"><a href="#5-3-方法引用" class="headerlink" title="5.3 方法引用"></a>5.3 方法引用</h3><p>形如 <code>System.out::println</code> 是一个方法引用，等价于 lambda 表达式 <code>x -&gt; System.out.println(x)</code>。</p>
+<h2 id="方法引用"><a href="#方法引用" class="headerlink" title="方法引用"></a>方法引用</h2><p>形如 <code>System.out::println</code> 是一个方法引用，等价于 lambda 表达式 <code>x -&gt; System.out.println(x)</code>。</p>
 <p>共 3 类：</p>
 <ul>
 <li><code>object::instanceFunc</code>：<code>x -&gt; object.instanceFunc(x)</code>。</li>
@@ -1695,10 +1710,10 @@
 <li><code>super::instanceFunc</code>：<code>x -&gt; super.instanceFunc(x)</code>。</li>
 </ul>
 <p>多个同名的重载函数时，根据上下文找到最合适的函数。</p>
-<h3 id="5-4-构造器引用"><a href="#5-4-构造器引用" class="headerlink" title="5.4 构造器引用"></a>5.4 构造器引用</h3><p>与方法引用类似，方法名为 <code>new</code>。例如 <code>Person::new</code>。</p>
+<h2 id="构造器引用"><a href="#构造器引用" class="headerlink" title="构造器引用"></a>构造器引用</h2><p>与方法引用类似，方法名为 <code>new</code>。例如 <code>Person::new</code>。</p>
 <p>可以有数组的构造器引用，<code>int[]::new</code>。</p>
 <p>Java 无法构造泛型 <code>T</code> 的数组，即不可以使用 <code>new T[10]</code>。<code>stream.toArray(Person[]::new)</code> 可以用类似泛型的方式构造数组。</p>
-<h3 id="5-5-变量作用域"><a href="#5-5-变量作用域" class="headerlink" title="5.5 变量作用域"></a>5.5 变量作用域</h3><p>引用的外部变量，必须是不可变的，相当于必须是 <code>final</code> 的，但是不用使用 <code>final</code> 修饰符。</p>
+<h2 id="变量作用域"><a href="#变量作用域" class="headerlink" title="变量作用域"></a>变量作用域</h2><p>引用的外部变量，必须是不可变的，相当于必须是 <code>final</code> 的，但是不用使用 <code>final</code> 修饰符。</p>
 <p>lambda 表达式的体与嵌套块有相同的作用域。</p>
 <ul>
 <li><p>因此不能声明和嵌套块中的同名变量。</p>
@@ -1707,18 +1722,18 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ActionListener linstener = event -&gt; &#123;</span><br><span class="line">      <span class="comment">// this 是 Application，而不是 ActionListener</span></span><br><span class="line">      Systme.out.println(<span class="keyword">this</span>.toString());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
-<h3 id="5-6-Comparator"><a href="#5-6-Comparator" class="headerlink" title="5.6 Comparator"></a>5.6 Comparator</h3><p><code>Comparator.comparing(Person::getName)</code> 提供“键提取函数”。</p>
+<h2 id="Comparator"><a href="#Comparator" class="headerlink" title="Comparator"></a>Comparator</h2><p><code>Comparator.comparing(Person::getName)</code> 提供“键提取函数”。</p>
 <p><code>Comparator.comparing(Person::getFirstName).thenComparing(Person::getSecondName)</code> 可以和thenComparing 串起来。</p>
 <p>comparing 和 thenComparing 可以提供第二个参数，是一个 Comparator 对象。<code>Comparator.comparing(Person::getName, (x, y) -&gt; x &gt; y)</code>。</p>
 <p><code>Comparator</code> 的 <code>nullFirst</code> 和 <code>nullSecond</code> 方式使装饰器，接收一个 Comparator 对象，遇到 null 时，标记为小于正常值 或 大于正常值。 </p>
-<h2 id="6-内部类"><a href="#6-内部类" class="headerlink" title="6. 内部类"></a>6. 内部类</h2><p>内部类是定义在另一个类中的类。</p>
+<h1 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h1><p>内部类是定义在另一个类中的类。</p>
 <p>3 个优点：</p>
 <ul>
 <li>内部类可以访问该类定义所在作用域的数据，包括 <code>private</code> 的数据。</li>
 <li>内部类可以对同一个包中的其他类隐藏起来。</li>
 <li>匿名内部类实现回调函数方便。</li>
 </ul>
-<h3 id="6-1-内部类访问外部对象"><a href="#6-1-内部类访问外部对象" class="headerlink" title="6.1 内部类访问外部对象"></a>6.1 内部类访问外部对象</h3><h4 id="编译器转化形式"><a href="#编译器转化形式" class="headerlink" title="编译器转化形式"></a>编译器转化形式</h4><p>内部类之所以可以访问创建它的外部类对象的数据域，是因为内部类的对象有一个隐式的外部类对象的引用。是编译器加上去的。</p>
+<h2 id="内部类访问外部对象"><a href="#内部类访问外部对象" class="headerlink" title="内部类访问外部对象"></a>内部类访问外部对象</h2><h3 id="编译器转化形式"><a href="#编译器转化形式" class="headerlink" title="编译器转化形式"></a>编译器转化形式</h3><p>内部类之所以可以访问创建它的外部类对象的数据域，是因为内部类的对象有一个隐式的外部类对象的引用。是编译器加上去的。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TalkingClock</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> keep;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TimePrinter</span> <span class="keyword">implements</span> <span class="title">ActionListener</span> </span>&#123;</span><br><span class="line">    <span class="meta">@override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actionPerformed</span><span class="params">(ActionEvent event)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (keep) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    TimePrinter t = <span class="keyword">new</span> TimePrinter();</span><br><span class="line">    <span class="keyword">new</span> Timer(<span class="number">1000</span>, t).start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>会被编译器添加内部类的关于 <code>outer</code> 的构造函数、生成内部类对象时添加 <code>this</code> 参数：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TalkingClock</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">boolean</span> keep;</span><br><span class="line">  </span><br><span class="line">  <span class="class"><span class="keyword">class</span> <span class="title">TimePrinter</span> <span class="keyword">implements</span> <span class="title">ActionListener</span> </span>&#123;</span><br><span class="line">    TalkingClock outer;</span><br><span class="line">    TimePrinter(TalkingClock outer) &#123;</span><br><span class="line">      <span class="keyword">this</span>.outer = outer;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">actionPerformed</span><span class="params">(ActionEvent event)</span> </span>&#123;</span><br><span class="line">      <span class="keyword">if</span> (keep) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    TimePrinter t = <span class="keyword">new</span> TimePrinter(<span class="keyword">this</span>);</span><br><span class="line">    <span class="keyword">new</span> Timer(<span class="number">1000</span>, t).start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -1727,25 +1742,25 @@
 <li>自己无法编写类似内部类的形式，因为内部类可以访问外部类的 <code>private</code> 域，但是自己定义的不可以。</li>
 <li>如何实现的访问私有域的：<code>TalkingClock.access$0(outer)</code>。</li>
 </ul>
-<h4 id="内外访问方式"><a href="#内外访问方式" class="headerlink" title="内外访问方式"></a>内外访问方式</h4><p>在内部类中使用外部类的 <code>this</code> 对象，可以用 <code>OuterClass.this</code> 的形式。</p>
+<h3 id="内外访问方式"><a href="#内外访问方式" class="headerlink" title="内外访问方式"></a>内外访问方式</h3><p>在内部类中使用外部类的 <code>this</code> 对象，可以用 <code>OuterClass.this</code> 的形式。</p>
 <p>在外部类作用域之外，使用 <code>OuterClass.InnerClass</code> 来访问这个内部类，如果它是 <code>public</code> 的。</p>
-<h4 id="规则限制"><a href="#规则限制" class="headerlink" title="规则限制"></a>规则限制</h4><p>内部类的静态域必须是 <code>final</code> 的。因为每一个外部类的对象，都有一个单独的内部类实例，为了保证“静态域只有一个实例”。</p>
+<h3 id="规则限制"><a href="#规则限制" class="headerlink" title="规则限制"></a>规则限制</h3><p>内部类的静态域必须是 <code>final</code> 的。因为每一个外部类的对象，都有一个单独的内部类实例，为了保证“静态域只有一个实例”。</p>
 <p>内部类不能有 <code>static</code> 方法。</p>
-<h3 id="6-2-局部内部类"><a href="#6-2-局部内部类" class="headerlink" title="6.2 局部内部类"></a>6.2 局部内部类</h3><h4 id="规则限制-1"><a href="#规则限制-1" class="headerlink" title="规则限制"></a>规则限制</h4><p>局部内部类不能用 <code>public</code> 或 <code>private</code> 修饰，因为作用域被限定在声明这个局部内部类的块中。</p>
+<h2 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h2><h3 id="规则限制-1"><a href="#规则限制-1" class="headerlink" title="规则限制"></a>规则限制</h3><p>局部内部类不能用 <code>public</code> 或 <code>private</code> 修饰，因为作用域被限定在声明这个局部内部类的块中。</p>
 <p>可以访问外部函数中的变量，但是必须是类 <code>final</code> 的（Java SE 8 之前必须显式声明为 <code>final</code> 的）。</p>
-<h4 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h4><ul>
+<h3 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h3><ul>
 <li>会把访问的外部函数的变量，进行备份。其实是，添加到了构造函数中。</li>
 </ul>
-<h4 id="绕过外部变量的-final-限制"><a href="#绕过外部变量的-final-限制" class="headerlink" title="绕过外部变量的 final 限制"></a>绕过外部变量的 final 限制</h4><p>要改变外部变量 <code>int num = 1</code>，定义为 <code>int[] num = {1}</code> 长度为 1 的数组即可。</p>
-<h3 id="6-3-匿名内部类"><a href="#6-3-匿名内部类" class="headerlink" title="6.3 匿名内部类"></a>6.3 匿名内部类</h3><p>构造函数调用的右小括号后面跟一个开大括号，正在定义的就是匿名内部类。</p>
-<h4 id="双括号初始化"><a href="#双括号初始化" class="headerlink" title="双括号初始化"></a>双括号初始化</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ArrayList&lt;String&gt; friends = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">friends.add(<span class="string">"a"</span>);</span><br><span class="line">friends.add(<span class="string">"b"</span>);</span><br><span class="line">invite(friends);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 可以简写为</span></span><br><span class="line">invite(<span class="keyword">new</span> ArrayList&lt;&gt;() &#123;</span><br><span class="line">  &#123; add(<span class="string">"a"</span>), add(<span class="string">"b"</span>)&#125; <span class="comment">// 对象构造块</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h4 id="在静态方法中获取-class"><a href="#在静态方法中获取-class" class="headerlink" title="在静态方法中获取 class"></a>在静态方法中获取 class</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Object()&#123;&#125;.getClass().getEnclosingClass();</span><br></pre></td></tr></table></figure>
-<h3 id="6-4-静态内部类"><a href="#6-4-静态内部类" class="headerlink" title="6.4 静态内部类"></a>6.4 静态内部类</h3><h4 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h4><p>用 <code>static</code> 修饰内部类，则内部类内部没有外部类的隐式引用，不能使用外部类的域。</p>
+<h3 id="绕过外部变量的-final-限制"><a href="#绕过外部变量的-final-限制" class="headerlink" title="绕过外部变量的 final 限制"></a>绕过外部变量的 final 限制</h3><p>要改变外部变量 <code>int num = 1</code>，定义为 <code>int[] num = {1}</code> 长度为 1 的数组即可。</p>
+<h2 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h2><p>构造函数调用的右小括号后面跟一个开大括号，正在定义的就是匿名内部类。</p>
+<h3 id="双括号初始化"><a href="#双括号初始化" class="headerlink" title="双括号初始化"></a>双括号初始化</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ArrayList&lt;String&gt; friends = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">friends.add(<span class="string">"a"</span>);</span><br><span class="line">friends.add(<span class="string">"b"</span>);</span><br><span class="line">invite(friends);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 可以简写为</span></span><br><span class="line">invite(<span class="keyword">new</span> ArrayList&lt;&gt;() &#123;</span><br><span class="line">  &#123; add(<span class="string">"a"</span>), add(<span class="string">"b"</span>)&#125; <span class="comment">// 对象构造块</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="在静态方法中获取-class"><a href="#在静态方法中获取-class" class="headerlink" title="在静态方法中获取 class"></a>在静态方法中获取 class</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> Object()&#123;&#125;.getClass().getEnclosingClass();</span><br></pre></td></tr></table></figure>
+<h2 id="静态内部类"><a href="#静态内部类" class="headerlink" title="静态内部类"></a>静态内部类</h2><h3 id="定义-2"><a href="#定义-2" class="headerlink" title="定义"></a>定义</h3><p>用 <code>static</code> 修饰内部类，则内部类内部没有外部类的隐式引用，不能使用外部类的域。</p>
 <p>只是为了把类隐藏在另一个类内部。</p>
 <p>注意，只有内部类可以使用 <code>static</code> 修饰。</p>
-<h4 id="规则限制-2"><a href="#规则限制-2" class="headerlink" title="规则限制"></a>规则限制</h4><p>静态内部类可以有静态域和静态方法。</p>
-<h4 id="接口中的内部类"><a href="#接口中的内部类" class="headerlink" title="接口中的内部类"></a>接口中的内部类</h4><p>声明在接口中的内部类自动为 <code>public</code> 和 <code>static</code>。</p>
-<h2 id="7-异常"><a href="#7-异常" class="headerlink" title="7. 异常"></a>7. 异常</h2><h3 id="7-1-异常层次结构"><a href="#7-1-异常层次结构" class="headerlink" title="7.1 异常层次结构"></a>7.1 异常层次结构</h3><ul>
+<h3 id="规则限制-2"><a href="#规则限制-2" class="headerlink" title="规则限制"></a>规则限制</h3><p>静态内部类可以有静态域和静态方法。</p>
+<h3 id="接口中的内部类"><a href="#接口中的内部类" class="headerlink" title="接口中的内部类"></a>接口中的内部类</h3><p>声明在接口中的内部类自动为 <code>public</code> 和 <code>static</code>。</p>
+<h1 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h1><h2 id="异常层次结构"><a href="#异常层次结构" class="headerlink" title="异常层次结构"></a>异常层次结构</h2><ul>
 <li>Throwable 类<ul>
 <li>Error 类：Java 运行时系统的内部错误和资源好紧错误。</li>
 <li>Exception 类<ul>
@@ -1757,20 +1772,20 @@
 </li>
 </ul>
 <p><code>Error</code> 和 <code>RuntimeException</code>是 uncheckd 异常，其他异常是 checked 异常。</p>
-<h3 id="7-2-声明-unchecked-异常"><a href="#7-2-声明-unchecked-异常" class="headerlink" title="7.2 声明 unchecked 异常"></a>7.2 声明 unchecked 异常</h3><p>在方法左花括号前面声明可能抛出的异常</p>
+<h2 id="声明-unchecked-异常"><a href="#声明-unchecked-异常" class="headerlink" title="声明 unchecked 异常"></a>声明 unchecked 异常</h2><p>在方法左花括号前面声明可能抛出的异常</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">FileInputStream</span><span class="params">(String name)</span> <span class="keyword">throws</span> FileNotFoundException</span>;</span><br></pre></td></tr></table></figure>
 <p>不需要声明 <code>Error</code> 和 <code>RuntimeException</code>。</p>
 <p>函数中调用方法声明的异常，必须被 catch 或声明。</p>
-<h4 id="override-中的异常声明"><a href="#override-中的异常声明" class="headerlink" title="override 中的异常声明"></a>override 中的异常声明</h4><ul>
+<h3 id="override-中的异常声明"><a href="#override-中的异常声明" class="headerlink" title="override 中的异常声明"></a>override 中的异常声明</h3><ul>
 <li><p>子类 <code>override</code> 父类的方法，声明的异常不能比父类方法的声明更通用，只能更具体。</p>
 </li>
 <li><p>如果父类方法没有声明异常，子类方法也不可以。</p>
 </li>
 </ul>
-<h3 id="7-3-抛出异常"><a href="#7-3-抛出异常" class="headerlink" title="7.3 抛出异常"></a>7.3 抛出异常</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> MyException(); <span class="comment">// 必须是 Throwable 的子类</span></span><br></pre></td></tr></table></figure>
-<h3 id="7-4-创建异常类"><a href="#7-4-创建异常类" class="headerlink" title="7.4 创建异常类"></a>7.4 创建异常类</h3><p>定义派生于 <code>Exception</code> 类或其子类的类。</p>
+<h2 id="抛出异常"><a href="#抛出异常" class="headerlink" title="抛出异常"></a>抛出异常</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> MyException(); <span class="comment">// 必须是 Throwable 的子类</span></span><br></pre></td></tr></table></figure>
+<h2 id="创建异常类"><a href="#创建异常类" class="headerlink" title="创建异常类"></a>创建异常类</h2><p>定义派生于 <code>Exception</code> 类或其子类的类。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyException</span> <span class="keyword">extends</span> <span class="title">Exception</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">MyException</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">MyException</span><span class="params">(String msg)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 存储在 throwable.detailMessage 域中</span></span><br><span class="line">    <span class="comment">// throwable.getMessage() 方法会返回它</span></span><br><span class="line">    <span class="keyword">super</span>(msg); </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="7-5-捕获异常"><a href="#7-5-捕获异常" class="headerlink" title="7.5 捕获异常"></a>7.5 捕获异常</h3><h4 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h4><ul>
+<h2 id="捕获异常"><a href="#捕获异常" class="headerlink" title="捕获异常"></a>捕获异常</h2><h3 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h3><ul>
 <li>执行 <code>try</code> 中代码，<code>try</code> 代码块是否抛出了某个 <code>catch</code> 中的异常。<ul>
 <li>抛出了，则不再执行try 中代码，执行 <code>catch</code> 中代码。</li>
 <li>没有抛出，跳过 <code>catch</code> 代码。</li>
@@ -1778,30 +1793,30 @@
 </li>
 <li>执行 <code>finally</code> 中代码。</li>
 </ul>
-<h4 id="捕获语法"><a href="#捕获语法" class="headerlink" title="捕获语法"></a>捕获语法</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (MyException e) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Java Se 7 中，可以一个 catch 语句捕获多个异常类型</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException | MyException e) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="捕获语法"><a href="#捕获语法" class="headerlink" title="捕获语法"></a>捕获语法</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125; <span class="keyword">catch</span> (MyException e) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Java Se 7 中，可以一个 catch 语句捕获多个异常类型</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  </span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException | MyException e) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>捕获的异常变量隐含为 <code>final</code>。</p>
 <p>可以在 <code>catch</code> 中再次抛出捕获的异常或者新的异常。</p>
-<h4 id="finally-中的-return"><a href="#finally-中的-return" class="headerlink" title="finally 中的 return"></a>finally 中的 return</h4><p><code>finally</code> 中的 return 会覆盖掉 <code>try</code> 和 <code>catch</code> 中的 return。</p>
-<h4 id="带资源的-try-语句"><a href="#带资源的-try-语句" class="headerlink" title="带资源的 try 语句"></a>带资源的 try 语句</h4><p>Java SE 7 中新增。</p>
+<h3 id="finally-中的-return"><a href="#finally-中的-return" class="headerlink" title="finally 中的 return"></a>finally 中的 return</h3><p><code>finally</code> 中的 return 会覆盖掉 <code>try</code> 和 <code>catch</code> 中的 return。</p>
+<h3 id="带资源的-try-语句"><a href="#带资源的-try-语句" class="headerlink" title="带资源的 try 语句"></a>带资源的 try 语句</h3><p>Java SE 7 中新增。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (Resource1 res1 = ...; Resource2 res2 = ...; Resource3 res3 = ...;) &#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><code>Resource</code> 必须是实现了 <code>AutoCloseable</code> 接口的类。</p>
 <p>编译器会自动补全相关的调用 <code>res.close()</code> 的方法。</p>
 <p>并且，如果 <code>try</code> 块抛出了异常 <code>e1</code>，<code>close</code> 的时候也抛出了异常 <code>e2</code>，会 <code>e1.addSuppressed(e1)</code>，抛出 <code>e1</code>。</p>
-<h2 id="8-泛型"><a href="#8-泛型" class="headerlink" title="8. 泛型"></a>8. 泛型</h2><h3 id="8-1-定义"><a href="#8-1-定义" class="headerlink" title="8.1 定义"></a>8.1 定义</h3><h4 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h4><p>诸如 <code>T</code> 的类型变量，用尖括号 <code>&lt;&gt;</code> 括起来，放在类名的后面。</p>
+<h1 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h1><h2 id="定义-3"><a href="#定义-3" class="headerlink" title="定义"></a>定义</h2><h3 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h3><p>诸如 <code>T</code> 的类型变量，用尖括号 <code>&lt;&gt;</code> 括起来，放在类名的后面。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>, <span class="title">U</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> T first;</span><br><span class="line">  <span class="keyword">private</span> U second;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Pair</span><span class="params">(T first, U second)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.first = first;</span><br><span class="line">    <span class="keyword">this</span>.second = second;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> T <span class="title">getFirst</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> first;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFirst</span><span class="params">(T first)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.first = first;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h4><p>泛型方法可以定在普通类中。</p>
+<h3 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h3><p>泛型方法可以定在普通类中。</p>
 <p>定义时，类型变量放在修饰符后面，返回类型的前面。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ArrayUtils</span> </span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">T <span class="title">getMiddle</span><span class="params">(T... items)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> items[item.length / <span class="number">2</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>使用时，在方法名前面加上 <code>&lt;具体类型&gt;</code>。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String middle = ArrayUtils.&lt;String&gt;getMiddle(<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>);</span><br></pre></td></tr></table></figure>
 <p>大多数情况，可以省略 <code>&lt;具体类型&gt;</code>，由编译器推断出。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String middle = ArrayUtils.getMiddle(<span class="string">"A"</span>, <span class="string">"B"</span>, <span class="string">"C"</span>);</span><br></pre></td></tr></table></figure>
-<h4 id="类型变量的限定"><a href="#类型变量的限定" class="headerlink" title="类型变量的限定"></a>类型变量的限定</h4><p>使用 <code>extends</code> 关键字，<code>&lt;T extends BoundingType&gt;</code> 来限定类型变量 <code>T</code> 是 <code>BoundingType</code> 的子类型。</p>
-<h5 id="多个类型限定"><a href="#多个类型限定" class="headerlink" title="多个类型限定"></a>多个类型限定</h5><p>一个类型变量可以有多个限定，用 <code>&amp;</code> 分隔开，如下：</p>
+<h3 id="类型变量的限定"><a href="#类型变量的限定" class="headerlink" title="类型变量的限定"></a>类型变量的限定</h3><p>使用 <code>extends</code> 关键字，<code>&lt;T extends BoundingType&gt;</code> 来限定类型变量 <code>T</code> 是 <code>BoundingType</code> 的子类型。</p>
+<h4 id="多个类型限定"><a href="#多个类型限定" class="headerlink" title="多个类型限定"></a>多个类型限定</h4><p>一个类型变量可以有多个限定，用 <code>&amp;</code> 分隔开，如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">&lt;T extends Comparable &amp; Serializable&gt;</span><br></pre></td></tr></table></figure>
 <p>限定中，最多只能有一个类，必须是限定列表的第一个。（原因见泛型的类型擦除）。</p>
-<h3 id="8-2-类型擦除和虚拟机"><a href="#8-2-类型擦除和虚拟机" class="headerlink" title="8.2 类型擦除和虚拟机"></a>8.2 类型擦除和虚拟机</h3><p>Java 要求旧版本的代码可以运行在新版本的 JVM 上，所以选择了在编译时擦除泛型的类型。</p>
-<h4 id="擦除规则"><a href="#擦除规则" class="headerlink" title="擦除规则"></a>擦除规则</h4><p>定义时</p>
+<h2 id="类型擦除和虚拟机"><a href="#类型擦除和虚拟机" class="headerlink" title="类型擦除和虚拟机"></a>类型擦除和虚拟机</h2><p>Java 要求旧版本的代码可以运行在新版本的 JVM 上，所以选择了在编译时擦除泛型的类型。</p>
+<h3 id="擦除规则"><a href="#擦除规则" class="headerlink" title="擦除规则"></a>擦除规则</h3><p>定义时</p>
 <ul>
 <li>编译后的字节码，只保留<strong>原始类型</strong>，即删除类型参数后的类名和方法名。</li>
 <li><strong>擦除</strong>类型变量，替换为限定类型。<ul>
@@ -1814,46 +1829,46 @@
 <ul>
 <li>编译器在必要的位置插入强制类型转换。</li>
 </ul>
-<h4 id="桥方法"><a href="#桥方法" class="headerlink" title="桥方法"></a>桥方法</h4><p>方法的类型参数在擦除时，关于 <code>overload</code> 和 <code>override</code> 会出现冲突。</p>
+<h3 id="桥方法"><a href="#桥方法" class="headerlink" title="桥方法"></a>桥方法</h3><p>方法的类型参数在擦除时，关于 <code>overload</code> 和 <code>override</code> 会出现冲突。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Food</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> <span class="keyword">extends</span> <span class="title">Food</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  T first;</span><br><span class="line">  T second;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> T <span class="title">getFirst</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> first;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setFirst</span><span class="params">(T first)</span> </span>&#123;</span><br><span class="line">    System.out.println(first.getClass());</span><br><span class="line">    <span class="keyword">this</span>.first = first;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> T <span class="title">getSecond</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> second;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecond</span><span class="params">(T second)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.second = second;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FruitPair</span> <span class="keyword">extends</span> <span class="title">Pair</span>&lt;<span class="title">Fruit</span>&gt; </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecond</span><span class="params">(Fruit second)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.setSecond(second);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Fruit <span class="title">getSecond</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">super</span>.getSecond();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// example</span></span><br><span class="line">FruitPair fruitPair = <span class="keyword">new</span> FruitPair();</span><br><span class="line">Pair&lt;Fruit&gt; pair = fruitPair;</span><br><span class="line">pair.setSecond(<span class="keyword">new</span> Fruit());</span><br></pre></td></tr></table></figure>
-<h5 id="写方法"><a href="#写方法" class="headerlink" title="写方法"></a>写方法</h5><p>对于写方法 <code>setSecond</code>，存在自己定义的 <code>setSecond(Fruit second)</code>，父类 <code>Pair</code> 的方法是 <code>setSecond(Object second)</code>。这两个方法的签名是不同的，无法进行 <code>override</code> 以及多态。</p>
+<h4 id="写方法"><a href="#写方法" class="headerlink" title="写方法"></a>写方法</h4><p>对于写方法 <code>setSecond</code>，存在自己定义的 <code>setSecond(Fruit second)</code>，父类 <code>Pair</code> 的方法是 <code>setSecond(Object second)</code>。这两个方法的签名是不同的，无法进行 <code>override</code> 以及多态。</p>
 <p>例如，在上述 example 中，调用 <code>pair.setSecond</code> 时。因为 <code>pair</code> 的声明是 <code>Pair</code>，不是 <code>FruitPair</code>，所以无法看到 <code>setSecond(Fruit second)</code> 方法，只能看到 <code>setSecond(Object second)</code>。这样会调用父类的 setSecond 方法，违反了程序的本意。</p>
 <p>因此，编译器会在类 <code>FruitPair</code> 中生成一个 <code>setSecond(Object second)</code> <strong>桥方法</strong>来完成覆写和多态：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setSecond</span><span class="params">(Object second)</span> </span>&#123;</span><br><span class="line">  setSecond((Fruit) second);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="读方法"><a href="#读方法" class="headerlink" title="读方法"></a>读方法</h5><p>对于读方法 <code>getSecond</code>，存在自己定义的 <code>Fruit getSecond()</code> 和 父类的方法 <code>Object getSecond()</code>。可以看到这两个方法的签名是相同的。</p>
+<h4 id="读方法"><a href="#读方法" class="headerlink" title="读方法"></a>读方法</h4><p>对于读方法 <code>getSecond</code>，存在自己定义的 <code>Fruit getSecond()</code> 和 父类的方法 <code>Object getSecond()</code>。可以看到这两个方法的签名是相同的。</p>
 <p>虚拟机中用参数类型和返回类型确定函数。虽然编写代码时，签名不包括返回值，但是编译器可能产生两个仅返回值不同的函数，虚拟机可以正确处理。</p>
 <p>为了完成覆盖和多态，子类 <code>FruitPair</code> 会生成一个 <code>Object getSecond()</code> 方法：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getSecond</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> getSecond();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="泛型场景之外的桥方法"><a href="#泛型场景之外的桥方法" class="headerlink" title="泛型场景之外的桥方法"></a>泛型场景之外的桥方法</h5><p>子类的方法可以返回更严格的返回类型，也是用桥方法实现的。</p>
-<h3 id="8-3-约束与局限"><a href="#8-3-约束与局限" class="headerlink" title="8.3 约束与局限"></a>8.3 约束与局限</h3><h4 id="1-泛型的类型变量不能是基本类型-List-lt-int-gt"><a href="#1-泛型的类型变量不能是基本类型-List-lt-int-gt" class="headerlink" title="1). 泛型的类型变量不能是基本类型 List&lt;int&gt;"></a>1). 泛型的类型变量不能是基本类型 <code>List&lt;int&gt;</code></h4><p>因为擦除类型后，会用 <code>Object</code> 替换， <code>Object</code> 不能存储 <code>int</code>。</p>
-<h4 id="2-运行时类型查询只能找到原始类型"><a href="#2-运行时类型查询只能找到原始类型" class="headerlink" title="2). 运行时类型查询只能找到原始类型"></a>2). 运行时类型查询只能找到原始类型</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Pair&lt;Fruit&gt; fruitPair;</span><br><span class="line">Pair&lt;String&gt; strPair;</span><br><span class="line"><span class="keyword">assert</span>(fruitPair.getClass() == strPair.getClass()); <span class="comment">// 因为都是 Pair 类的对象</span></span><br><span class="line"></span><br><span class="line">fruitPair <span class="keyword">instanceof</span> Pair&lt;Fruit&gt;; <span class="comment">// 编译错误</span></span><br><span class="line">(Pair&lt;Fruit&gt;) fruitPair; <span class="comment">// 可以，编译警告</span></span><br></pre></td></tr></table></figure>
-<h4 id="3-不能-new-参数化类型的数组-new-Pair-lt-Fruit-gt-10"><a href="#3-不能-new-参数化类型的数组-new-Pair-lt-Fruit-gt-10" class="headerlink" title="3). 不能 new 参数化类型的数组 new Pair&lt;Fruit&gt;[10]"></a>3). 不能 new 参数化类型的数组 <code>new Pair&lt;Fruit&gt;[10]</code></h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Pair&lt;Fruit&gt;[] pairs = <span class="keyword">new</span> Pair&lt;Fruit&gt;[<span class="number">10</span>]; <span class="comment">// 编译错误</span></span><br><span class="line"></span><br><span class="line">Pair&lt;Fruit&gt;[] pairs = (Pair&lt;Fruit&gt;[]) <span class="keyword">new</span> Pair&lt;?&gt;[<span class="number">10</span>]; <span class="comment">// 可以，编译警告</span></span><br></pre></td></tr></table></figure>
-<h4 id="4-在函数参数中-new-参数化类型的数组"><a href="#4-在函数参数中-new-参数化类型的数组" class="headerlink" title="4). 在函数参数中 new 参数化类型的数组"></a>4). 在函数参数中 new 参数化类型的数组</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">addAll</span><span class="params">(T... items)</span> </span>&#123;&#125;</span><br><span class="line">addAll(<span class="keyword">new</span> Pair&lt;Fruit&gt;(), <span class="keyword">new</span> Pair&lt;Fruit&gt;());</span><br></pre></td></tr></table></figure>
+<h4 id="泛型场景之外的桥方法"><a href="#泛型场景之外的桥方法" class="headerlink" title="泛型场景之外的桥方法"></a>泛型场景之外的桥方法</h4><p>子类的方法可以返回更严格的返回类型，也是用桥方法实现的。</p>
+<h2 id="约束与局限"><a href="#约束与局限" class="headerlink" title="约束与局限"></a>约束与局限</h2><h3 id="1-泛型的类型变量不能是基本类型-List-lt-int-gt"><a href="#1-泛型的类型变量不能是基本类型-List-lt-int-gt" class="headerlink" title="1). 泛型的类型变量不能是基本类型 List&lt;int&gt;"></a>1). 泛型的类型变量不能是基本类型 <code>List&lt;int&gt;</code></h3><p>因为擦除类型后，会用 <code>Object</code> 替换， <code>Object</code> 不能存储 <code>int</code>。</p>
+<h3 id="2-运行时类型查询只能找到原始类型"><a href="#2-运行时类型查询只能找到原始类型" class="headerlink" title="2). 运行时类型查询只能找到原始类型"></a>2). 运行时类型查询只能找到原始类型</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Pair&lt;Fruit&gt; fruitPair;</span><br><span class="line">Pair&lt;String&gt; strPair;</span><br><span class="line"><span class="keyword">assert</span>(fruitPair.getClass() == strPair.getClass()); <span class="comment">// 因为都是 Pair 类的对象</span></span><br><span class="line"></span><br><span class="line">fruitPair <span class="keyword">instanceof</span> Pair&lt;Fruit&gt;; <span class="comment">// 编译错误</span></span><br><span class="line">(Pair&lt;Fruit&gt;) fruitPair; <span class="comment">// 可以，编译警告</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-不能-new-参数化类型的数组-new-Pair-lt-Fruit-gt-10"><a href="#3-不能-new-参数化类型的数组-new-Pair-lt-Fruit-gt-10" class="headerlink" title="3). 不能 new 参数化类型的数组 new Pair&lt;Fruit&gt;[10]"></a>3). 不能 new 参数化类型的数组 <code>new Pair&lt;Fruit&gt;[10]</code></h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Pair&lt;Fruit&gt;[] pairs = <span class="keyword">new</span> Pair&lt;Fruit&gt;[<span class="number">10</span>]; <span class="comment">// 编译错误</span></span><br><span class="line"></span><br><span class="line">Pair&lt;Fruit&gt;[] pairs = (Pair&lt;Fruit&gt;[]) <span class="keyword">new</span> Pair&lt;?&gt;[<span class="number">10</span>]; <span class="comment">// 可以，编译警告</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-在函数参数中-new-参数化类型的数组"><a href="#4-在函数参数中-new-参数化类型的数组" class="headerlink" title="4). 在函数参数中 new 参数化类型的数组"></a>4). 在函数参数中 new 参数化类型的数组</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">addAll</span><span class="params">(T... items)</span> </span>&#123;&#125;</span><br><span class="line">addAll(<span class="keyword">new</span> Pair&lt;Fruit&gt;(), <span class="keyword">new</span> Pair&lt;Fruit&gt;());</span><br></pre></td></tr></table></figure>
 <p>相比规则 3)，放松了规则，只会得到警告。</p>
-<h4 id="5-不能实例化类型变量-new-T"><a href="#5-不能实例化类型变量-new-T" class="headerlink" title="5). 不能实例化类型变量 new T()"></a>5). 不能实例化类型变量 <code>new T()</code></h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> T(); <span class="comment">// 编译错误</span></span><br><span class="line"><span class="keyword">new</span> T[<span class="number">10</span>]; <span class="comment">// 编译错误</span></span><br><span class="line">T.class; <span class="comment">// 编译错误</span></span><br></pre></td></tr></table></figure>
+<h3 id="5-不能实例化类型变量-new-T"><a href="#5-不能实例化类型变量-new-T" class="headerlink" title="5). 不能实例化类型变量 new T()"></a>5). 不能实例化类型变量 <code>new T()</code></h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">new</span> T(); <span class="comment">// 编译错误</span></span><br><span class="line"><span class="keyword">new</span> T[<span class="number">10</span>]; <span class="comment">// 编译错误</span></span><br><span class="line">T.class; <span class="comment">// 编译错误</span></span><br></pre></td></tr></table></figure>
 <p>因为如果运行，类型擦除后，都会变为 <code>new Object()</code>，和程序本意不符。</p>
 <p><code>Class</code> 类是泛型类，<code>String.class</code> 返回了 <code>Class&lt;String&gt;</code> 的唯一实例。</p>
-<h4 id="6-不能实例化类型变量的数组-new-T-10"><a href="#6-不能实例化类型变量的数组-new-T-10" class="headerlink" title="6). 不能实例化类型变量的数组 new T[10]"></a>6). 不能实例化类型变量的数组 <code>new T[10]</code></h4><p>因为如果允许，这样 new 出来的是 <code>Object[]</code>，无法转化成其他类的对象。</p>
+<h3 id="6-不能实例化类型变量的数组-new-T-10"><a href="#6-不能实例化类型变量的数组-new-T-10" class="headerlink" title="6). 不能实例化类型变量的数组 new T[10]"></a>6). 不能实例化类型变量的数组 <code>new T[10]</code></h3><p>因为如果允许，这样 new 出来的是 <code>Object[]</code>，无法转化成其他类的对象。</p>
 <p>如果只是内部使用数组，可以如下，强制类型转化 <code>E[]</code> 是假象。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayList</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> E[] elements;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    elements = (E[]) <span class="keyword">new</span> Object[<span class="number">10</span>];</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>但是如果用这种方法，返回了<code>E[]</code>，是不可以的，因为它是用 <code>new Object[]</code>构建的。所以编译不会报错，在执行到 AAA 处时，报出 ClassCastException。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ArrayList</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> E[] elements;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    elements = (E[]) <span class="keyword">new</span> Object[<span class="number">10</span>];</span><br><span class="line">  &#125;</span><br><span class="line">  E[] getList() &#123;</span><br><span class="line">    <span class="keyword">return</span> elements;</span><br><span class="line">  &#125;</span><br><span class="line">&#125; </span><br><span class="line"></span><br><span class="line">ArrayList&lt;Integer&gt; nums;</span><br><span class="line">Integer[] nums2 = nums.getList(); <span class="comment">// AAA</span></span><br></pre></td></tr></table></figure>
-<h4 id="7-泛型类不能有静态的类型变量"><a href="#7-泛型类不能有静态的类型变量" class="headerlink" title="7). 泛型类不能有静态的类型变量"></a>7). 泛型类不能有静态的类型变量</h4><p>如果允许，<code>Pair&lt;String&gt;</code> 和 <code>Pair&lt;Integer&gt;</code> 会生成两个静态域，不符合语义。</p>
+<h3 id="7-泛型类不能有静态的类型变量"><a href="#7-泛型类不能有静态的类型变量" class="headerlink" title="7). 泛型类不能有静态的类型变量"></a>7). 泛型类不能有静态的类型变量</h3><p>如果允许，<code>Pair&lt;String&gt;</code> 和 <code>Pair&lt;Integer&gt;</code> 会生成两个静态域，不符合语义。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> T item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="8-擦除后的冲突"><a href="#8-擦除后的冲突" class="headerlink" title="8). 擦除后的冲突"></a>8). 擦除后的冲突</h4><p>擦除类型后，如果有冲突是不可以的。</p>
+<h3 id="8-擦除后的冲突"><a href="#8-擦除后的冲突" class="headerlink" title="8). 擦除后的冲突"></a>8). 擦除后的冲突</h3><p>擦除类型后，如果有冲突是不可以的。</p>
 <p>如下，这样会生成 <code>equals(Object)</code> 与超类 <code>Object</code> 的方法冲突。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Pair</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(T value)</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>一个类不能同时成为两个接口类型的子类，这两个接口类型是同一个接口的不同参数化。</p>
 <p>如下，<code>Fruit</code> 实现了 <code>Comparable&lt;Food&gt;</code> 和 <code>Comparable&lt;Fruit&gt;</code>。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Food</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Food</span>&gt; </span>&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> <span class="keyword">extends</span> <span class="title">Food</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Fruit</span>&gt; </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="8-4-通配符"><a href="#8-4-通配符" class="headerlink" title="8.4 通配符"></a>8.4 通配符</h3><p><a href="https://www.zhihu.com/question/20400700/answer/117464182" target="_blank" rel="noopener">知乎-通配符</a></p>
-<h4 id="8-4-1-继承关系"><a href="#8-4-1-继承关系" class="headerlink" title="8.4.1 继承关系"></a>8.4.1 继承关系</h4><p><code>Pair&lt;Fruit&gt;</code> 与 <code>Pair&lt;Food&gt;</code> 没有什么关系，他们都是 <code>Pair</code> 的子类。</p>
+<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><p><a href="https://www.zhihu.com/question/20400700/answer/117464182" target="_blank" rel="noopener">知乎-通配符</a></p>
+<h3 id="8-4-1-继承关系"><a href="#8-4-1-继承关系" class="headerlink" title="8.4.1 继承关系"></a>8.4.1 继承关系</h3><p><code>Pair&lt;Fruit&gt;</code> 与 <code>Pair&lt;Food&gt;</code> 没有什么关系，他们都是 <code>Pair</code> 的子类。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Pair&lt;Food&gt; pair = <span class="keyword">new</span> Pair&lt;Fruit&gt;(); <span class="comment">// 编译错误</span></span><br></pre></td></tr></table></figure>
-<h4 id="8-4-2-上界通配符-extends"><a href="#8-4-2-上界通配符-extends" class="headerlink" title="8.4.2 上界通配符 extends"></a>8.4.2 上界通配符 extends</h4><p><code>Pair&lt;? exnteds Food&gt;</code> 表示这里最通用可以是 <code>Food</code>，即 <code>Food</code> 和 <code>Food</code> 的子类。</p>
+<h3 id="8-4-2-上界通配符-extends"><a href="#8-4-2-上界通配符-extends" class="headerlink" title="8.4.2 上界通配符 extends"></a>8.4.2 上界通配符 extends</h3><p><code>Pair&lt;? exnteds Food&gt;</code> 表示这里最通用可以是 <code>Food</code>，即 <code>Food</code> 和 <code>Food</code> 的子类。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Pair&lt;? extends Food&gt; pair = <span class="keyword">new</span> Pair&lt;Fruit&gt;();</span><br></pre></td></tr></table></figure>
 <p>不能存，只能取。</p>
 <p>因为编译器只知道这里是 Food 和 Food 的子类，不知道具体是什么类的对象。编译器实际上会变为 <code>Pair&lt;#CAP1&gt;</code>，用 #CAP1 来占位。</p>
-<h4 id="8-4-3-下界通配符"><a href="#8-4-3-下界通配符" class="headerlink" title="8.4.3 下界通配符"></a>8.4.3 下界通配符</h4><p><code>Pair&lt;? super Fruit&gt;</code> 表示这里最具体可以使 <code>Fruit</code>，即 <code>Fruit</code> 和 <code>Fruit</code> 的超类。</p>
+<h3 id="8-4-3-下界通配符"><a href="#8-4-3-下界通配符" class="headerlink" title="8.4.3 下界通配符"></a>8.4.3 下界通配符</h3><p><code>Pair&lt;? super Fruit&gt;</code> 表示这里最具体可以使 <code>Fruit</code>，即 <code>Fruit</code> 和 <code>Fruit</code> 的超类。</p>
 <p>可以存，取的时候只能赋值给 <code>Object</code>。</p>
 <p>因为这里规定了下界，既然元素是 Fruit 的基类，那么存入 Fruit 的子类都可以。</p>
 <p>但是因为模糊了上界，所以只能赋给 Object。</p>
@@ -1992,6 +2007,208 @@
       <tags>
         <tag>java</tag>
         <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>I/O流相关类</title>
+    <url>/2020/java/io/io%E6%B5%81/</url>
+    <content><![CDATA[<h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/28286559" target="_blank" rel="noopener">Java IO，硬骨头也能变软</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/31352578" target="_blank" rel="noopener">PipedInputStream和PipedOutStream记录</a></li>
+<li>《Java 核心技术-卷2-第二章》</li>
+</ul>
+<h2 id="1-三种分类方式"><a href="#1-三种分类方式" class="headerlink" title="1. 三种分类方式"></a>1. 三种分类方式</h2><h3 id="字节流和字符流"><a href="#字节流和字符流" class="headerlink" title="字节流和字符流"></a>字节流和字符流</h3><ul>
+<li>字节流<ul>
+<li>以字节为单位进行读写。</li>
+<li>每次读写 1 byte 数据。</li>
+<li>可以操作任何类型的数据。</li>
+</ul>
+</li>
+<li>字符流<ul>
+<li>以字符码元为单位进行读写。</li>
+<li>每次读写 2 bytes 数据。</li>
+<li>只能操作字符类型的数据。</li>
+</ul>
+</li>
+</ul>
+<h3 id="输入流和输出流"><a href="#输入流和输出流" class="headerlink" title="输入流和输出流"></a>输入流和输出流</h3><ul>
+<li>输入流<ul>
+<li>可以进行输入相关的操作。</li>
+</ul>
+</li>
+<li>输出流<ul>
+<li>可以进行输出相关的操作。</li>
+</ul>
+</li>
+</ul>
+<h3 id="节点流和操作流"><a href="#节点流和操作流" class="headerlink" title="节点流和操作流"></a>节点流和操作流</h3><ul>
+<li>节点流<ul>
+<li>直接与数据相连，数据来源或目的地是要操作的最终数据。</li>
+</ul>
+</li>
+<li>操作流<ul>
+<li>利用装饰器模式，对节点流进行包装，提供多种方便的做操方式。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-具体分类"><a href="#2-具体分类" class="headerlink" title="2. 具体分类"></a>2. 具体分类</h2><p>所有读取/写入操作都要加锁。</p>
+<h3 id="2-1-输入-字节流"><a href="#2-1-输入-字节流" class="headerlink" title="2.1 输入/字节流"></a>2.1 输入/字节流</h3><h4 id="1-节点流"><a href="#1-节点流" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileInputStream"><a href="#FileInputStream" class="headerlink" title="FileInputStream"></a>FileInputStream</h5><ul>
+<li>用于从文件读取数据。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h5 id="ByteArrayInputStream"><a href="#ByteArrayInputStream" class="headerlink" title="ByteArrayInputStream"></a>ByteArrayInputStream</h5><ul>
+<li>用于从数组读取数据。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h5 id="PipedInputStream"><a href="#PipedInputStream" class="headerlink" title="PipedInputStream"></a>PipedInputStream</h5><ul>
+<li>用于线程间通信，需要和 <code>PipedOutputStream</code> 一起使用。</li>
+<li>使用固定长度的字节数组 buffer，在没有可读字节时阻塞。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h4 id="2-操作流"><a href="#2-操作流" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterInputStream"><a href="#FilterInputStream" class="headerlink" title="FilterInputStream"></a>FilterInputStream</h5><ul>
+<li>内置一个输入/字节流 inner 用来操作。</li>
+<li>所有操作只是简单的调用 inner 来完成。</li>
+<li>所有输入/字节/操作流的超类，除了 SequenceInputStream。</li>
+</ul>
+<h5 id="BufferedInputStream"><a href="#BufferedInputStream" class="headerlink" title="BufferedInputStream"></a>BufferedInputStream</h5><ul>
+<li>使用字节数组 buffer 缓存数据。每次读取，先把 buffer 填满，再从 buffer 中读取。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h5 id="DataInputStream"><a href="#DataInputStream" class="headerlink" title="DataInputStream"></a>DataInputStream</h5><ul>
+<li>实现了 <code>DataInput</code> 接口。<ul>
+<li><code>readInt/Char/Boolean/等基本类型</code> 读取基本类型</li>
+<li><code>readUTF</code> 读取 修订过的 UTF 格式的字符串。<ul>
+<li>使用 <code>readUTF</code> 读取字符串。</li>
+<li>2个字节的 uint 表示长度 length。</li>
+<li>length 个字节组成 修订过的 UTF 编码。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h5><ul>
+<li>用于序列化对象。</li>
+<li>实现了 <code>DataInput</code> 接口。</li>
+<li><code>readObject</code> 读取对象。</li>
+</ul>
+<h5 id="SequenceInputStream"><a href="#SequenceInputStream" class="headerlink" title="SequenceInputStream"></a>SequenceInputStream</h5><ul>
+<li>从多个流依次读取数据。</li>
+<li>构造函数传入任意个 InputStream。</li>
+</ul>
+<h3 id="2-2-输出-字节流"><a href="#2-2-输出-字节流" class="headerlink" title="2.2 输出/字节流"></a>2.2 输出/字节流</h3><h4 id="1-字节流"><a href="#1-字节流" class="headerlink" title="1) 字节流"></a>1) 字节流</h4><h5 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h5><ul>
+<li>用于向文件写入数据。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h5 id="ByteArrayOutputStream"><a href="#ByteArrayOutputStream" class="headerlink" title="ByteArrayOutputStream"></a>ByteArrayOutputStream</h5><ul>
+<li>用于向数组写入数据。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h5 id="PipedOutputStream"><a href="#PipedOutputStream" class="headerlink" title="PipedOutputStream"></a>PipedOutputStream</h5><ul>
+<li>用于线程间通信，需要和 <code>PipedInputputStream</code> 一起使用。</li>
+<li>在没有空间写入时阻塞。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h4 id="2-操作流-1"><a href="#2-操作流-1" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h5><ul>
+<li>内置一个输出/字节流 inner 用来操作。</li>
+<li>所有操作只是简单的调用 inner 来完成。</li>
+<li>所有输出/字节/操作流的超类。</li>
+</ul>
+<h5 id="BufferedOutputStream"><a href="#BufferedOutputStream" class="headerlink" title="BufferedOutputStream"></a>BufferedOutputStream</h5><ul>
+<li>使用字节数组 buffer （默认 1024 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h5 id="DataOutputStream"><a href="#DataOutputStream" class="headerlink" title="DataOutputStream"></a>DataOutputStream</h5><ul>
+<li>实现了 <code>DataOutput</code> 接口。<ul>
+<li><code>writeInt/Char/Boolean/等基本类型</code> 写入基本类型</li>
+<li><code>writeUTF</code> 写入 修订过的 UTF 格式的字符串。</li>
+<li><code>writeChars</code> 写入 UTF16 格式的字符串。注意没有写入长度。</li>
+</ul>
+</li>
+</ul>
+<h5 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h5><ul>
+<li>序列化对象。</li>
+<li><code>writeObject</code> 读取对象。</li>
+</ul>
+<h5 id="PrintStream"><a href="#PrintStream" class="headerlink" title="PrintStream"></a>PrintStream</h5><ul>
+<li>用于打印基本类型/字符串到流。<ul>
+<li>都转化为字符串。</li>
+</ul>
+</li>
+<li>性能不好。<ul>
+<li>内部使用 <code>BufferedWriter</code>。</li>
+<li>每个 write 操作后，会 flushBuffer，把 buffer 的内容写入到 inner 流中（没有 flush inner）。</li>
+<li><code>prinln</code> 分成两次 write 操作：writer 内容 + writer 换行符。要 flushBuffer 两次。</li>
+<li>开启 autoflush 后，每次写入换行符，都会调用 inner 的 flush 方法。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-输入-字符流"><a href="#2-3-输入-字符流" class="headerlink" title="2.3 输入/字符流"></a>2.3 输入/字符流</h3><p>除了 <code>BufferedReader.readLine()</code>，都只能读取字符/字符数组。</p>
+<h4 id="1-节点流-1"><a href="#1-节点流-1" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h5><ul>
+<li>用于从文件读取数据。</li>
+<li>继承了 InputStreamReader。创建一个 fileInputStream，传递给自己。</li>
+<li>只能读取字符/字符数组。</li>
+</ul>
+<h5 id="PipedReader"><a href="#PipedReader" class="headerlink" title="PipedReader"></a>PipedReader</h5><ul>
+<li>用于线程间通信。</li>
+<li>使用字符数组缓存数据。没有字符可读时，阻塞。</li>
+<li>只能读取字符/字符数组。</li>
+</ul>
+<h5 id="CharArrayReader"><a href="#CharArrayReader" class="headerlink" title="CharArrayReader"></a>CharArrayReader</h5><ul>
+<li>用于从数组读取数据。</li>
+<li>只能读取字符/字符数组。</li>
+</ul>
+<h4 id="2-操作流-2"><a href="#2-操作流-2" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedReader"><a href="#BufferedReader" class="headerlink" title="BufferedReader"></a>BufferedReader</h5><ul>
+<li>只能读取字符/字符数组。</li>
+<li>使用字符数组 buffer （默认 8192 字节）缓存数据。</li>
+<li>读取一行字符串。</li>
+</ul>
+<h5 id="InputStreamWriter"><a href="#InputStreamWriter" class="headerlink" title="InputStreamWriter"></a>InputStreamWriter</h5><ul>
+<li>把 输入/字节流 转化为 输入/字符流。</li>
+<li>只能读取字符/字符数组。</li>
+<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
+</ul>
+<h3 id="2-4-输出-字符流"><a href="#2-4-输出-字符流" class="headerlink" title="2.4 输出/字符流"></a>2.4 输出/字符流</h3><h4 id="1-节点流-2"><a href="#1-节点流-2" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><ul>
+<li>用于向文件写入数据。</li>
+<li>继承了 OutputStreamReader。创建一个 fileOutputStream，传递给自己。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+</ul>
+<h5 id="PipedWriter"><a href="#PipedWriter" class="headerlink" title="PipedWriter"></a>PipedWriter</h5><ul>
+<li>用于线程间通信。</li>
+<li>没有空间写入时，阻塞。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+</ul>
+<h5 id="CharArrayWriter"><a href="#CharArrayWriter" class="headerlink" title="CharArrayWriter"></a>CharArrayWriter</h5><ul>
+<li>用于向数组写入数据。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+</ul>
+<h4 id="2-操作流-3"><a href="#2-操作流-3" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><ul>
+<li>只能写入字符/字符串/字符数组。</li>
+<li>使用字符数组 buffer （默认 8192 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
+</ul>
+<h5 id="OutputStreamWriter"><a href="#OutputStreamWriter" class="headerlink" title="OutputStreamWriter"></a>OutputStreamWriter</h5><ul>
+<li>把 输出/字节流 转化为 输出/字符流。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
+</ul>
+<h5 id="PrintWriter"><a href="#PrintWriter" class="headerlink" title="PrintWriter"></a>PrintWriter</h5><ul>
+<li>用于打印基本类型/字符串到流。</li>
+<li>性能不好。<ul>
+<li>每个 writer 操作，都会写入 inner 流中。</li>
+<li><code>println</code> 分开两次 write 操作。</li>
+<li>开启 autoflush 后，每次写入后都会调用 inner 的 flush 方法。</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-例子"><a href="#3-例子" class="headerlink" title="3. 例子"></a>3. 例子</h2><p>使用 <code>connect</code>把 <code>PipedInputStream</code> 与 <code>PipedOutputStream</code>连接起来。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sender</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedOutputStream out = <span class="keyword">new</span> PipedOutputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedOutputStream <span class="title">getOut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      out.write(<span class="string">"hello, world"</span>.getBytes(StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedInputStream in = <span class="keyword">new</span> PipedInputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedInputStream <span class="title">getIn</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> in;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">100</span>];</span><br><span class="line">      in.read(buffer);</span><br><span class="line">      System.out.println(<span class="keyword">new</span> String(buffer, StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Sender sender = <span class="keyword">new</span> Sender();</span><br><span class="line">    Receiver receiver = <span class="keyword">new</span> Receiver();</span><br><span class="line"></span><br><span class="line">    sender.getOut().connect(receiver.getIn());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(sender).start();</span><br><span class="line">    <span class="keyword">new</span> Thread(receiver).start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>io</category>
+      </categories>
+      <tags>
+        <tag>io</tag>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -2524,208 +2741,6 @@
       <tags>
         <tag>java</tag>
         <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>I/O流相关类</title>
-    <url>/2020/java/io/io%E6%B5%81/</url>
-    <content><![CDATA[<h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/28286559" target="_blank" rel="noopener">Java IO，硬骨头也能变软</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/31352578" target="_blank" rel="noopener">PipedInputStream和PipedOutStream记录</a></li>
-<li>《Java 核心技术-卷2-第二章》</li>
-</ul>
-<h2 id="1-三种分类方式"><a href="#1-三种分类方式" class="headerlink" title="1. 三种分类方式"></a>1. 三种分类方式</h2><h3 id="字节流和字符流"><a href="#字节流和字符流" class="headerlink" title="字节流和字符流"></a>字节流和字符流</h3><ul>
-<li>字节流<ul>
-<li>以字节为单位进行读写。</li>
-<li>每次读写 1 byte 数据。</li>
-<li>可以操作任何类型的数据。</li>
-</ul>
-</li>
-<li>字符流<ul>
-<li>以字符码元为单位进行读写。</li>
-<li>每次读写 2 bytes 数据。</li>
-<li>只能操作字符类型的数据。</li>
-</ul>
-</li>
-</ul>
-<h3 id="输入流和输出流"><a href="#输入流和输出流" class="headerlink" title="输入流和输出流"></a>输入流和输出流</h3><ul>
-<li>输入流<ul>
-<li>可以进行输入相关的操作。</li>
-</ul>
-</li>
-<li>输出流<ul>
-<li>可以进行输出相关的操作。</li>
-</ul>
-</li>
-</ul>
-<h3 id="节点流和操作流"><a href="#节点流和操作流" class="headerlink" title="节点流和操作流"></a>节点流和操作流</h3><ul>
-<li>节点流<ul>
-<li>直接与数据相连，数据来源或目的地是要操作的最终数据。</li>
-</ul>
-</li>
-<li>操作流<ul>
-<li>利用装饰器模式，对节点流进行包装，提供多种方便的做操方式。</li>
-</ul>
-</li>
-</ul>
-<h2 id="2-具体分类"><a href="#2-具体分类" class="headerlink" title="2. 具体分类"></a>2. 具体分类</h2><p>所有读取/写入操作都要加锁。</p>
-<h3 id="2-1-输入-字节流"><a href="#2-1-输入-字节流" class="headerlink" title="2.1 输入/字节流"></a>2.1 输入/字节流</h3><h4 id="1-节点流"><a href="#1-节点流" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileInputStream"><a href="#FileInputStream" class="headerlink" title="FileInputStream"></a>FileInputStream</h5><ul>
-<li>用于从文件读取数据。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h5 id="ByteArrayInputStream"><a href="#ByteArrayInputStream" class="headerlink" title="ByteArrayInputStream"></a>ByteArrayInputStream</h5><ul>
-<li>用于从数组读取数据。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h5 id="PipedInputStream"><a href="#PipedInputStream" class="headerlink" title="PipedInputStream"></a>PipedInputStream</h5><ul>
-<li>用于线程间通信，需要和 <code>PipedOutputStream</code> 一起使用。</li>
-<li>使用固定长度的字节数组 buffer，在没有可读字节时阻塞。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h4 id="2-操作流"><a href="#2-操作流" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterInputStream"><a href="#FilterInputStream" class="headerlink" title="FilterInputStream"></a>FilterInputStream</h5><ul>
-<li>内置一个输入/字节流 inner 用来操作。</li>
-<li>所有操作只是简单的调用 inner 来完成。</li>
-<li>所有输入/字节/操作流的超类，除了 SequenceInputStream。</li>
-</ul>
-<h5 id="BufferedInputStream"><a href="#BufferedInputStream" class="headerlink" title="BufferedInputStream"></a>BufferedInputStream</h5><ul>
-<li>使用字节数组 buffer 缓存数据。每次读取，先把 buffer 填满，再从 buffer 中读取。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h5 id="DataInputStream"><a href="#DataInputStream" class="headerlink" title="DataInputStream"></a>DataInputStream</h5><ul>
-<li>实现了 <code>DataInput</code> 接口。<ul>
-<li><code>readInt/Char/Boolean/等基本类型</code> 读取基本类型</li>
-<li><code>readUTF</code> 读取 修订过的 UTF 格式的字符串。<ul>
-<li>使用 <code>readUTF</code> 读取字符串。</li>
-<li>2个字节的 uint 表示长度 length。</li>
-<li>length 个字节组成 修订过的 UTF 编码。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h5 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h5><ul>
-<li>用于序列化对象。</li>
-<li>实现了 <code>DataInput</code> 接口。</li>
-<li><code>readObject</code> 读取对象。</li>
-</ul>
-<h5 id="SequenceInputStream"><a href="#SequenceInputStream" class="headerlink" title="SequenceInputStream"></a>SequenceInputStream</h5><ul>
-<li>从多个流依次读取数据。</li>
-<li>构造函数传入任意个 InputStream。</li>
-</ul>
-<h3 id="2-2-输出-字节流"><a href="#2-2-输出-字节流" class="headerlink" title="2.2 输出/字节流"></a>2.2 输出/字节流</h3><h4 id="1-字节流"><a href="#1-字节流" class="headerlink" title="1) 字节流"></a>1) 字节流</h4><h5 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h5><ul>
-<li>用于向文件写入数据。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h5 id="ByteArrayOutputStream"><a href="#ByteArrayOutputStream" class="headerlink" title="ByteArrayOutputStream"></a>ByteArrayOutputStream</h5><ul>
-<li>用于向数组写入数据。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h5 id="PipedOutputStream"><a href="#PipedOutputStream" class="headerlink" title="PipedOutputStream"></a>PipedOutputStream</h5><ul>
-<li>用于线程间通信，需要和 <code>PipedInputputStream</code> 一起使用。</li>
-<li>在没有空间写入时阻塞。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h4 id="2-操作流-1"><a href="#2-操作流-1" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h5><ul>
-<li>内置一个输出/字节流 inner 用来操作。</li>
-<li>所有操作只是简单的调用 inner 来完成。</li>
-<li>所有输出/字节/操作流的超类。</li>
-</ul>
-<h5 id="BufferedOutputStream"><a href="#BufferedOutputStream" class="headerlink" title="BufferedOutputStream"></a>BufferedOutputStream</h5><ul>
-<li>使用字节数组 buffer （默认 1024 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h5 id="DataOutputStream"><a href="#DataOutputStream" class="headerlink" title="DataOutputStream"></a>DataOutputStream</h5><ul>
-<li>实现了 <code>DataOutput</code> 接口。<ul>
-<li><code>writeInt/Char/Boolean/等基本类型</code> 写入基本类型</li>
-<li><code>writeUTF</code> 写入 修订过的 UTF 格式的字符串。</li>
-<li><code>writeChars</code> 写入 UTF16 格式的字符串。注意没有写入长度。</li>
-</ul>
-</li>
-</ul>
-<h5 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h5><ul>
-<li>序列化对象。</li>
-<li><code>writeObject</code> 读取对象。</li>
-</ul>
-<h5 id="PrintStream"><a href="#PrintStream" class="headerlink" title="PrintStream"></a>PrintStream</h5><ul>
-<li>用于打印基本类型/字符串到流。<ul>
-<li>都转化为字符串。</li>
-</ul>
-</li>
-<li>性能不好。<ul>
-<li>内部使用 <code>BufferedWriter</code>。</li>
-<li>每个 write 操作后，会 flushBuffer，把 buffer 的内容写入到 inner 流中（没有 flush inner）。</li>
-<li><code>prinln</code> 分成两次 write 操作：writer 内容 + writer 换行符。要 flushBuffer 两次。</li>
-<li>开启 autoflush 后，每次写入换行符，都会调用 inner 的 flush 方法。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-3-输入-字符流"><a href="#2-3-输入-字符流" class="headerlink" title="2.3 输入/字符流"></a>2.3 输入/字符流</h3><p>除了 <code>BufferedReader.readLine()</code>，都只能读取字符/字符数组。</p>
-<h4 id="1-节点流-1"><a href="#1-节点流-1" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h5><ul>
-<li>用于从文件读取数据。</li>
-<li>继承了 InputStreamReader。创建一个 fileInputStream，传递给自己。</li>
-<li>只能读取字符/字符数组。</li>
-</ul>
-<h5 id="PipedReader"><a href="#PipedReader" class="headerlink" title="PipedReader"></a>PipedReader</h5><ul>
-<li>用于线程间通信。</li>
-<li>使用字符数组缓存数据。没有字符可读时，阻塞。</li>
-<li>只能读取字符/字符数组。</li>
-</ul>
-<h5 id="CharArrayReader"><a href="#CharArrayReader" class="headerlink" title="CharArrayReader"></a>CharArrayReader</h5><ul>
-<li>用于从数组读取数据。</li>
-<li>只能读取字符/字符数组。</li>
-</ul>
-<h4 id="2-操作流-2"><a href="#2-操作流-2" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedReader"><a href="#BufferedReader" class="headerlink" title="BufferedReader"></a>BufferedReader</h5><ul>
-<li>只能读取字符/字符数组。</li>
-<li>使用字符数组 buffer （默认 8192 字节）缓存数据。</li>
-<li>读取一行字符串。</li>
-</ul>
-<h5 id="InputStreamWriter"><a href="#InputStreamWriter" class="headerlink" title="InputStreamWriter"></a>InputStreamWriter</h5><ul>
-<li>把 输入/字节流 转化为 输入/字符流。</li>
-<li>只能读取字符/字符数组。</li>
-<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
-</ul>
-<h3 id="2-4-输出-字符流"><a href="#2-4-输出-字符流" class="headerlink" title="2.4 输出/字符流"></a>2.4 输出/字符流</h3><h4 id="1-节点流-2"><a href="#1-节点流-2" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><ul>
-<li>用于向文件写入数据。</li>
-<li>继承了 OutputStreamReader。创建一个 fileOutputStream，传递给自己。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-</ul>
-<h5 id="PipedWriter"><a href="#PipedWriter" class="headerlink" title="PipedWriter"></a>PipedWriter</h5><ul>
-<li>用于线程间通信。</li>
-<li>没有空间写入时，阻塞。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-</ul>
-<h5 id="CharArrayWriter"><a href="#CharArrayWriter" class="headerlink" title="CharArrayWriter"></a>CharArrayWriter</h5><ul>
-<li>用于向数组写入数据。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-</ul>
-<h4 id="2-操作流-3"><a href="#2-操作流-3" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><ul>
-<li>只能写入字符/字符串/字符数组。</li>
-<li>使用字符数组 buffer （默认 8192 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
-</ul>
-<h5 id="OutputStreamWriter"><a href="#OutputStreamWriter" class="headerlink" title="OutputStreamWriter"></a>OutputStreamWriter</h5><ul>
-<li>把 输出/字节流 转化为 输出/字符流。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
-</ul>
-<h5 id="PrintWriter"><a href="#PrintWriter" class="headerlink" title="PrintWriter"></a>PrintWriter</h5><ul>
-<li>用于打印基本类型/字符串到流。</li>
-<li>性能不好。<ul>
-<li>每个 writer 操作，都会写入 inner 流中。</li>
-<li><code>println</code> 分开两次 write 操作。</li>
-<li>开启 autoflush 后，每次写入后都会调用 inner 的 flush 方法。</li>
-</ul>
-</li>
-</ul>
-<h2 id="3-例子"><a href="#3-例子" class="headerlink" title="3. 例子"></a>3. 例子</h2><p>使用 <code>connect</code>把 <code>PipedInputStream</code> 与 <code>PipedOutputStream</code>连接起来。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sender</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedOutputStream out = <span class="keyword">new</span> PipedOutputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedOutputStream <span class="title">getOut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      out.write(<span class="string">"hello, world"</span>.getBytes(StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedInputStream in = <span class="keyword">new</span> PipedInputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedInputStream <span class="title">getIn</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> in;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">100</span>];</span><br><span class="line">      in.read(buffer);</span><br><span class="line">      System.out.println(<span class="keyword">new</span> String(buffer, StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Sender sender = <span class="keyword">new</span> Sender();</span><br><span class="line">    Receiver receiver = <span class="keyword">new</span> Receiver();</span><br><span class="line"></span><br><span class="line">    sender.getOut().connect(receiver.getIn());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(sender).start();</span><br><span class="line">    <span class="keyword">new</span> Thread(receiver).start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>io</category>
-      </categories>
-      <tags>
-        <tag>io</tag>
-        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -3281,36 +3296,6 @@
       </tags>
   </entry>
   <entry>
-    <title>8.5 DelayQueue 源码分析</title>
-    <url>/2020/java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E8%89%BA%E6%9C%AF%E7%AC%94%E8%AE%B0/8.5DelayQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="8-5-DelayQueue-源码分析"><a href="#8-5-DelayQueue-源码分析" class="headerlink" title="8.5 DelayQueue 源码分析"></a>8.5 DelayQueue 源码分析</h1><h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1. 数据结构"></a>1. 数据结构</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayQueue</span>&lt;<span class="title">E</span> <span class="keyword">extends</span> <span class="title">Delayed</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PriorityQueue&lt;E&gt; q = <span class="keyword">new</span> PriorityQueue&lt;E&gt;();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">transient</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">  	<span class="comment">// 出队线程阻塞在这里。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition available = lock.newCondition();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> Thread leader = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Condition signalled when a newer element becomes available</span></span><br><span class="line"><span class="comment">     * at the head of the queue or a new thread may need to</span></span><br><span class="line"><span class="comment">     * become leader.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DelayQueue</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Delayed</span> <span class="keyword">extends</span> <span class="title">Comparable</span>&lt;<span class="title">Delayed</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回还要延迟多久，</span></span><br><span class="line">  	<span class="comment">// 小于等于 0 时，说明时间到了。</span></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>使用 <code>PriorityQueue</code> + <code>ReentrantLock</code> 实现。</li>
-<li>内部元素必须实现 <code>Delayed</code> 接口，等待队列的元素是按照节点的  <code>compareTo()</code> 从小到大出队的。</li>
-<li>使用 <code>leader</code> 每次头结点变化时，唤醒一个元素，使其有超时等待，其他线程无限等待。</li>
-</ol>
-<h2 id="2-入队-offer-e"><a href="#2-入队-offer-e" class="headerlink" title="2. 入队 offer(e)"></a>2. 入队 offer(e)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 无界，所以 put(e) 也是直接调用 offer(e)。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 2. 入优先队列。</span></span><br><span class="line">        q.offer(e);</span><br><span class="line">      	<span class="comment">// 3. 如果这次入队的元素最小，有了赋予一次 leader 的机会，唤醒等待队列上的一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (q.peek() == e) &#123;</span><br><span class="line">            leader = <span class="keyword">null</span>;</span><br><span class="line">            available.signal();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-阻塞出队-take"><a href="#3-阻塞出队-take" class="headerlink" title="3. 阻塞出队 take()"></a>3. 阻塞出队 take()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            E first = q.peek();</span><br><span class="line">          	<span class="comment">// 2. 如果队列为空，阻塞。</span></span><br><span class="line">            <span class="keyword">if</span> (first == <span class="keyword">null</span>)</span><br><span class="line">                available.await();</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">long</span> delay = first.getDelay(NANOSECONDS);</span><br><span class="line">              	<span class="comment">// 3. 如果首节点过期，返回。</span></span><br><span class="line">                <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> q.poll();</span><br><span class="line">                first = <span class="keyword">null</span>; <span class="comment">// don't retain ref while waiting</span></span><br><span class="line">                <span class="comment">// 4.1 如果 leader 不为 null，说明其他线程抢到了这次赋予 leader 的机会。</span></span><br><span class="line">              	<span class="comment">//		例如本线程是等待队列里被唤醒的，但是赋值 leader 前，</span></span><br><span class="line">              	<span class="comment">//		有了一个新的 take() 抢先完成了赋值 leader 的机会。</span></span><br><span class="line">              	<span class="keyword">if</span> (leader != <span class="keyword">null</span>)</span><br><span class="line">                    available.await();</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                  	<span class="comment">// 4.2 得到了赋值 leader 的机会，不忙等、而是等待 delay 时间。</span></span><br><span class="line">                    Thread thisThread = Thread.currentThread();</span><br><span class="line">                    leader = thisThread;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        available.awaitNanos(delay);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                      	<span class="comment">// 5. 清空 leader。</span></span><br><span class="line">                        <span class="keyword">if</span> (leader == thisThread)</span><br><span class="line">                            leader = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 6. 如果本线程取出一个元素后，队列里还有元素，</span></span><br><span class="line">      	<span class="comment">//			则又有赋予 leader 的权限了。唤醒一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (leader == <span class="keyword">null</span> &amp;&amp; q.peek() != <span class="keyword">null</span>)</span><br><span class="line">            available.signal();</span><br><span class="line">      	<span class="comment">// 7. 释放锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>在以下两个情况，会有一次赋值 <code>leader</code> 的机会，唤醒一个等待队列上的出队线程。<ul>
-<li>在入队操作后，如果本次入队的是最小元素。</li>
-<li>出队操作后，如果队列还有元素。</li>
-</ul>
-</li>
-<li>争夺到 <code>leader</code> 机会的出队线程，进行有超时的等待。</li>
-<li>队列没有元素时，所有出队线程都是无限等待。</li>
-</ul>
-<h2 id="4-非阻塞出队-poll"><a href="#4-非阻塞出队-poll" class="headerlink" title="4. 非阻塞出队 poll()"></a>4. 非阻塞出队 poll()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        E first = q.peek();</span><br><span class="line">      	<span class="comment">// 2.1 如果队列为空，返回 null。</span></span><br><span class="line">        <span class="keyword">if</span> (first == <span class="keyword">null</span> || first.getDelay(NANOSECONDS) &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      	<span class="comment">// 2.2 否则，出队首元素。</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> q.poll();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 3. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>java</category>
-        <category>concurrency</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>concurrency</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>8.4 PriorityBlockingQueue 源码分析</title>
     <url>/2020/java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E8%89%BA%E6%9C%AF%E7%AC%94%E8%AE%B0/8.4PriorityBlockingQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h1 id="8-4-PriorityBlockingQueue-源码分析"><a href="#8-4-PriorityBlockingQueue-源码分析" class="headerlink" title="8.4 PriorityBlockingQueue 源码分析"></a>8.4 PriorityBlockingQueue 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
@@ -3336,6 +3321,36 @@
 <p>默认初始容量为 11。</p>
 <h2 id="2-入队-offer"><a href="#2-入队-offer" class="headerlink" title="2. 入队 offer()"></a>2. 入队 offer()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 阻塞入队 put(e) 也是直接调用的 offer(e)。因为无界，所以无法阻塞。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 获取锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">int</span> n, cap;</span><br><span class="line">    Object[] array;</span><br><span class="line">  	<span class="comment">// 2. 如果数组满了，先扩容。</span></span><br><span class="line">    <span class="keyword">while</span> ((n = size) &gt;= (cap = (array = queue).length))</span><br><span class="line">        tryGrow(array, cap);</span><br><span class="line">    <span class="comment">// 3. 入队。</span></span><br><span class="line">  	<span class="keyword">try</span> &#123;</span><br><span class="line">        Comparator&lt;? <span class="keyword">super</span> E&gt; cmp = comparator;</span><br><span class="line">        <span class="keyword">if</span> (cmp == <span class="keyword">null</span>)</span><br><span class="line">            siftUpComparable(n, e, array);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            siftUpUsingComparator(n, e, array, cmp);</span><br><span class="line">        size = n + <span class="number">1</span>;</span><br><span class="line">        notEmpty.signal();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryGrow</span><span class="params">(Object[] array, <span class="keyword">int</span> oldCap)</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 释放锁。使其他线程可以入队、出队。</span></span><br><span class="line">    lock.unlock(); <span class="comment">// must release and then re-acquire main lock</span></span><br><span class="line">    Object[] newArray = <span class="keyword">null</span>;</span><br><span class="line">  	<span class="comment">// 2. 获取扩容自旋锁。</span></span><br><span class="line">    <span class="keyword">if</span> (allocationSpinLock == <span class="number">0</span> &amp;&amp;</span><br><span class="line">        UNSAFE.compareAndSwapInt(<span class="keyword">this</span>, allocationSpinLockOffset,</span><br><span class="line">                                 <span class="number">0</span>, <span class="number">1</span>)) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          	<span class="comment">// 3. 计算扩容后的数组代销。</span></span><br><span class="line">          	<span class="comment">// 		oldGap&lt;64则扩容新增oldcap+2,否者扩容50%，并且最大为MAX_ARRAY_SIZE。</span></span><br><span class="line">            <span class="keyword">int</span> newCap = oldCap + ((oldCap &lt; <span class="number">64</span>) ?</span><br><span class="line">                                   (oldCap + <span class="number">2</span>) : <span class="comment">// grow faster if small</span></span><br><span class="line">                                   (oldCap &gt;&gt; <span class="number">1</span>));</span><br><span class="line">            <span class="keyword">if</span> (newCap - MAX_ARRAY_SIZE &gt; <span class="number">0</span>) &#123;    <span class="comment">// possible overflow</span></span><br><span class="line">                <span class="keyword">int</span> minCap = oldCap + <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">if</span> (minCap &lt; <span class="number">0</span> || minCap &gt; MAX_ARRAY_SIZE)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError();</span><br><span class="line">                newCap = MAX_ARRAY_SIZE;</span><br><span class="line">            &#125;</span><br><span class="line">          	<span class="comment">// 4. 创建扩容后的数组。</span></span><br><span class="line">            <span class="keyword">if</span> (newCap &gt; oldCap &amp;&amp; queue == array)</span><br><span class="line">                newArray = <span class="keyword">new</span> Object[newCap];</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            allocationSpinLock = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 4. 获取扩容自旋锁失败的线程，让出 CPU。</span></span><br><span class="line">    <span class="keyword">if</span> (newArray == <span class="keyword">null</span>) <span class="comment">// back off if another thread is allocating</span></span><br><span class="line">        Thread.yield();</span><br><span class="line">    <span class="comment">// 5. 获取锁。因为接下来，要把数组指向刚刚创建的数组、拷贝数据。</span></span><br><span class="line">  	lock.lock();</span><br><span class="line">    <span class="keyword">if</span> (newArray != <span class="keyword">null</span> &amp;&amp; queue == array) &#123;</span><br><span class="line">      	<span class="comment">// 5.1 把数组指向刚刚创建的数组。</span></span><br><span class="line">        queue = newArray;</span><br><span class="line">      	<span class="comment">// 5.2 拷贝数据。</span></span><br><span class="line">        System.arraycopy(array, <span class="number">0</span>, newArray, <span class="number">0</span>, oldCap);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_ARRAY_SIZE = Integer.MAX_VALUE - <span class="number">8</span>;</span><br></pre></td></tr></table></figure>
 ]]></content>
+      <categories>
+        <category>java</category>
+        <category>concurrency</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>concurrency</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>8.5 DelayQueue 源码分析</title>
+    <url>/2020/java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E8%89%BA%E6%9C%AF%E7%AC%94%E8%AE%B0/8.5DelayQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="8-5-DelayQueue-源码分析"><a href="#8-5-DelayQueue-源码分析" class="headerlink" title="8.5 DelayQueue 源码分析"></a>8.5 DelayQueue 源码分析</h1><h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1. 数据结构"></a>1. 数据结构</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayQueue</span>&lt;<span class="title">E</span> <span class="keyword">extends</span> <span class="title">Delayed</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PriorityQueue&lt;E&gt; q = <span class="keyword">new</span> PriorityQueue&lt;E&gt;();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">transient</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">  	<span class="comment">// 出队线程阻塞在这里。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition available = lock.newCondition();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> Thread leader = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Condition signalled when a newer element becomes available</span></span><br><span class="line"><span class="comment">     * at the head of the queue or a new thread may need to</span></span><br><span class="line"><span class="comment">     * become leader.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DelayQueue</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Delayed</span> <span class="keyword">extends</span> <span class="title">Comparable</span>&lt;<span class="title">Delayed</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回还要延迟多久，</span></span><br><span class="line">  	<span class="comment">// 小于等于 0 时，说明时间到了。</span></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用 <code>PriorityQueue</code> + <code>ReentrantLock</code> 实现。</li>
+<li>内部元素必须实现 <code>Delayed</code> 接口，等待队列的元素是按照节点的  <code>compareTo()</code> 从小到大出队的。</li>
+<li>使用 <code>leader</code> 每次头结点变化时，唤醒一个元素，使其有超时等待，其他线程无限等待。</li>
+</ol>
+<h2 id="2-入队-offer-e"><a href="#2-入队-offer-e" class="headerlink" title="2. 入队 offer(e)"></a>2. 入队 offer(e)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 无界，所以 put(e) 也是直接调用 offer(e)。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 2. 入优先队列。</span></span><br><span class="line">        q.offer(e);</span><br><span class="line">      	<span class="comment">// 3. 如果这次入队的元素最小，有了赋予一次 leader 的机会，唤醒等待队列上的一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (q.peek() == e) &#123;</span><br><span class="line">            leader = <span class="keyword">null</span>;</span><br><span class="line">            available.signal();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-阻塞出队-take"><a href="#3-阻塞出队-take" class="headerlink" title="3. 阻塞出队 take()"></a>3. 阻塞出队 take()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            E first = q.peek();</span><br><span class="line">          	<span class="comment">// 2. 如果队列为空，阻塞。</span></span><br><span class="line">            <span class="keyword">if</span> (first == <span class="keyword">null</span>)</span><br><span class="line">                available.await();</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">long</span> delay = first.getDelay(NANOSECONDS);</span><br><span class="line">              	<span class="comment">// 3. 如果首节点过期，返回。</span></span><br><span class="line">                <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> q.poll();</span><br><span class="line">                first = <span class="keyword">null</span>; <span class="comment">// don't retain ref while waiting</span></span><br><span class="line">                <span class="comment">// 4.1 如果 leader 不为 null，说明其他线程抢到了这次赋予 leader 的机会。</span></span><br><span class="line">              	<span class="comment">//		例如本线程是等待队列里被唤醒的，但是赋值 leader 前，</span></span><br><span class="line">              	<span class="comment">//		有了一个新的 take() 抢先完成了赋值 leader 的机会。</span></span><br><span class="line">              	<span class="keyword">if</span> (leader != <span class="keyword">null</span>)</span><br><span class="line">                    available.await();</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                  	<span class="comment">// 4.2 得到了赋值 leader 的机会，不忙等、而是等待 delay 时间。</span></span><br><span class="line">                    Thread thisThread = Thread.currentThread();</span><br><span class="line">                    leader = thisThread;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        available.awaitNanos(delay);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                      	<span class="comment">// 5. 清空 leader。</span></span><br><span class="line">                        <span class="keyword">if</span> (leader == thisThread)</span><br><span class="line">                            leader = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 6. 如果本线程取出一个元素后，队列里还有元素，</span></span><br><span class="line">      	<span class="comment">//			则又有赋予 leader 的权限了。唤醒一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (leader == <span class="keyword">null</span> &amp;&amp; q.peek() != <span class="keyword">null</span>)</span><br><span class="line">            available.signal();</span><br><span class="line">      	<span class="comment">// 7. 释放锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在以下两个情况，会有一次赋值 <code>leader</code> 的机会，唤醒一个等待队列上的出队线程。<ul>
+<li>在入队操作后，如果本次入队的是最小元素。</li>
+<li>出队操作后，如果队列还有元素。</li>
+</ul>
+</li>
+<li>争夺到 <code>leader</code> 机会的出队线程，进行有超时的等待。</li>
+<li>队列没有元素时，所有出队线程都是无限等待。</li>
+</ul>
+<h2 id="4-非阻塞出队-poll"><a href="#4-非阻塞出队-poll" class="headerlink" title="4. 非阻塞出队 poll()"></a>4. 非阻塞出队 poll()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        E first = q.peek();</span><br><span class="line">      	<span class="comment">// 2.1 如果队列为空，返回 null。</span></span><br><span class="line">        <span class="keyword">if</span> (first == <span class="keyword">null</span> || first.getDelay(NANOSECONDS) &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      	<span class="comment">// 2.2 否则，出队首元素。</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> q.poll();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 3. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>java</category>
         <category>concurrency</category>
