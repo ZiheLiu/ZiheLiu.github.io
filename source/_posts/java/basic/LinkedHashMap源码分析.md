@@ -9,13 +9,11 @@ categories:
 typora-root-url: ../../../
 ---
 
-# LinkedHashMap 源码分析
-
-## 0. 引用
+# 引用
 
 - [搞懂 Java LinkedHashMap 源码](https://juejin.im/post/5ace2bde6fb9a028e25deca8)
 
-## 1. 与 HashMap 的关系
+# 与 HashMap 的关系
 
 - `LinkedHashMap` 继承自 `HashMap`，复用了 `HashMap` 的所有结构、操作和机制。
 
@@ -26,9 +24,9 @@ typora-root-url: ../../../
   - 在 `accessOrder` 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。
 
 
-## 2. 实现方式
+# 实现方式
 
-### 扩展节点
+## 扩展节点
 
 ```java
 static class Entry<K,V> extends HashMap.Node<K,V> {
@@ -41,7 +39,7 @@ static class Entry<K,V> extends HashMap.Node<K,V> {
 
 在节点中，添加 before 和 after，来实现双向链表。
 
-### 创建节点
+## 创建节点
 
 ```java
 // LinkedHashMap
@@ -60,7 +58,7 @@ Node<K,V> newNode(int hash, K key, V value, Node<K,V> next) {
 
 相比 `HashMap`，在创建节点后，会把节点加入到链表尾部。
 
-### 双向链表操作
+## 双向链表操作
 
 ```java
 void afterNodeRemoval(Node<K,V> e) { // unlink

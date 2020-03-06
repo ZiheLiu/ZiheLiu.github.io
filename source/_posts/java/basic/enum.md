@@ -9,11 +9,9 @@ categories:
 typora-root-url: ../../../
 ---
 
-# Enum
+# 定义
 
-## 1. 定义
-
-### 基础
+## 基础
 
 使用 `enum`  关键字，类似于定义类的方式。
 
@@ -24,7 +22,7 @@ enum Fruit {
 }
 ```
 
-### 自定义构造函数
+## 自定义构造函数
 
 可以自定义构造函数，传递额外的信息。注意 `Fruit` 类的第一个语句必须是枚举变量的定义。
 
@@ -41,7 +39,7 @@ enum Fruit {
 }
 ```
 
-## 2. 原理
+# 原理
 
 编译器会把 `enum` 类转化为 `Enum<E extends Enum<E>>` 的子类。
 
@@ -96,7 +94,7 @@ final class Fruit extends Enum
 3. 枚举量列表存储在静态常量 `$VALUES` 中。
 4. 为 `Fruit` 类添加 `final` 修饰符。
 
-## 3. 常用函数
+# 常用函数
 
 根据反编译后的类、超类 `Enum` ，可以发现如下的常用函数：
 
@@ -109,9 +107,9 @@ final class Fruit extends Enum
 比较两个枚举量是否相等，用 `==` 即可，即比较两个枚举常量的地址是否相同。  
 当然，用 `equals` 也可以，因为 `Enum` 的 `equals` 函数就是直接 `return this == other` 。
 
-## 4. switch 中的枚举量
+# switch 中的枚举量
 
-### 定义
+## 定义
 
 可以在 `switch` 中使用枚举量。注意 `case` 中不需要写 `Fruit.XXXX` ，直接 `XXXX` 即可。
 
@@ -127,7 +125,7 @@ switch (fruit) {
 }
 ```
 
-### 原理
+## 原理
 
 编译器会把代码进行转换，创建一个 SwitchMap 类 `Main$1` ，使用 `ordinal` 进行比较。
 
@@ -174,13 +172,13 @@ class Main {
 }
 ```
 
-## 5. 枚举类的序列化
+# 枚举类的序列化
 
-### 引用
+## 引用
 
 - [枚举的序列化如何实现](https://github.com/hollischuang/toBeTopJavaer/blob/master/basics/java-basic/enum-serializable.md)
 
-### 类似枚举类的序列化问题
+## 类似枚举类的序列化问题
 
 在 Java 没有枚举类的时候，一般用如下的方法实现枚举类。
 
@@ -207,7 +205,7 @@ Fruit orange = (Fruit) objectInputStream.read();
 aseertt(orange == Fruit.ORANGE); // Error
 ```
 
-### 枚举类的序列化
+## 枚举类的序列化
 
 枚举类在序列化的时候，对于 `Enum` 子类的对象，只会把 `name` 属性输出。
 

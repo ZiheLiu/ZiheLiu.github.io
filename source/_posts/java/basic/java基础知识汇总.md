@@ -9,8 +9,6 @@ categories:
 typora-root-url: ../../../
 ---
 
-# Java 基础知识汇总
-
 Java 区分大小写。
 
 源代码的文件名必须与公共类的名字相同。
@@ -21,7 +19,7 @@ main 方法必须声明为 public。
 
 javabeans TODO
 
-## 3. 继承
+# 继承
 
 “is-a” 关系是继承的一个明显特征。
 
@@ -33,32 +31,39 @@ Java 只存在公有继承。
 
 子类方法不能访问超类的 `private` 域，只能通过公有的接口访问。
 
-### 3.1.` super` 关键字
+##` super` 关键字
 
-#### 作用
+### 作用
 
 - 调用超类的方法。
 - 调用超类的构造函数。只能出现在子类函数的第一条语句。
 
-#### 与 `this` 的不同
+### 与 `this` 的不同
 
 - 不是对象的引用。
 - 用来指示编译器调用超类方法的关键字。
 
-### 3.2. 多态与动态绑定
+## 多态与动态绑定
 
-#### 3.2.1 多态
+### 多态
 
-##### 定义
+#### 定义
 
 一个对象变量可以指示多种实际类型的现象（一个 `ClassA` 变量可以引用 `ClassA` 类对象、它的子类对象）。
 
-##### 原理
+#### 原理
 
 - 虚拟机知道变量实际引用的对象类型，可以正确地调用相应的方法。
 - TODO
+  - 静态类型（外观类型），实际类型
+  - 重载。静态分派。
+    - 编译器阶段。取决于传入参数数量、类型（包括第一个静态类型参数）。
+  - 重写。动态分派。
+    - 运行阶段。`invokevirtual` 指令先找第一个参数的动态类型里的方法，再向上找。
+      - 会用虚表优化。
+    - 因为使用域时，没有`invokevirtual`指令。所以只能使用静态类型的域。
 
-##### 子类数组
+#### 子类数组
 
 **子类**数组的引用可以隐式转化成**父类**数组的引用。
 
@@ -70,7 +75,7 @@ Parent[] parents = children; // 合法
 parents[0] = new Parent(); // throw ArrayStoreException
 ```
 
-##### 强制类型转换
+#### 强制类型转换
 
 超类转化为子类，需要进行强制类型转换。
 
@@ -80,14 +85,14 @@ parents[0] = new Parent(); // throw ArrayStoreException
 
 
 
-#### 3.2.2 动态绑定
+### 3.2.2 动态绑定
 
 - 在运行时能够自动选择调用哪个方法的现象。
 - 动态绑定是默认的处理方式。
 
 
 
-#### 3.2.3 方法调用的过程
+### 3.2.3 方法调用的过程
 
 调用 `item.func(param)`：
 
@@ -97,7 +102,7 @@ parents[0] = new Parent(); // throw ArrayStoreException
 4. 在程序运行时，如果 `item.func` 是动态绑定方式调用的，虚拟机找到与 `item` 所引用对象的实际类型 `D` 最合适的类的 `func`方法。首先看类 `D` 是否有对应的方法，再看超类，以此类推。
    为了节约开销，虚拟机会为每一个类生成方法表，不需要每次都进行动态搜索。
 
-### 3.3 重载 overload 和 覆写 override
+## 重载 overload 和 覆写 override
 
 函数的签名：方法名  + 参数列表。注意，**返回值**不属于签名！
 
@@ -114,7 +119,7 @@ parents[0] = new Parent(); // throw ArrayStoreException
 
 ###3.4 final 类和方法，内联
 
-##### final 关键字
+#### final 关键字
 
 `final` 修饰的方法，子类不可以覆盖它。
 
@@ -122,7 +127,7 @@ parents[0] = new Parent(); // throw ArrayStoreException
 
 - 其中方法自动被 `final` 修饰，但是域不会。
 
-##### 内联
+#### 内联
 
 - 如果一个方法没有被覆盖并且很短，编译器会优化它，进行内联。
 
@@ -133,7 +138,7 @@ parents[0] = new Parent(); // throw ArrayStoreException
 
 - 使用分支转移（函数调用），会扰乱 CPU 预取指令的策略。
 
-### 3.5 abstract 关键字
+## abstract 关键字
 
 `abstract` 修饰的方法，不需要有函数体。
 
@@ -143,7 +148,7 @@ parents[0] = new Parent(); // throw ArrayStoreException
 
 抽象类可以包含具有函数体的方法。
 
-### 3.6 Object 类
+## Object 类
 
 - 是所有类的超类。
 
@@ -154,7 +159,7 @@ parents[0] = new Parent(); // throw ArrayStoreException
 
 - 数组也扩展了 Object 类。
 
-#### equals 函数
+### equals 函数
 
 Java语言规范要求 `equals` 方法具有 5 个特性：
 
@@ -195,7 +200,7 @@ Java语言规范要求 `equals` 方法具有 5 个特性：
   }
 ```
 
-#### hashCode 函数
+### hashCode 函数
 
 `equals` 函数 与 `hashCode` 函数的定义必须一致。
 
@@ -207,7 +212,7 @@ Java语言规范要求 `equals` 方法具有 5 个特性：
 
 类的 `hashCode()` 方法，默认返回引用的地址。
 
-#### toString 函数
+### toString 函数
 
 对象与一个字符串通过 `+` 连接起来，会自动调用对象的 `toString()` 函数。
 
@@ -215,9 +220,9 @@ Java语言规范要求 `equals` 方法具有 5 个特性：
 
 默认方法，输出 类型 + 散列码。
 
-### 4. 包装类、自动装箱和拆箱
+## 包装类、自动装箱和拆箱
 
-#### 包装类
+### 包装类
 
 8 个类：Long、Integer、Short、Byte，Double、Float，Boolean，Void。
 
@@ -227,11 +232,11 @@ Java语言规范要求 `equals` 方法具有 5 个特性：
 
 因为是类，所以进行算数运算时，可能 throw NullPointerException。
 
-#### 自动拆箱和装箱
+### 自动拆箱和装箱
 
 发生在编译期间，编译器补全拆箱和装箱的代码。
 
-#### 性能差
+### 性能差
 
 - `ArrayList<Integer>` 的每个值包在一个对象里，性能远低于 `int[]`。
 
@@ -243,7 +248,7 @@ Java语言规范要求 `equals` 方法具有 5 个特性：
   System.out.println(ok ? n : x); // n 先拆箱，再转为 double，再装箱为 Double
   ```
 
-#### 相等判断
+### 相等判断
 
 包装类在比较时，最好使用 `equals`。
 
@@ -251,11 +256,11 @@ Java语言规范要求 `equals` 方法具有 5 个特性：
 
 boolean/byte/char <= 127/-128-127的short和int，会被包装到固定的对象中。此时，值相等，用 `==` 判断也会相等。
 
-### 5. 参数数量可变方法
+## 参数数量可变方法
 
 函数最后一个参数可以是 `ClassName... args`，编译器会替换为 `ClassName[] args`。`func(item1, item2)` 会替换为 `func(ClassName[] {item1, item2})`。
 
-### 6. 枚举类
+## 枚举类
 
 ```java
 public enum Size {
@@ -285,21 +290,21 @@ public enum Size {
 }
 ```
 
-## 4. 接口
+# 接口
 
-### 4.0 相关函数
+## 相关函数
 
-#### Arrays.sort
+### Arrays.sort
 
 调用 `Arrays.sort(items)`，数组中的元素必须实现了 `Comparable<T>`。
 
 调用 `Arrays.sort(items, comparator)`，提供一个实现了 `Comparator<T>` 接口的对象即可。
 
-#### instanceof
+### instanceof
 
 `instanceof` 可以检查一个对象是否实现了一个接口。
 
-#### Cloneable
+### Cloneable
 
 `Object.clone` 方法
 
@@ -312,9 +317,9 @@ public enum Size {
 
 
 
-### 4.1 接口的特性
+## 接口的特性
 
-#### 接口的方法和域
+### 接口的方法和域
 
 接口的所有**方法**自动属于 `public`。
 
@@ -326,7 +331,7 @@ Java SE 8 中，接口可以有**静态方法**。避免使用伴随类（例如
 
 
 
-#### 默认方法冲突规则
+### 默认方法冲突规则
 
 1. 类实现的**两个接口**有相同签名的方法
    - 只要其中一个方法有默认实现，就会编译错误。
@@ -335,19 +340,19 @@ Java SE 8 中，接口可以有**静态方法**。避免使用伴随类（例如
 
 
 
-#### 继承和实现相关
+### 继承和实现相关
 
 接口可以被其他接口继承 `extends`。
 
-##### 为什么有了抽象类，还需要接口？
+#### 为什么有了抽象类，还需要接口？
 
 一个类可以实现多个接口，但是只能继承一个类。
 
 
 
-## 5. lambda 表达式
+# lambda 表达式
 
-### 5.1 语法
+## 语法
 
 代码块 + 必须传入代码块的变量的规范。
 
@@ -369,9 +374,9 @@ Java SE 8 中，接口可以有**静态方法**。避免使用伴随类（例如
 (first, second) -> first.length() - second.length();
 ```
 
-### 5.2 函数式接口
+## 函数式接口
 
-#### 定义
+### 定义
 
 对于只有一个**抽象方法**的接口，需要接口的对象时，可以提供一个 lambda 表达式。
 
@@ -384,11 +389,11 @@ Java SE 8 中，接口可以有**静态方法**。避免使用伴随类（例如
 - 如果有多于一个的抽象方法，会编译错误。
 - javadoc 会指出这个借口是函数式接口。
 
-#### Object 相关
+### Object 相关
 
 注意，lambda 表达式只能赋值给一个接口变量，不能复制给 `Object`（因为 `Object` 不是一个接口）。
 
-#### BiFunction
+### BiFunction
 
 `java.util.function` 提供了很多通用函数接口，例如 `BiFunction<T, U, R>` 描述参数类型为 `T `和 `U` 而且返回类型为 `R` 的函数。
 
@@ -398,7 +403,7 @@ BiFunction<T, U, R> func = (first, second) -> first.length() - second.length();
 
 但是使用接口和函数式接口的地方不能传递一个 `BiFunction`。
 
-### 5.3 方法引用
+## 方法引用
 
 形如 `System.out::println` 是一个方法引用，等价于 lambda 表达式 `x -> System.out.println(x)`。
 
@@ -415,7 +420,7 @@ BiFunction<T, U, R> func = (first, second) -> first.length() - second.length();
 
 多个同名的重载函数时，根据上下文找到最合适的函数。
 
-### 5.4 构造器引用
+## 构造器引用
 
 与方法引用类似，方法名为 `new`。例如 `Person::new`。
 
@@ -423,7 +428,7 @@ BiFunction<T, U, R> func = (first, second) -> first.length() - second.length();
 
 Java 无法构造泛型 `T` 的数组，即不可以使用 `new T[10]`。`stream.toArray(Person[]::new)` 可以用类似泛型的方式构造数组。
 
-### 5.5 变量作用域
+## 变量作用域
 
 引用的外部变量，必须是不可变的，相当于必须是 `final` 的，但是不用使用 `final` 修饰符。
 
@@ -444,7 +449,7 @@ lambda 表达式的体与嵌套块有相同的作用域。
   }
   ```
 
-### 5.6 Comparator
+## Comparator
 
 `Comparator.comparing(Person::getName)` 提供“键提取函数”。
 
@@ -458,7 +463,7 @@ comparing 和 thenComparing 可以提供第二个参数，是一个 Comparator �
 
 
 
-## 6. 内部类
+# 内部类
 
 内部类是定义在另一个类中的类。
 
@@ -468,9 +473,9 @@ comparing 和 thenComparing 可以提供第二个参数，是一个 Comparator �
 - 内部类可以对同一个包中的其他类隐藏起来。
 - 匿名内部类实现回调函数方便。
 
-### 6.1 内部类访问外部对象
+## 内部类访问外部对象
 
-#### 编译器转化形式
+### 编译器转化形式
 
 内部类之所以可以访问创建它的外部类对象的数据域，是因为内部类的对象有一个隐式的外部类对象的引用。是编译器加上去的。
 
@@ -526,39 +531,39 @@ public class TalkingClock {
 - 自己无法编写类似内部类的形式，因为内部类可以访问外部类的 `private` 域，但是自己定义的不可以。
 - 如何实现的访问私有域的：`TalkingClock.access$0(outer)`。
 
-#### 内外访问方式
+### 内外访问方式
 
 在内部类中使用外部类的 `this` 对象，可以用 `OuterClass.this` 的形式。
 
 在外部类作用域之外，使用 `OuterClass.InnerClass` 来访问这个内部类，如果它是 `public` 的。
 
-#### 规则限制
+### 规则限制
 
 内部类的静态域必须是 `final` 的。因为每一个外部类的对象，都有一个单独的内部类实例，为了保证“静态域只有一个实例”。
 
 内部类不能有 `static` 方法。
 
-### 6.2 局部内部类
+## 局部内部类
 
-#### 规则限制
+### 规则限制
 
 局部内部类不能用 `public` 或 `private` 修饰，因为作用域被限定在声明这个局部内部类的块中。
 
 可以访问外部函数中的变量，但是必须是类 `final` 的（Java SE 8 之前必须显式声明为 `final` 的）。
 
-#### 原理
+### 原理
 
 - 会把访问的外部函数的变量，进行备份。其实是，添加到了构造函数中。
 
-#### 绕过外部变量的 final 限制
+### 绕过外部变量的 final 限制
 
 要改变外部变量 `int num = 1`，定义为 `int[] num = {1}` 长度为 1 的数组即可。
 
-### 6.3 匿名内部类
+## 匿名内部类
 
 构造函数调用的右小括号后面跟一个开大括号，正在定义的就是匿名内部类。
 
-#### 双括号初始化
+### 双括号初始化
 
 ```java
 ArrayList<String> friends = new ArrayList<>();
@@ -572,15 +577,15 @@ invite(new ArrayList<>() {
 });
 ```
 
-#### 在静态方法中获取 class
+### 在静态方法中获取 class
 
 ```java
 new Object(){}.getClass().getEnclosingClass();
 ```
 
-### 6.4 静态内部类
+## 静态内部类
 
-#### 定义
+### 定义
 
 用 `static ` 修饰内部类，则内部类内部没有外部类的隐式引用，不能使用外部类的域。
 
@@ -588,19 +593,19 @@ new Object(){}.getClass().getEnclosingClass();
 
 注意，只有内部类可以使用 `static` 修饰。
 
-#### 规则限制
+### 规则限制
 
 静态内部类可以有静态域和静态方法。
 
-#### 接口中的内部类
+### 接口中的内部类
 
 声明在接口中的内部类自动为 `public` 和 `static`。
 
 
 
-## 7. 异常
+# 异常
 
-### 7.1 异常层次结构
+## 异常层次结构
 
 - Throwable 类
   - Error 类：Java 运行时系统的内部错误和资源好紧错误。
@@ -612,7 +617,7 @@ new Object(){}.getClass().getEnclosingClass();
 
 
 
-### 7.2 声明 unchecked 异常
+## 声明 unchecked 异常
 
 在方法左花括号前面声明可能抛出的异常
 
@@ -624,7 +629,7 @@ public FileInputStream(String name) throws FileNotFoundException;
 
 函数中调用方法声明的异常，必须被 catch 或声明。
 
-#### override 中的异常声明
+### override 中的异常声明
 
 - 子类 `override` 父类的方法，声明的异常不能比父类方法的声明更通用，只能更具体。
 
@@ -632,7 +637,7 @@ public FileInputStream(String name) throws FileNotFoundException;
 
 
 
-### 7.3 抛出异常
+## 抛出异常
 
 ```java
 throw new MyException(); // 必须是 Throwable 的子类
@@ -640,7 +645,7 @@ throw new MyException(); // 必须是 Throwable 的子类
 
 
 
-### 7.4 创建异常类
+## 创建异常类
 
 定义派生于 `Exception` 类或其子类的类。
 
@@ -657,16 +662,16 @@ public class MyException extends Exception {
 
 
 
-### 7.5 捕获异常
+## 捕获异常
 
-#### 执行流程
+### 执行流程
 
 - 执行 `try` 中代码，`try` 代码块是否抛出了某个 `catch` 中的异常。
   - 抛出了，则不再执行try 中代码，执行 `catch` 中代码。
   - 没有抛出，跳过 `catch` 代码。
 - 执行 `finally` 中代码。
 
-#### 捕获语法
+### 捕获语法
 
 ```java
 try {
@@ -689,11 +694,11 @@ try {
 
 可以在 `catch` 中再次抛出捕获的异常或者新的异常。
 
-#### finally 中的 return
+### finally 中的 return
 
 `finally` 中的 return 会覆盖掉 `try` 和 `catch` 中的 return。
 
-#### 带资源的 try 语句
+### 带资源的 try 语句
 
 Java SE 7 中新增。
 
@@ -713,11 +718,11 @@ try (Resource1 res1 = ...; Resource2 res2 = ...; Resource3 res3 = ...;) {
 
 
 
-## 8. 泛型
+# 泛型
 
-### 8.1 定义
+## 定义
 
-#### 泛型类
+### 泛型类
 
 诸如 `T` 的类型变量，用尖括号 `<>` 括起来，放在类名的后面。
 
@@ -741,7 +746,7 @@ public class Pair<T, U> {
 }
 ```
 
-#### 泛型方法
+### 泛型方法
 
 泛型方法可以定在普通类中。
 
@@ -767,11 +772,11 @@ String middle = ArrayUtils.<String>getMiddle("A", "B", "C");
 String middle = ArrayUtils.getMiddle("A", "B", "C");
 ```
 
-#### 类型变量的限定
+### 类型变量的限定
 
 使用 `extends` 关键字，`<T extends BoundingType>` 来限定类型变量 `T` 是 `BoundingType` 的子类型。
 
-##### 多个类型限定
+#### 多个类型限定
 
 一个类型变量可以有多个限定，用 `&` 分隔开，如下：
 
@@ -783,11 +788,11 @@ String middle = ArrayUtils.getMiddle("A", "B", "C");
 
 
 
-### 8.2 类型擦除和虚拟机
+## 类型擦除和虚拟机
 
 Java 要求旧版本的代码可以运行在新版本的 JVM 上，所以选择了在编译时擦除泛型的类型。
 
-#### 擦除规则
+### 擦除规则
 
 定义时
 
@@ -800,7 +805,7 @@ Java 要求旧版本的代码可以运行在新版本的 JVM 上，所以选择�
 
 - 编译器在必要的位置插入强制类型转换。
 
-#### 桥方法
+### 桥方法
 
 方法的类型参数在擦除时，关于 `overload` 和 `override` 会出现冲突。
 
@@ -850,7 +855,7 @@ Pair<Fruit> pair = fruitPair;
 pair.setSecond(new Fruit());
 ```
 
-##### 写方法
+#### 写方法
 
 对于写方法 `setSecond`，存在自己定义的 `setSecond(Fruit second)`，父类 `Pair` 的方法是 `setSecond(Object second)`。这两个方法的签名是不同的，无法进行 `override` 以及多态。
 
@@ -864,7 +869,7 @@ public void setSecond(Object second) {
 }
 ```
 
-##### 读方法
+#### 读方法
 
 对于读方法 `getSecond`，存在自己定义的 `Fruit getSecond()` 和 父类的方法 `Object getSecond()`。可以看到这两个方法的签名是相同的。
 
@@ -878,19 +883,19 @@ public Object getSecond() {
 }
 ```
 
-##### 泛型场景之外的桥方法
+#### 泛型场景之外的桥方法
 
 子类的方法可以返回更严格的返回类型，也是用桥方法实现的。
 
 
 
-### 8.3 约束与局限
+## 约束与局限
 
-#### 1). 泛型的类型变量不能是基本类型 `List<int>`
+### 1). 泛型的类型变量不能是基本类型 `List<int>`
 
 因为擦除类型后，会用 `Object` 替换， `Object` 不能存储 `int`。
 
-#### 2). 运行时类型查询只能找到原始类型
+### 2). 运行时类型查询只能找到原始类型
 
 ```java
 Pair<Fruit> fruitPair;
@@ -901,7 +906,7 @@ fruitPair instanceof Pair<Fruit>; // 编译错误
 (Pair<Fruit>) fruitPair; // 可以，编译警告
 ```
 
-#### 3). 不能 new 参数化类型的数组 `new Pair<Fruit>[10]`
+### 3). 不能 new 参数化类型的数组 `new Pair<Fruit>[10]`
 
 ```java
 Pair<Fruit>[] pairs = new Pair<Fruit>[10]; // 编译错误
@@ -909,7 +914,7 @@ Pair<Fruit>[] pairs = new Pair<Fruit>[10]; // 编译错误
 Pair<Fruit>[] pairs = (Pair<Fruit>[]) new Pair<?>[10]; // 可以，编译警告
 ```
 
-#### 4). 在函数参数中 new 参数化类型的数组
+### 4). 在函数参数中 new 参数化类型的数组
 
 ```java
 public static <T> void addAll(T... items) {}
@@ -918,7 +923,7 @@ addAll(new Pair<Fruit>(), new Pair<Fruit>());
 
 相比规则 3)，放松了规则，只会得到警告。
 
-#### 5). 不能实例化类型变量 `new T()`
+### 5). 不能实例化类型变量 `new T()`
 
 ```java
 new T(); // 编译错误
@@ -930,7 +935,7 @@ T.class; // 编译错误
 
 `Class` 类是泛型类，`String.class` 返回了 `Class<String>` 的唯一实例。
 
-#### 6). 不能实例化类型变量的数组 `new T[10]`
+### 6). 不能实例化类型变量的数组 `new T[10]`
 
 因为如果允许，这样 new 出来的是 `Object[]`，无法转化成其他类的对象。
 
@@ -962,7 +967,7 @@ ArrayList<Integer> nums;
 Integer[] nums2 = nums.getList(); // AAA
 ```
 
-#### 7). 泛型类不能有静态的类型变量
+### 7). 泛型类不能有静态的类型变量
 
 如果允许，`Pair<String>` 和 `Pair<Integer>` 会生成两个静态域，不符合语义。
 
@@ -972,7 +977,7 @@ class Pair<T> {
 }
 ```
 
-#### 8). 擦除后的冲突
+### 8). 擦除后的冲突
 
 擦除类型后，如果有冲突是不可以的。
 
@@ -995,11 +1000,11 @@ class Fruit extends Food implements Comparable<Fruit> {}
 
 
 
-### 8.4 通配符
+## 通配符
 
 [知乎-通配符](https://www.zhihu.com/question/20400700/answer/117464182)
 
-#### 8.4.1 继承关系
+### 8.4.1 继承关系
 
 `Pair<Fruit>` 与 `Pair<Food>` 没有什么关系，他们都是 `Pair` 的子类。
 
@@ -1009,7 +1014,7 @@ Pair<Food> pair = new Pair<Fruit>(); // 编译错误
 
 
 
-#### 8.4.2 上界通配符 extends
+### 8.4.2 上界通配符 extends
 
 `Pair<? exnteds Food>` 表示这里最通用可以是 `Food`，即 `Food` 和 `Food` 的子类。
 
@@ -1025,7 +1030,7 @@ Pair<? extends Food> pair = new Pair<Fruit>();
 
 
 
-#### 8.4.3 下界通配符
+### 8.4.3 下界通配符
 
 `Pair<? super Fruit>` 表示这里最具体可以使 `Fruit`，即 `Fruit` 和 `Fruit` 的超类。
 
