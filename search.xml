@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>B 树与 B+ 树</title>
+    <url>/2020/%E6%95%B0%E6%8D%AE%E5%BA%93/B%E6%A0%91%E4%B8%8EB+%E6%A0%91/</url>
+    <content><![CDATA[<blockquote>
+<ul>
+<li><a href="https://www.cnblogs.com/nullzx/p/8729425.html" target="_blank" rel="noopener">B树和B+树的插入、删除图文详解</a></li>
+<li><a href="https://www.cs.usfca.edu/~galles/visualization/BTree.html" target="_blank" rel="noopener">B-Tree Visualization</a></li>
+</ul>
+</blockquote>
+]]></content>
+      <categories>
+        <category>数据库</category>
+      </categories>
+      <tags>
+        <tag>record</tag>
+        <tag>数据库</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>FastThreadLocal</title>
     <url>/2020/netty/FastThreadLocal/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -171,20 +189,6 @@
       </tags>
   </entry>
   <entry>
-    <title>排序</title>
-    <url>/2020/algorithm/%E6%8E%92%E5%BA%8F/</url>
-    <content><![CDATA[<blockquote>
-<p><a href="https://www.zhihu.com/question/51337272/answer/572455307" target="_blank" rel="noopener">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>algorithm</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>红黑树</title>
     <url>/2020/algorithm/%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
     <content><![CDATA[<h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
@@ -242,6 +246,20 @@
 <li><a href="https://zhuanlan.zhihu.com/p/22800206" target="_blank" rel="noopener">数据结构：红黑树的删除</a></li>
 <li><a href="https://www.zhihu.com/question/19856999" target="_blank" rel="noopener">红黑树比 AVL 树具体更高效在哪里？</a></li>
 </ol>
+]]></content>
+      <categories>
+        <category>algorithm</category>
+      </categories>
+      <tags>
+        <tag>algorithm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>排序</title>
+    <url>/2020/algorithm/%E6%8E%92%E5%BA%8F/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://www.zhihu.com/question/51337272/answer/572455307" target="_blank" rel="noopener">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
+</blockquote>
 ]]></content>
       <categories>
         <category>algorithm</category>
@@ -617,125 +635,6 @@
       </tags>
   </entry>
   <entry>
-    <title>HTTP 协议</title>
-    <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/http/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/61423830" target="_blank" rel="noopener">你猜一个 TCP 连接上面能发多少个 HTTP 请求</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/26559480" target="_blank" rel="noopener">一文读懂 HTTP/2 特性</a></li>
-</ul>
-<h1 id="HTTP是无状态的-V-S-Connection-keep-alive"><a href="#HTTP是无状态的-V-S-Connection-keep-alive" class="headerlink" title="HTTP是无状态的 V.S. Connection: keep-alive"></a>HTTP是无状态的 V.S. Connection: keep-alive</h1><ul>
-<li>无状态<ul>
-<li>指协议对于事务的处理没有记忆的能力，服务器不知道客户端的状态。具体来说，这一次向服务端发送的请求，与同一个客户端上一次发送的请求没有任何联系。</li>
-</ul>
-</li>
-<li>Connection: keep-alive<ul>
-<li>HTTP的传输层协议是TCP。当一个HTTP请求处理结束后，服务端和客户端之间的TCP连接并不会马上关闭，当一段时间内客户端再次发起HTTP请求时，会使用同一个TCP连接进行通信。</li>
-<li>keep-alive并不是代表TCP连接会永远存在，而是一定时间范围内的。 #TODO</li>
-<li>HTTP/1.1出现的，默认是开启的。</li>
-</ul>
-</li>
-</ul>
-<h1 id="对同一个服务端的多个HTTP的发送情况"><a href="#对同一个服务端的多个HTTP的发送情况" class="headerlink" title="对同一个服务端的多个HTTP的发送情况"></a>对同一个服务端的多个HTTP的发送情况</h1><h2 id="使用一个TCP连接，可以同时发送多个HTTP请求吗？"><a href="#使用一个TCP连接，可以同时发送多个HTTP请求吗？" class="headerlink" title="使用一个TCP连接，可以同时发送多个HTTP请求吗？"></a>使用一个TCP连接，可以同时发送多个HTTP请求吗？</h2><h3 id="http-1-1-无法发送多个，使用多个TCP连接来解决"><a href="#http-1-1-无法发送多个，使用多个TCP连接来解决" class="headerlink" title="http/1.1 无法发送多个，使用多个TCP连接来解决"></a>http/1.1 无法发送多个，使用多个TCP连接来解决</h3><p>默认情况下，一个TCP连接，同一时刻只能处理一个HTTP请求，两个请求不能有重叠。</p>
-<p>HTTP/1.1中规定了Pipelining，但是只存在于理想情况，实际比较复杂。</p>
-<blockquote>
-<p>一个支持持久连接的客户端可以在一个连接中发送多个请求（不需要等待任意请求的响应）。收到请求的服务器必须按照请求收到的顺序发送响应。</p>
-</blockquote>
-<p>流水线的缺点：</p>
-<ol>
-<li>一些代理服务器不能正确的处理 HTTP Pipelining。</li>
-<li>“队头堵塞”（Head-of-line blocking）：如果第一个请求阻塞了，即使后边的请求处理好了，也会被阻塞住。</li>
-</ol>
-<p>因此，浏览器默认是关闭的，为了提高并发性能，对于一个服务端会建立多个TCP连接。不过，这个连接数目是有上限的，一般不超过6-8个。</p>
-<h3 id="http-2-Multiplexing"><a href="#http-2-Multiplexing" class="headerlink" title="http/2 Multiplexing"></a>http/2 Multiplexing</h3><ul>
-<li><p><strong>帧：</strong>HTTP/2 数据通信的最小单位消息：指 HTTP/2 中逻辑上的 HTTP 消息。例如请求和响应等，消息由一个或多个帧组成。</p>
-</li>
-<li><p><strong>流：</strong>存在于连接中的一个虚拟通道。流可以承载双向消息，每个流都有一个唯一的整数ID。</p>
-</li>
-</ul>
-<p>HTTP/2 采用二进制格式传输数据，而非 HTTP 1.x 的文本格式，二进制协议解析起来更高效。 HTTP / 1 的请求和响应报文，都是由起始行，首部和实体正文（可选）组成，各部分之间以文本换行符分隔。HTTP/2 将请求和响应数据分割为更小的帧，并且它们采用二进制编码。</p>
-<p><strong>HTTP/2 中，同域名下所有通信都在单个连接上完成，该连接可以承载任意数量的双向数据流。</strong>每个数据流都以消息的形式发送，而消息又由一个或多个帧组成。多个帧之间可以乱序发送，根据帧首部的<strong>流标识</strong>可以重新组装。</p>
-<h1 id="HTTP-重定向"><a href="#HTTP-重定向" class="headerlink" title="HTTP 重定向"></a>HTTP 重定向</h1><blockquote>
-<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Redirections" target="_blank" rel="noopener">HTTP 的重定向</a></p>
-</blockquote>
-<h2 id="永久重定向"><a href="#永久重定向" class="headerlink" title="永久重定向"></a>永久重定向</h2><p>这种重定向操作是永久性的。它表示原 URL 不应再被使用，而应该优先选用新的 URL。搜索引擎机器人会在遇到该状态码时触发更新操作，在其索引库中修改与该资源相关的 URL 。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th><strong>编码</strong></th>
-<th><strong>含义</strong></th>
-<th><strong>处理方法</strong></th>
-<th><strong>典型应用场景</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>301</code></td>
-<td>Moved Permanently</td>
-<td><code>GET</code> 方法不会发生变更，其他方法有可能会变更为 <code>GET</code> 方法。[1]</td>
-<td>网站重构。</td>
-</tr>
-<tr>
-<td><code>308</code></td>
-<td>Permanent Redirect</td>
-<td>方法和消息主体都不发生变化。</td>
-<td>网站重构，用于非GET方法。(with non-GET links/operations)</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>[1] 该规范无意使方法发生改变，但在实际应用中用户代理会这么做。 308 状态码被创建用来消除在使用非 GET 方法时的歧义行为。</p>
-<h2 id="临时重定向"><a href="#临时重定向" class="headerlink" title="临时重定向"></a>临时重定向</h2><p>有时候请求的资源无法从其标准地址访问，但是却可以从另外的地方访问。在这种情况下可以使用临时重定向。搜索引擎不会记录该新的、临时的链接。在创建、更新或者删除资源的时候，临时重定向也可以用于显示临时性的进度页面。</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th><strong>编码</strong></th>
-<th><strong>含义</strong></th>
-<th><strong>处理方法</strong></th>
-<th><strong>典型应用场景</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>302</code></td>
-<td><code>Found</code></td>
-<td><code>GET</code> 方法不会发生变更，其他方法有可能会变更为 GET 方法。[2]</td>
-<td>由于不可预见的原因该页面暂不可用。在这种情况下，搜索引擎不会更新它们的链接。</td>
-</tr>
-<tr>
-<td><code>303</code></td>
-<td><code>See Other</code></td>
-<td><code>GET</code> 方法不会发生变更，其他方法会<strong>变更</strong>为 GET 方法（消息主体会丢失）。</td>
-<td>用于 <code>PUT</code> 或 <code>POST</code> 请求完成之后进行页面跳转来防止由于页面刷新导致的操作的重复触发。</td>
-</tr>
-<tr>
-<td><code>307</code></td>
-<td><code>Temporary Redirect</code></td>
-<td>方法和消息主体都不发生变化。</td>
-<td>由于不可预见的原因该页面暂不可用。在这种情况下，搜索引擎不会更新它们的链接。当站点支持非 GET 方法的链接或操作的时候，该状态码优于 302 状态码。</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>[2] 该规范无意使方法发生改变，但在实际应用中用户代理会这么做。 307 状态码被创建用来消除在使用非 GET 方法时的歧义行为。</p>
-<h1 id="页面跳转方式"><a href="#页面跳转方式" class="headerlink" title="页面跳转方式"></a>页面跳转方式</h1><blockquote>
-<p><a href="https://blog.csdn.net/Radic_Feng/article/details/6798378" target="_blank" rel="noopener">实现页面重定向（跳转）的4种方式</a></p>
-</blockquote>
-<ol>
-<li>后端跳转。返回30X状态码，Response的Header中的Location为要跳转的路径。因为body是空的，页面不会闪烁。</li>
-<li>前端JavaScript跳转。在JavaScript中使用 window.location 跳转。Body不是空的，页面会闪烁。</li>
-<li>前端HTML跳转。在Header中使用 <code>&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;url=&lt;c:url value=&quot;/authenticate.html&quot;/&gt;&quot; /&gt;</code> 跳转。Body不是空的，页面会闪烁。</li>
-</ol>
-]]></content>
-      <categories>
-        <category>network</category>
-      </categories>
-      <tags>
-        <tag>network</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>正向代理、反向代理、透明代理</title>
     <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E4%BB%A3%E7%90%86/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -858,6 +757,125 @@
 </li>
 </ul>
 <h1 id="UDP最大长度"><a href="#UDP最大长度" class="headerlink" title="UDP最大长度"></a>UDP最大长度</h1><p>最好不超过链路层的MTU(最大传输单元) 1500字节</p>
+]]></content>
+      <categories>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>network</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HTTP 协议</title>
+    <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/http/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/61423830" target="_blank" rel="noopener">你猜一个 TCP 连接上面能发多少个 HTTP 请求</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/26559480" target="_blank" rel="noopener">一文读懂 HTTP/2 特性</a></li>
+</ul>
+<h1 id="HTTP是无状态的-V-S-Connection-keep-alive"><a href="#HTTP是无状态的-V-S-Connection-keep-alive" class="headerlink" title="HTTP是无状态的 V.S. Connection: keep-alive"></a>HTTP是无状态的 V.S. Connection: keep-alive</h1><ul>
+<li>无状态<ul>
+<li>指协议对于事务的处理没有记忆的能力，服务器不知道客户端的状态。具体来说，这一次向服务端发送的请求，与同一个客户端上一次发送的请求没有任何联系。</li>
+</ul>
+</li>
+<li>Connection: keep-alive<ul>
+<li>HTTP的传输层协议是TCP。当一个HTTP请求处理结束后，服务端和客户端之间的TCP连接并不会马上关闭，当一段时间内客户端再次发起HTTP请求时，会使用同一个TCP连接进行通信。</li>
+<li>keep-alive并不是代表TCP连接会永远存在，而是一定时间范围内的。 #TODO</li>
+<li>HTTP/1.1出现的，默认是开启的。</li>
+</ul>
+</li>
+</ul>
+<h1 id="对同一个服务端的多个HTTP的发送情况"><a href="#对同一个服务端的多个HTTP的发送情况" class="headerlink" title="对同一个服务端的多个HTTP的发送情况"></a>对同一个服务端的多个HTTP的发送情况</h1><h2 id="使用一个TCP连接，可以同时发送多个HTTP请求吗？"><a href="#使用一个TCP连接，可以同时发送多个HTTP请求吗？" class="headerlink" title="使用一个TCP连接，可以同时发送多个HTTP请求吗？"></a>使用一个TCP连接，可以同时发送多个HTTP请求吗？</h2><h3 id="http-1-1-无法发送多个，使用多个TCP连接来解决"><a href="#http-1-1-无法发送多个，使用多个TCP连接来解决" class="headerlink" title="http/1.1 无法发送多个，使用多个TCP连接来解决"></a>http/1.1 无法发送多个，使用多个TCP连接来解决</h3><p>默认情况下，一个TCP连接，同一时刻只能处理一个HTTP请求，两个请求不能有重叠。</p>
+<p>HTTP/1.1中规定了Pipelining，但是只存在于理想情况，实际比较复杂。</p>
+<blockquote>
+<p>一个支持持久连接的客户端可以在一个连接中发送多个请求（不需要等待任意请求的响应）。收到请求的服务器必须按照请求收到的顺序发送响应。</p>
+</blockquote>
+<p>流水线的缺点：</p>
+<ol>
+<li>一些代理服务器不能正确的处理 HTTP Pipelining。</li>
+<li>“队头堵塞”（Head-of-line blocking）：如果第一个请求阻塞了，即使后边的请求处理好了，也会被阻塞住。</li>
+</ol>
+<p>因此，浏览器默认是关闭的，为了提高并发性能，对于一个服务端会建立多个TCP连接。不过，这个连接数目是有上限的，一般不超过6-8个。</p>
+<h3 id="http-2-Multiplexing"><a href="#http-2-Multiplexing" class="headerlink" title="http/2 Multiplexing"></a>http/2 Multiplexing</h3><ul>
+<li><p><strong>帧：</strong>HTTP/2 数据通信的最小单位消息：指 HTTP/2 中逻辑上的 HTTP 消息。例如请求和响应等，消息由一个或多个帧组成。</p>
+</li>
+<li><p><strong>流：</strong>存在于连接中的一个虚拟通道。流可以承载双向消息，每个流都有一个唯一的整数ID。</p>
+</li>
+</ul>
+<p>HTTP/2 采用二进制格式传输数据，而非 HTTP 1.x 的文本格式，二进制协议解析起来更高效。 HTTP / 1 的请求和响应报文，都是由起始行，首部和实体正文（可选）组成，各部分之间以文本换行符分隔。HTTP/2 将请求和响应数据分割为更小的帧，并且它们采用二进制编码。</p>
+<p><strong>HTTP/2 中，同域名下所有通信都在单个连接上完成，该连接可以承载任意数量的双向数据流。</strong>每个数据流都以消息的形式发送，而消息又由一个或多个帧组成。多个帧之间可以乱序发送，根据帧首部的<strong>流标识</strong>可以重新组装。</p>
+<h1 id="HTTP-重定向"><a href="#HTTP-重定向" class="headerlink" title="HTTP 重定向"></a>HTTP 重定向</h1><blockquote>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Redirections" target="_blank" rel="noopener">HTTP 的重定向</a></p>
+</blockquote>
+<h2 id="永久重定向"><a href="#永久重定向" class="headerlink" title="永久重定向"></a>永久重定向</h2><p>这种重定向操作是永久性的。它表示原 URL 不应再被使用，而应该优先选用新的 URL。搜索引擎机器人会在遇到该状态码时触发更新操作，在其索引库中修改与该资源相关的 URL 。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>编码</strong></th>
+<th><strong>含义</strong></th>
+<th><strong>处理方法</strong></th>
+<th><strong>典型应用场景</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>301</code></td>
+<td>Moved Permanently</td>
+<td><code>GET</code> 方法不会发生变更，其他方法有可能会变更为 <code>GET</code> 方法。[1]</td>
+<td>网站重构。</td>
+</tr>
+<tr>
+<td><code>308</code></td>
+<td>Permanent Redirect</td>
+<td>方法和消息主体都不发生变化。</td>
+<td>网站重构，用于非GET方法。(with non-GET links/operations)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>[1] 该规范无意使方法发生改变，但在实际应用中用户代理会这么做。 308 状态码被创建用来消除在使用非 GET 方法时的歧义行为。</p>
+<h2 id="临时重定向"><a href="#临时重定向" class="headerlink" title="临时重定向"></a>临时重定向</h2><p>有时候请求的资源无法从其标准地址访问，但是却可以从另外的地方访问。在这种情况下可以使用临时重定向。搜索引擎不会记录该新的、临时的链接。在创建、更新或者删除资源的时候，临时重定向也可以用于显示临时性的进度页面。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>编码</strong></th>
+<th><strong>含义</strong></th>
+<th><strong>处理方法</strong></th>
+<th><strong>典型应用场景</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>302</code></td>
+<td><code>Found</code></td>
+<td><code>GET</code> 方法不会发生变更，其他方法有可能会变更为 GET 方法。[2]</td>
+<td>由于不可预见的原因该页面暂不可用。在这种情况下，搜索引擎不会更新它们的链接。</td>
+</tr>
+<tr>
+<td><code>303</code></td>
+<td><code>See Other</code></td>
+<td><code>GET</code> 方法不会发生变更，其他方法会<strong>变更</strong>为 GET 方法（消息主体会丢失）。</td>
+<td>用于 <code>PUT</code> 或 <code>POST</code> 请求完成之后进行页面跳转来防止由于页面刷新导致的操作的重复触发。</td>
+</tr>
+<tr>
+<td><code>307</code></td>
+<td><code>Temporary Redirect</code></td>
+<td>方法和消息主体都不发生变化。</td>
+<td>由于不可预见的原因该页面暂不可用。在这种情况下，搜索引擎不会更新它们的链接。当站点支持非 GET 方法的链接或操作的时候，该状态码优于 302 状态码。</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>[2] 该规范无意使方法发生改变，但在实际应用中用户代理会这么做。 307 状态码被创建用来消除在使用非 GET 方法时的歧义行为。</p>
+<h1 id="页面跳转方式"><a href="#页面跳转方式" class="headerlink" title="页面跳转方式"></a>页面跳转方式</h1><blockquote>
+<p><a href="https://blog.csdn.net/Radic_Feng/article/details/6798378" target="_blank" rel="noopener">实现页面重定向（跳转）的4种方式</a></p>
+</blockquote>
+<ol>
+<li>后端跳转。返回30X状态码，Response的Header中的Location为要跳转的路径。因为body是空的，页面不会闪烁。</li>
+<li>前端JavaScript跳转。在JavaScript中使用 window.location 跳转。Body不是空的，页面会闪烁。</li>
+<li>前端HTML跳转。在Header中使用 <code>&lt;meta http-equiv=&quot;refresh&quot; content=&quot;0;url=&lt;c:url value=&quot;/authenticate.html&quot;/&gt;&quot; /&gt;</code> 跳转。Body不是空的，页面会闪烁。</li>
+</ol>
 ]]></content>
       <categories>
         <category>network</category>
@@ -1236,89 +1254,6 @@
       <tags>
         <tag>java</tag>
         <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>FileChannel与内存映射文件</title>
-    <url>/2020/java/io/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76" target="_blank" rel="noopener">jdk/src/share/native/java/io/io_util.c</a></li>
-<li><a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html" target="_blank" rel="noopener">JNIFunctions</a></li>
-<li><a href="https://www.jianshu.com/p/a23ca155f949" target="_blank" rel="noopener">Java文件NIO读取的本质——FileInputStream与FileChannel对比</a></li>
-<li><a href="https://www.zhihu.com/question/48161206/answer/110863886" target="_blank" rel="noopener">Linux 中 mmap() 函数的内存映射问题理解？</a></li>
-<li><a href="https://blog.csdn.net/zhxdick/article/details/81130102" target="_blank" rel="noopener">JDK核心JAVA源码解析（5） - JAVA File MMAP原理解析</a></li>
-<li><a href="https://blog.csdn.net/yangguosb/article/details/77891275" target="_blank" rel="noopener">Linux零拷贝之mmap</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/91507035" target="_blank" rel="noopener">Java网络编程与NIO详解8：浅析mmap和Direct Buffer</a></li>
-<li><a href="https://www.cnkirito.moe/file-io-best-practise/" target="_blank" rel="noopener">文件 IO 操作的一些最佳实践</a></li>
-<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/" target="_blank" rel="noopener">通过零拷贝实现有效数据传输</a></li>
-</ul>
-<h1 id="FileChannel-基本用法"><a href="#FileChannel-基本用法" class="headerlink" title="FileChannel 基本用法"></a>FileChannel 基本用法</h1><h2 id="创建-FileChannel"><a href="#创建-FileChannel" class="headerlink" title="创建 FileChannel"></a>创建 FileChannel</h2><p>使用 <code>FileChannel.open</code> 创建。</p>
-<p>其中 <code>OpenOption</code> 可以有：</p>
-<ul>
-<li>READ</li>
-<li>WRITE</li>
-<li>APPEND</li>
-<li>CREATE：如果文件不存在，则创建一个。</li>
-<li>CREATE_NEW：创建文件，如果存在抛出异常。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">FileChannel ch = FileChannel.open(Path path, OpenOption... options);</span><br></pre></td></tr></table></figure>
-<p>也可以从 <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 中通过 <code>getChannel()</code> 方法得到。<br>这种 channel 的文件描述符和  <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 使用的是同一个，文件指针位置也是共享的。</p>
-<h2 id="读写数据"><a href="#读写数据" class="headerlink" title="读写数据"></a>读写数据</h2><p>主要通过 <code>read()</code> 和 <code>write</code> 方法操作数据。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">read</span><span class="params">(ByteBuffer dst)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">write</span><span class="params">(ByteBuffer src)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="mmap-读写数据"><a href="#mmap-读写数据" class="headerlink" title="mmap 读写数据"></a>mmap 读写数据</h2><p>可以通过 <code>ch.map()</code> 方法建立一个内存映射文件的 <code>DirectByteBuffer</code>。</p>
-<p>通过 <code>buffer.get()</code> 和 <code>buffer.put()</code> 方法操作 <code>ByteBuffer</code> 的方式来读写文件。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ByteBuffer buffer = ch.map(FileChannel.MapMode.READ_WRITE, <span class="number">0</span>, Integer.MAX_VALUE);</span><br><span class="line">buffer.put(<span class="number">1</span>);</span><br><span class="line">buffer.put(<span class="string">'h'</span>);</span><br><span class="line">buffer.put(<span class="string">"hello"</span>.getBytes(StandardCharset.UTF_8));</span><br></pre></td></tr></table></figure>
-<h2 id="Transform-数据"><a href="#Transform-数据" class="headerlink" title="Transform 数据"></a>Transform 数据</h2><p>通过 <code>transformFrom()</code> 和 <code>transformTo()</code> 把数据 从其他通道写入到该通道/从该通道写入到其他通道。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferFrom</span><span class="params">(ReadableByteChannel src,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">long</span> position, <span class="keyword">long</span> count)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">long</span> count,</span></span></span><br><span class="line"><span class="function"><span class="params">                                WritableByteChannel target)</span></span></span><br></pre></td></tr></table></figure>
-<h1 id="读取文件的拷贝次数"><a href="#读取文件的拷贝次数" class="headerlink" title="读取文件的拷贝次数"></a>读取文件的拷贝次数</h1><h2 id="内核的页缓冲"><a href="#内核的页缓冲" class="headerlink" title="内核的页缓冲"></a>内核的页缓冲</h2><p>正常的文件读写，需要使用系统调用 <code>read()</code> 和 <code>write()</code>。</p>
-<p>在内核有数据的页缓冲区。在读写数据时（以读数据为例），<code>read()</code> 系统调用首先到页缓冲区中看是否有足够的数据。</p>
-<ul>
-<li>如果没有，则去文件中，把数据拷贝到页缓冲区。</li>
-<li>如果有，则直接从页缓冲区拷贝用户空间。</li>
-</ul>
-<h2 id="堆外内存到堆内内存"><a href="#堆外内存到堆内内存" class="headerlink" title="堆外内存到堆内内存"></a>堆外内存到堆内内存</h2><p>在 Java 中读写数据时，因为系统调用 <code>read()</code> 和 <code>write</code>，需要提供要操作的内存地址。而 Java 的堆内内存的变量的内存地址是不固定的，在一次 GC 中，可能进行重排/复制等操作。所以读取数据，需要先创建一个临时的内存区域来加载数据，再从临时区域拷贝到堆内内存。</p>
-<p><code>FileInputStream.read()</code>  调用 native 的 <a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76" target="_blank" rel="noopener">readBytes 方法</a>。可以看到，在 JNI 方法中，申请了一块 <code>buf</code> 字符数组，读取数据后，使用 <a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html" target="_blank" rel="noopener">env.SetByteArrayRegion</a> 把 <code>buf</code> 内容拷贝 Java 的 byteArray中。</p>
-<p>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; JNI 临时内存 —&gt; Java 堆内内存。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">jint</span><br><span class="line">readBytes(JNIEnv *env, jobject <span class="keyword">this</span>, jbyteArray bytes,</span><br><span class="line">          jint off, jint len, jfieldID fid)</span><br><span class="line">&#123;</span><br><span class="line">    jint nread;</span><br><span class="line">    <span class="keyword">char</span> stackBuf[BUF_SIZE];</span><br><span class="line">    <span class="keyword">char</span> *buf = <span class="literal">NULL</span>;</span><br><span class="line">    FD fd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len &gt; BUF_SIZE) &#123;</span><br><span class="line">        buf = <span class="built_in">malloc</span>(len);</span><br><span class="line">        <span class="keyword">if</span> (buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="literal">NULL</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = stackBuf;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fd = GET_FD(<span class="keyword">this</span>, fid);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        JNU_ThrowIOException(env, <span class="string">"Stream Closed"</span>);</span><br><span class="line">        nread = <span class="number">-1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nread = (jint)IO_Read(fd, buf, len);</span><br><span class="line">        <span class="keyword">if</span> (nread &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            (*env)-&gt;SetByteArrayRegion(env, bytes, off, nread, (jbyte *)buf);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_ERR) &#123;</span><br><span class="line">            JNU_ThrowIOExceptionWithLastError(env, <span class="string">"Read error"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_INTR) &#123;</span><br><span class="line">            JNU_ThrowByName(env, <span class="string">"java/io/InterruptedIOException"</span>, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">/* EOF */</span></span><br><span class="line">            nread = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (buf != stackBuf) &#123;</span><br><span class="line">        <span class="built_in">free</span>(buf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>FileChannel.read()</code> 方法，会有两种情况。</p>
-<ul>
-<li><code>read</code> 传入的是 <code>DirectByteBuffer</code>，因为堆外内存一般不会 GC（什么时候GC？TODO），所以有固定的内存地址，不需要先复制到临时内存中。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存。</li>
-<li><code>read</code> 传入的是 <code>ByteBuffer</code>，需要先存储到临时的堆外内存，再拷贝到堆内内存。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存 —&gt; Java 堆外内存。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(FileDescriptor var0, ByteBuffer var1, <span class="keyword">long</span> var2, NativeDispatcher var4)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (var1.isReadOnly()) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Read-only buffer"</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (var1 <span class="keyword">instanceof</span> DirectBuffer) &#123; <span class="comment">// 如果是堆外内存，不需要申请暂时的内存区域</span></span><br><span class="line">    <span class="keyword">return</span> readIntoNativeBuffer(var0, var1, var2, var4);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> var7;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">int</span> var6 = readIntoNativeBuffer(var0, var5, var2, var4);</span><br><span class="line">      var5.flip();</span><br><span class="line">      <span class="keyword">if</span> (var6 &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        var1.put(var5);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      var7 = var6;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      Util.offerFirstTemporaryDirectBuffer(var5);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var7;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="mmap-原理"><a href="#mmap-原理" class="headerlink" title="mmap 原理"></a>mmap 原理</h1><h2 id="创建和读写过程"><a href="#创建和读写过程" class="headerlink" title="创建和读写过程"></a>创建和读写过程</h2><p><code>mmap</code> 系统调用，会建立一个 <code>vm_area_struct</code> 的数据结构，这个数据结构表示了进程虚拟地址空间中的一段，它把磁盘文件的区域和虚拟地址空间中的一段连接了起来。但是这时候物理内存中还是没有内容的，而 mmu 是在虚拟地址空间和物理内存地址之间建立映射的。</p>
-<p>在访问到这段虚拟地址空间时，由于只是建立了映射，而实际的页面还没有放置到页框中，所以会产生一个缺页中断陷入内核，然后会首先在硬盘的swap页面中寻找这个页面是否被交换出去，如果没有找到这个页面，那么会依照mmap建立的vm_area_struct这个数据结构把磁盘中的文件读到物理内存中，这样就可以访问了。</p>
-<p>所以，使用 <code>mmap</code> 经历的拷贝过程：磁盘 —&gt; Java 堆外内存。</p>
-<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><p><code>mmap</code> 创建的堆外内存，不会受 <code>-XX:MaxDirectMemorySize</code> 限制。</p>
-<p>这个参数只有在使用 <code>ByteBuffer.allocateDirect</code> 的时候，才会检查，而在使用 <code>allocateMemory</code> JNI 方法和 <code>mmap</code> 的时候，不会检查。</p>
-<p>但是 <code>mmap</code> 一次的大小不能超过 <code>Integer.MAX_INT</code> （约 2 G）。因为 <code>mmap</code> 最后会调用如下的 JNI 方法，其中的地址会被转为 int。猜测是因为 Java 为了跨平台，并不知道平台是 32 G 还是 64 G的。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span>* <span class="title">addr_from_java</span><span class="params">(jlong addr)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// This assert fails in a variety of ways on 32-bit systems.</span></span><br><span class="line">  <span class="comment">// It is impossible to predict whether native code that converts</span></span><br><span class="line">  <span class="comment">// pointers to longs will sign-extend or zero-extend the addresses.</span></span><br><span class="line">  <span class="comment">//assert(addr == (uintptr_t)addr, "must not be odd high bits");</span></span><br><span class="line">  <span class="comment">//转换为int</span></span><br><span class="line">  <span class="keyword">return</span> (<span class="keyword">void</span>*)(<span class="keyword">uintptr_t</span>)addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="文件拷贝与-FileChannel-transformTo"><a href="#文件拷贝与-FileChannel-transformTo" class="headerlink" title="文件拷贝与 FileChannel.transformTo"></a>文件拷贝与 FileChannel.transformTo</h1><ul>
-<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/" target="_blank" rel="noopener">通过零拷贝实现有效数据传输</a></li>
-</ul>
-<p>把数据从一个文件拷贝到另外一个文件。</p>
-<p>传统的数据传输，需要先调用 <code>in.read()</code>，在调用 <code>out.write()</code>。需要 4 次拷贝、4 次内核/用户态切换。磁盘 —&gt; 读内核页缓冲区 —&gt; 用户空间 —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
-<p>传统方法的数据拷贝：</p>
-<p><img src="/images/传统-拷贝.gif" alt="传统-拷贝"></p>
-<p>传统方法的上下文切换：</p>
-<p><img src="/images/传统-上下文切换.gif" alt="传统-上下文切换"></p>
-<p>而 <code>FileChannel.transformTo</code> 可以无需 用户空间的接入，之即完成数据的传输。需要 3 次拷贝、2次切换：磁盘 —&gt; 读内核页缓冲区  —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
-<p>这个操作依赖底层操作系统对零拷贝的支持；在 UNIX 和各种 Linux 系统中，此调用被传递到 <code>sendfile()</code> 系统调用中。</p>
-<p>transformTo 的数据拷贝：</p>
-<p><img src="/images/transferTo-拷贝.gif" alt="transferTo-拷贝"></p>
-<p>transformTo 的上下文切换：</p>
-<p><img src="/images/transferTo-上下文切换.gif" alt="transferTo-上下文切换"></p>
-<p>如果底层网络接口卡支持<em>收集操作</em> 的话，那么我们就可以进一步减少内核的数据复制。在 Linux 内核 2.4 及后期版本中，套接字缓冲区描述符就做了相应调整，以满足该需求。需要2次拷贝、2次切换。</p>
-<p>transformTo + 收集 的数据拷贝：</p>
-<p><img src="/images/transferTo-拷贝2.gif" alt="transferTo-拷贝2"></p>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>io</category>
-      </categories>
-      <tags>
-        <tag>io</tag>
-        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -2010,208 +1945,6 @@
       </tags>
   </entry>
   <entry>
-    <title>I/O流相关类</title>
-    <url>/2020/java/io/io%E6%B5%81/</url>
-    <content><![CDATA[<h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/28286559" target="_blank" rel="noopener">Java IO，硬骨头也能变软</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/31352578" target="_blank" rel="noopener">PipedInputStream和PipedOutStream记录</a></li>
-<li>《Java 核心技术-卷2-第二章》</li>
-</ul>
-<h2 id="1-三种分类方式"><a href="#1-三种分类方式" class="headerlink" title="1. 三种分类方式"></a>1. 三种分类方式</h2><h3 id="字节流和字符流"><a href="#字节流和字符流" class="headerlink" title="字节流和字符流"></a>字节流和字符流</h3><ul>
-<li>字节流<ul>
-<li>以字节为单位进行读写。</li>
-<li>每次读写 1 byte 数据。</li>
-<li>可以操作任何类型的数据。</li>
-</ul>
-</li>
-<li>字符流<ul>
-<li>以字符码元为单位进行读写。</li>
-<li>每次读写 2 bytes 数据。</li>
-<li>只能操作字符类型的数据。</li>
-</ul>
-</li>
-</ul>
-<h3 id="输入流和输出流"><a href="#输入流和输出流" class="headerlink" title="输入流和输出流"></a>输入流和输出流</h3><ul>
-<li>输入流<ul>
-<li>可以进行输入相关的操作。</li>
-</ul>
-</li>
-<li>输出流<ul>
-<li>可以进行输出相关的操作。</li>
-</ul>
-</li>
-</ul>
-<h3 id="节点流和操作流"><a href="#节点流和操作流" class="headerlink" title="节点流和操作流"></a>节点流和操作流</h3><ul>
-<li>节点流<ul>
-<li>直接与数据相连，数据来源或目的地是要操作的最终数据。</li>
-</ul>
-</li>
-<li>操作流<ul>
-<li>利用装饰器模式，对节点流进行包装，提供多种方便的做操方式。</li>
-</ul>
-</li>
-</ul>
-<h2 id="2-具体分类"><a href="#2-具体分类" class="headerlink" title="2. 具体分类"></a>2. 具体分类</h2><p>所有读取/写入操作都要加锁。</p>
-<h3 id="2-1-输入-字节流"><a href="#2-1-输入-字节流" class="headerlink" title="2.1 输入/字节流"></a>2.1 输入/字节流</h3><h4 id="1-节点流"><a href="#1-节点流" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileInputStream"><a href="#FileInputStream" class="headerlink" title="FileInputStream"></a>FileInputStream</h5><ul>
-<li>用于从文件读取数据。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h5 id="ByteArrayInputStream"><a href="#ByteArrayInputStream" class="headerlink" title="ByteArrayInputStream"></a>ByteArrayInputStream</h5><ul>
-<li>用于从数组读取数据。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h5 id="PipedInputStream"><a href="#PipedInputStream" class="headerlink" title="PipedInputStream"></a>PipedInputStream</h5><ul>
-<li>用于线程间通信，需要和 <code>PipedOutputStream</code> 一起使用。</li>
-<li>使用固定长度的字节数组 buffer，在没有可读字节时阻塞。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h4 id="2-操作流"><a href="#2-操作流" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterInputStream"><a href="#FilterInputStream" class="headerlink" title="FilterInputStream"></a>FilterInputStream</h5><ul>
-<li>内置一个输入/字节流 inner 用来操作。</li>
-<li>所有操作只是简单的调用 inner 来完成。</li>
-<li>所有输入/字节/操作流的超类，除了 SequenceInputStream。</li>
-</ul>
-<h5 id="BufferedInputStream"><a href="#BufferedInputStream" class="headerlink" title="BufferedInputStream"></a>BufferedInputStream</h5><ul>
-<li>使用字节数组 buffer 缓存数据。每次读取，先把 buffer 填满，再从 buffer 中读取。</li>
-<li>只能读取字节或字节数组。</li>
-</ul>
-<h5 id="DataInputStream"><a href="#DataInputStream" class="headerlink" title="DataInputStream"></a>DataInputStream</h5><ul>
-<li>实现了 <code>DataInput</code> 接口。<ul>
-<li><code>readInt/Char/Boolean/等基本类型</code> 读取基本类型</li>
-<li><code>readUTF</code> 读取 修订过的 UTF 格式的字符串。<ul>
-<li>使用 <code>readUTF</code> 读取字符串。</li>
-<li>2个字节的 uint 表示长度 length。</li>
-<li>length 个字节组成 修订过的 UTF 编码。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h5 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h5><ul>
-<li>用于序列化对象。</li>
-<li>实现了 <code>DataInput</code> 接口。</li>
-<li><code>readObject</code> 读取对象。</li>
-</ul>
-<h5 id="SequenceInputStream"><a href="#SequenceInputStream" class="headerlink" title="SequenceInputStream"></a>SequenceInputStream</h5><ul>
-<li>从多个流依次读取数据。</li>
-<li>构造函数传入任意个 InputStream。</li>
-</ul>
-<h3 id="2-2-输出-字节流"><a href="#2-2-输出-字节流" class="headerlink" title="2.2 输出/字节流"></a>2.2 输出/字节流</h3><h4 id="1-字节流"><a href="#1-字节流" class="headerlink" title="1) 字节流"></a>1) 字节流</h4><h5 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h5><ul>
-<li>用于向文件写入数据。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h5 id="ByteArrayOutputStream"><a href="#ByteArrayOutputStream" class="headerlink" title="ByteArrayOutputStream"></a>ByteArrayOutputStream</h5><ul>
-<li>用于向数组写入数据。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h5 id="PipedOutputStream"><a href="#PipedOutputStream" class="headerlink" title="PipedOutputStream"></a>PipedOutputStream</h5><ul>
-<li>用于线程间通信，需要和 <code>PipedInputputStream</code> 一起使用。</li>
-<li>在没有空间写入时阻塞。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h4 id="2-操作流-1"><a href="#2-操作流-1" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h5><ul>
-<li>内置一个输出/字节流 inner 用来操作。</li>
-<li>所有操作只是简单的调用 inner 来完成。</li>
-<li>所有输出/字节/操作流的超类。</li>
-</ul>
-<h5 id="BufferedOutputStream"><a href="#BufferedOutputStream" class="headerlink" title="BufferedOutputStream"></a>BufferedOutputStream</h5><ul>
-<li>使用字节数组 buffer （默认 1024 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
-<li>只能写入字节或字节数组。</li>
-</ul>
-<h5 id="DataOutputStream"><a href="#DataOutputStream" class="headerlink" title="DataOutputStream"></a>DataOutputStream</h5><ul>
-<li>实现了 <code>DataOutput</code> 接口。<ul>
-<li><code>writeInt/Char/Boolean/等基本类型</code> 写入基本类型</li>
-<li><code>writeUTF</code> 写入 修订过的 UTF 格式的字符串。</li>
-<li><code>writeChars</code> 写入 UTF16 格式的字符串。注意没有写入长度。</li>
-</ul>
-</li>
-</ul>
-<h5 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h5><ul>
-<li>序列化对象。</li>
-<li><code>writeObject</code> 读取对象。</li>
-</ul>
-<h5 id="PrintStream"><a href="#PrintStream" class="headerlink" title="PrintStream"></a>PrintStream</h5><ul>
-<li>用于打印基本类型/字符串到流。<ul>
-<li>都转化为字符串。</li>
-</ul>
-</li>
-<li>性能不好。<ul>
-<li>内部使用 <code>BufferedWriter</code>。</li>
-<li>每个 write 操作后，会 flushBuffer，把 buffer 的内容写入到 inner 流中（没有 flush inner）。</li>
-<li><code>prinln</code> 分成两次 write 操作：writer 内容 + writer 换行符。要 flushBuffer 两次。</li>
-<li>开启 autoflush 后，每次写入换行符，都会调用 inner 的 flush 方法。</li>
-</ul>
-</li>
-</ul>
-<h3 id="2-3-输入-字符流"><a href="#2-3-输入-字符流" class="headerlink" title="2.3 输入/字符流"></a>2.3 输入/字符流</h3><p>除了 <code>BufferedReader.readLine()</code>，都只能读取字符/字符数组。</p>
-<h4 id="1-节点流-1"><a href="#1-节点流-1" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h5><ul>
-<li>用于从文件读取数据。</li>
-<li>继承了 InputStreamReader。创建一个 fileInputStream，传递给自己。</li>
-<li>只能读取字符/字符数组。</li>
-</ul>
-<h5 id="PipedReader"><a href="#PipedReader" class="headerlink" title="PipedReader"></a>PipedReader</h5><ul>
-<li>用于线程间通信。</li>
-<li>使用字符数组缓存数据。没有字符可读时，阻塞。</li>
-<li>只能读取字符/字符数组。</li>
-</ul>
-<h5 id="CharArrayReader"><a href="#CharArrayReader" class="headerlink" title="CharArrayReader"></a>CharArrayReader</h5><ul>
-<li>用于从数组读取数据。</li>
-<li>只能读取字符/字符数组。</li>
-</ul>
-<h4 id="2-操作流-2"><a href="#2-操作流-2" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedReader"><a href="#BufferedReader" class="headerlink" title="BufferedReader"></a>BufferedReader</h5><ul>
-<li>只能读取字符/字符数组。</li>
-<li>使用字符数组 buffer （默认 8192 字节）缓存数据。</li>
-<li>读取一行字符串。</li>
-</ul>
-<h5 id="InputStreamWriter"><a href="#InputStreamWriter" class="headerlink" title="InputStreamWriter"></a>InputStreamWriter</h5><ul>
-<li>把 输入/字节流 转化为 输入/字符流。</li>
-<li>只能读取字符/字符数组。</li>
-<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
-</ul>
-<h3 id="2-4-输出-字符流"><a href="#2-4-输出-字符流" class="headerlink" title="2.4 输出/字符流"></a>2.4 输出/字符流</h3><h4 id="1-节点流-2"><a href="#1-节点流-2" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><ul>
-<li>用于向文件写入数据。</li>
-<li>继承了 OutputStreamReader。创建一个 fileOutputStream，传递给自己。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-</ul>
-<h5 id="PipedWriter"><a href="#PipedWriter" class="headerlink" title="PipedWriter"></a>PipedWriter</h5><ul>
-<li>用于线程间通信。</li>
-<li>没有空间写入时，阻塞。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-</ul>
-<h5 id="CharArrayWriter"><a href="#CharArrayWriter" class="headerlink" title="CharArrayWriter"></a>CharArrayWriter</h5><ul>
-<li>用于向数组写入数据。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-</ul>
-<h4 id="2-操作流-3"><a href="#2-操作流-3" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><ul>
-<li>只能写入字符/字符串/字符数组。</li>
-<li>使用字符数组 buffer （默认 8192 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
-</ul>
-<h5 id="OutputStreamWriter"><a href="#OutputStreamWriter" class="headerlink" title="OutputStreamWriter"></a>OutputStreamWriter</h5><ul>
-<li>把 输出/字节流 转化为 输出/字符流。</li>
-<li>只能写入字符/字符串/字符数组。</li>
-<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
-</ul>
-<h5 id="PrintWriter"><a href="#PrintWriter" class="headerlink" title="PrintWriter"></a>PrintWriter</h5><ul>
-<li>用于打印基本类型/字符串到流。</li>
-<li>性能不好。<ul>
-<li>每个 writer 操作，都会写入 inner 流中。</li>
-<li><code>println</code> 分开两次 write 操作。</li>
-<li>开启 autoflush 后，每次写入后都会调用 inner 的 flush 方法。</li>
-</ul>
-</li>
-</ul>
-<h2 id="3-例子"><a href="#3-例子" class="headerlink" title="3. 例子"></a>3. 例子</h2><p>使用 <code>connect</code>把 <code>PipedInputStream</code> 与 <code>PipedOutputStream</code>连接起来。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sender</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedOutputStream out = <span class="keyword">new</span> PipedOutputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedOutputStream <span class="title">getOut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      out.write(<span class="string">"hello, world"</span>.getBytes(StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedInputStream in = <span class="keyword">new</span> PipedInputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedInputStream <span class="title">getIn</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> in;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">100</span>];</span><br><span class="line">      in.read(buffer);</span><br><span class="line">      System.out.println(<span class="keyword">new</span> String(buffer, StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Sender sender = <span class="keyword">new</span> Sender();</span><br><span class="line">    Receiver receiver = <span class="keyword">new</span> Receiver();</span><br><span class="line"></span><br><span class="line">    sender.getOut().connect(receiver.getIn());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(sender).start();</span><br><span class="line">    <span class="keyword">new</span> Thread(receiver).start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>io</category>
-      </categories>
-      <tags>
-        <tag>io</tag>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>2. Java垃圾收集器与内存分配分配策略</title>
     <url>/2020/java/jvm/2Java%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -2744,6 +2477,208 @@
       </tags>
   </entry>
   <entry>
+    <title>I/O流相关类</title>
+    <url>/2020/java/io/io%E6%B5%81/</url>
+    <content><![CDATA[<h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/28286559" target="_blank" rel="noopener">Java IO，硬骨头也能变软</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/31352578" target="_blank" rel="noopener">PipedInputStream和PipedOutStream记录</a></li>
+<li>《Java 核心技术-卷2-第二章》</li>
+</ul>
+<h2 id="1-三种分类方式"><a href="#1-三种分类方式" class="headerlink" title="1. 三种分类方式"></a>1. 三种分类方式</h2><h3 id="字节流和字符流"><a href="#字节流和字符流" class="headerlink" title="字节流和字符流"></a>字节流和字符流</h3><ul>
+<li>字节流<ul>
+<li>以字节为单位进行读写。</li>
+<li>每次读写 1 byte 数据。</li>
+<li>可以操作任何类型的数据。</li>
+</ul>
+</li>
+<li>字符流<ul>
+<li>以字符码元为单位进行读写。</li>
+<li>每次读写 2 bytes 数据。</li>
+<li>只能操作字符类型的数据。</li>
+</ul>
+</li>
+</ul>
+<h3 id="输入流和输出流"><a href="#输入流和输出流" class="headerlink" title="输入流和输出流"></a>输入流和输出流</h3><ul>
+<li>输入流<ul>
+<li>可以进行输入相关的操作。</li>
+</ul>
+</li>
+<li>输出流<ul>
+<li>可以进行输出相关的操作。</li>
+</ul>
+</li>
+</ul>
+<h3 id="节点流和操作流"><a href="#节点流和操作流" class="headerlink" title="节点流和操作流"></a>节点流和操作流</h3><ul>
+<li>节点流<ul>
+<li>直接与数据相连，数据来源或目的地是要操作的最终数据。</li>
+</ul>
+</li>
+<li>操作流<ul>
+<li>利用装饰器模式，对节点流进行包装，提供多种方便的做操方式。</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-具体分类"><a href="#2-具体分类" class="headerlink" title="2. 具体分类"></a>2. 具体分类</h2><p>所有读取/写入操作都要加锁。</p>
+<h3 id="2-1-输入-字节流"><a href="#2-1-输入-字节流" class="headerlink" title="2.1 输入/字节流"></a>2.1 输入/字节流</h3><h4 id="1-节点流"><a href="#1-节点流" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileInputStream"><a href="#FileInputStream" class="headerlink" title="FileInputStream"></a>FileInputStream</h5><ul>
+<li>用于从文件读取数据。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h5 id="ByteArrayInputStream"><a href="#ByteArrayInputStream" class="headerlink" title="ByteArrayInputStream"></a>ByteArrayInputStream</h5><ul>
+<li>用于从数组读取数据。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h5 id="PipedInputStream"><a href="#PipedInputStream" class="headerlink" title="PipedInputStream"></a>PipedInputStream</h5><ul>
+<li>用于线程间通信，需要和 <code>PipedOutputStream</code> 一起使用。</li>
+<li>使用固定长度的字节数组 buffer，在没有可读字节时阻塞。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h4 id="2-操作流"><a href="#2-操作流" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterInputStream"><a href="#FilterInputStream" class="headerlink" title="FilterInputStream"></a>FilterInputStream</h5><ul>
+<li>内置一个输入/字节流 inner 用来操作。</li>
+<li>所有操作只是简单的调用 inner 来完成。</li>
+<li>所有输入/字节/操作流的超类，除了 SequenceInputStream。</li>
+</ul>
+<h5 id="BufferedInputStream"><a href="#BufferedInputStream" class="headerlink" title="BufferedInputStream"></a>BufferedInputStream</h5><ul>
+<li>使用字节数组 buffer 缓存数据。每次读取，先把 buffer 填满，再从 buffer 中读取。</li>
+<li>只能读取字节或字节数组。</li>
+</ul>
+<h5 id="DataInputStream"><a href="#DataInputStream" class="headerlink" title="DataInputStream"></a>DataInputStream</h5><ul>
+<li>实现了 <code>DataInput</code> 接口。<ul>
+<li><code>readInt/Char/Boolean/等基本类型</code> 读取基本类型</li>
+<li><code>readUTF</code> 读取 修订过的 UTF 格式的字符串。<ul>
+<li>使用 <code>readUTF</code> 读取字符串。</li>
+<li>2个字节的 uint 表示长度 length。</li>
+<li>length 个字节组成 修订过的 UTF 编码。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h5 id="ObjectInputStream"><a href="#ObjectInputStream" class="headerlink" title="ObjectInputStream"></a>ObjectInputStream</h5><ul>
+<li>用于序列化对象。</li>
+<li>实现了 <code>DataInput</code> 接口。</li>
+<li><code>readObject</code> 读取对象。</li>
+</ul>
+<h5 id="SequenceInputStream"><a href="#SequenceInputStream" class="headerlink" title="SequenceInputStream"></a>SequenceInputStream</h5><ul>
+<li>从多个流依次读取数据。</li>
+<li>构造函数传入任意个 InputStream。</li>
+</ul>
+<h3 id="2-2-输出-字节流"><a href="#2-2-输出-字节流" class="headerlink" title="2.2 输出/字节流"></a>2.2 输出/字节流</h3><h4 id="1-字节流"><a href="#1-字节流" class="headerlink" title="1) 字节流"></a>1) 字节流</h4><h5 id="FileOutputStream"><a href="#FileOutputStream" class="headerlink" title="FileOutputStream"></a>FileOutputStream</h5><ul>
+<li>用于向文件写入数据。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h5 id="ByteArrayOutputStream"><a href="#ByteArrayOutputStream" class="headerlink" title="ByteArrayOutputStream"></a>ByteArrayOutputStream</h5><ul>
+<li>用于向数组写入数据。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h5 id="PipedOutputStream"><a href="#PipedOutputStream" class="headerlink" title="PipedOutputStream"></a>PipedOutputStream</h5><ul>
+<li>用于线程间通信，需要和 <code>PipedInputputStream</code> 一起使用。</li>
+<li>在没有空间写入时阻塞。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h4 id="2-操作流-1"><a href="#2-操作流-1" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="FilterOutputStream"><a href="#FilterOutputStream" class="headerlink" title="FilterOutputStream"></a>FilterOutputStream</h5><ul>
+<li>内置一个输出/字节流 inner 用来操作。</li>
+<li>所有操作只是简单的调用 inner 来完成。</li>
+<li>所有输出/字节/操作流的超类。</li>
+</ul>
+<h5 id="BufferedOutputStream"><a href="#BufferedOutputStream" class="headerlink" title="BufferedOutputStream"></a>BufferedOutputStream</h5><ul>
+<li>使用字节数组 buffer （默认 1024 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
+<li>只能写入字节或字节数组。</li>
+</ul>
+<h5 id="DataOutputStream"><a href="#DataOutputStream" class="headerlink" title="DataOutputStream"></a>DataOutputStream</h5><ul>
+<li>实现了 <code>DataOutput</code> 接口。<ul>
+<li><code>writeInt/Char/Boolean/等基本类型</code> 写入基本类型</li>
+<li><code>writeUTF</code> 写入 修订过的 UTF 格式的字符串。</li>
+<li><code>writeChars</code> 写入 UTF16 格式的字符串。注意没有写入长度。</li>
+</ul>
+</li>
+</ul>
+<h5 id="ObjectOutputStream"><a href="#ObjectOutputStream" class="headerlink" title="ObjectOutputStream"></a>ObjectOutputStream</h5><ul>
+<li>序列化对象。</li>
+<li><code>writeObject</code> 读取对象。</li>
+</ul>
+<h5 id="PrintStream"><a href="#PrintStream" class="headerlink" title="PrintStream"></a>PrintStream</h5><ul>
+<li>用于打印基本类型/字符串到流。<ul>
+<li>都转化为字符串。</li>
+</ul>
+</li>
+<li>性能不好。<ul>
+<li>内部使用 <code>BufferedWriter</code>。</li>
+<li>每个 write 操作后，会 flushBuffer，把 buffer 的内容写入到 inner 流中（没有 flush inner）。</li>
+<li><code>prinln</code> 分成两次 write 操作：writer 内容 + writer 换行符。要 flushBuffer 两次。</li>
+<li>开启 autoflush 后，每次写入换行符，都会调用 inner 的 flush 方法。</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-3-输入-字符流"><a href="#2-3-输入-字符流" class="headerlink" title="2.3 输入/字符流"></a>2.3 输入/字符流</h3><p>除了 <code>BufferedReader.readLine()</code>，都只能读取字符/字符数组。</p>
+<h4 id="1-节点流-1"><a href="#1-节点流-1" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileReader"><a href="#FileReader" class="headerlink" title="FileReader"></a>FileReader</h5><ul>
+<li>用于从文件读取数据。</li>
+<li>继承了 InputStreamReader。创建一个 fileInputStream，传递给自己。</li>
+<li>只能读取字符/字符数组。</li>
+</ul>
+<h5 id="PipedReader"><a href="#PipedReader" class="headerlink" title="PipedReader"></a>PipedReader</h5><ul>
+<li>用于线程间通信。</li>
+<li>使用字符数组缓存数据。没有字符可读时，阻塞。</li>
+<li>只能读取字符/字符数组。</li>
+</ul>
+<h5 id="CharArrayReader"><a href="#CharArrayReader" class="headerlink" title="CharArrayReader"></a>CharArrayReader</h5><ul>
+<li>用于从数组读取数据。</li>
+<li>只能读取字符/字符数组。</li>
+</ul>
+<h4 id="2-操作流-2"><a href="#2-操作流-2" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedReader"><a href="#BufferedReader" class="headerlink" title="BufferedReader"></a>BufferedReader</h5><ul>
+<li>只能读取字符/字符数组。</li>
+<li>使用字符数组 buffer （默认 8192 字节）缓存数据。</li>
+<li>读取一行字符串。</li>
+</ul>
+<h5 id="InputStreamWriter"><a href="#InputStreamWriter" class="headerlink" title="InputStreamWriter"></a>InputStreamWriter</h5><ul>
+<li>把 输入/字节流 转化为 输入/字符流。</li>
+<li>只能读取字符/字符数组。</li>
+<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
+</ul>
+<h3 id="2-4-输出-字符流"><a href="#2-4-输出-字符流" class="headerlink" title="2.4 输出/字符流"></a>2.4 输出/字符流</h3><h4 id="1-节点流-2"><a href="#1-节点流-2" class="headerlink" title="1) 节点流"></a>1) 节点流</h4><h5 id="FileWriter"><a href="#FileWriter" class="headerlink" title="FileWriter"></a>FileWriter</h5><ul>
+<li>用于向文件写入数据。</li>
+<li>继承了 OutputStreamReader。创建一个 fileOutputStream，传递给自己。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+</ul>
+<h5 id="PipedWriter"><a href="#PipedWriter" class="headerlink" title="PipedWriter"></a>PipedWriter</h5><ul>
+<li>用于线程间通信。</li>
+<li>没有空间写入时，阻塞。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+</ul>
+<h5 id="CharArrayWriter"><a href="#CharArrayWriter" class="headerlink" title="CharArrayWriter"></a>CharArrayWriter</h5><ul>
+<li>用于向数组写入数据。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+</ul>
+<h4 id="2-操作流-3"><a href="#2-操作流-3" class="headerlink" title="2) 操作流"></a>2) 操作流</h4><h5 id="BufferedWriter"><a href="#BufferedWriter" class="headerlink" title="BufferedWriter"></a>BufferedWriter</h5><ul>
+<li>只能写入字符/字符串/字符数组。</li>
+<li>使用字符数组 buffer （默认 8192 字节）缓存数据。每次写入，先写入 buffer，buffer 满了再写入流。</li>
+</ul>
+<h5 id="OutputStreamWriter"><a href="#OutputStreamWriter" class="headerlink" title="OutputStreamWriter"></a>OutputStreamWriter</h5><ul>
+<li>把 输出/字节流 转化为 输出/字符流。</li>
+<li>只能写入字符/字符串/字符数组。</li>
+<li>需要给定编码格式。如果不给定，则为 JVM 的默认字符集，和操作系统有关。</li>
+</ul>
+<h5 id="PrintWriter"><a href="#PrintWriter" class="headerlink" title="PrintWriter"></a>PrintWriter</h5><ul>
+<li>用于打印基本类型/字符串到流。</li>
+<li>性能不好。<ul>
+<li>每个 writer 操作，都会写入 inner 流中。</li>
+<li><code>println</code> 分开两次 write 操作。</li>
+<li>开启 autoflush 后，每次写入后都会调用 inner 的 flush 方法。</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-例子"><a href="#3-例子" class="headerlink" title="3. 例子"></a>3. 例子</h2><p>使用 <code>connect</code>把 <code>PipedInputStream</code> 与 <code>PipedOutputStream</code>连接起来。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sender</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedOutputStream out = <span class="keyword">new</span> PipedOutputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedOutputStream <span class="title">getOut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> out;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      out.write(<span class="string">"hello, world"</span>.getBytes(StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Receiver</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">  PipedInputStream in = <span class="keyword">new</span> PipedInputStream();</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> PipedInputStream <span class="title">getIn</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> in;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">100</span>];</span><br><span class="line">      in.read(buffer);</span><br><span class="line">      System.out.println(<span class="keyword">new</span> String(buffer, StandardCharsets.UTF_8));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">      e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    Sender sender = <span class="keyword">new</span> Sender();</span><br><span class="line">    Receiver receiver = <span class="keyword">new</span> Receiver();</span><br><span class="line"></span><br><span class="line">    sender.getOut().connect(receiver.getIn());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(sender).start();</span><br><span class="line">    <span class="keyword">new</span> Thread(receiver).start();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>io</category>
+      </categories>
+      <tags>
+        <tag>io</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>4. 类加载器</title>
     <url>/2020/java/jvm/4%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -2901,6 +2836,89 @@
       <tags>
         <tag>java</tag>
         <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>FileChannel与内存映射文件</title>
+    <url>/2020/java/io/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76" target="_blank" rel="noopener">jdk/src/share/native/java/io/io_util.c</a></li>
+<li><a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html" target="_blank" rel="noopener">JNIFunctions</a></li>
+<li><a href="https://www.jianshu.com/p/a23ca155f949" target="_blank" rel="noopener">Java文件NIO读取的本质——FileInputStream与FileChannel对比</a></li>
+<li><a href="https://www.zhihu.com/question/48161206/answer/110863886" target="_blank" rel="noopener">Linux 中 mmap() 函数的内存映射问题理解？</a></li>
+<li><a href="https://blog.csdn.net/zhxdick/article/details/81130102" target="_blank" rel="noopener">JDK核心JAVA源码解析（5） - JAVA File MMAP原理解析</a></li>
+<li><a href="https://blog.csdn.net/yangguosb/article/details/77891275" target="_blank" rel="noopener">Linux零拷贝之mmap</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/91507035" target="_blank" rel="noopener">Java网络编程与NIO详解8：浅析mmap和Direct Buffer</a></li>
+<li><a href="https://www.cnkirito.moe/file-io-best-practise/" target="_blank" rel="noopener">文件 IO 操作的一些最佳实践</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/" target="_blank" rel="noopener">通过零拷贝实现有效数据传输</a></li>
+</ul>
+<h1 id="FileChannel-基本用法"><a href="#FileChannel-基本用法" class="headerlink" title="FileChannel 基本用法"></a>FileChannel 基本用法</h1><h2 id="创建-FileChannel"><a href="#创建-FileChannel" class="headerlink" title="创建 FileChannel"></a>创建 FileChannel</h2><p>使用 <code>FileChannel.open</code> 创建。</p>
+<p>其中 <code>OpenOption</code> 可以有：</p>
+<ul>
+<li>READ</li>
+<li>WRITE</li>
+<li>APPEND</li>
+<li>CREATE：如果文件不存在，则创建一个。</li>
+<li>CREATE_NEW：创建文件，如果存在抛出异常。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">FileChannel ch = FileChannel.open(Path path, OpenOption... options);</span><br></pre></td></tr></table></figure>
+<p>也可以从 <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 中通过 <code>getChannel()</code> 方法得到。<br>这种 channel 的文件描述符和  <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 使用的是同一个，文件指针位置也是共享的。</p>
+<h2 id="读写数据"><a href="#读写数据" class="headerlink" title="读写数据"></a>读写数据</h2><p>主要通过 <code>read()</code> 和 <code>write</code> 方法操作数据。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">read</span><span class="params">(ByteBuffer dst)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">write</span><span class="params">(ByteBuffer src)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="mmap-读写数据"><a href="#mmap-读写数据" class="headerlink" title="mmap 读写数据"></a>mmap 读写数据</h2><p>可以通过 <code>ch.map()</code> 方法建立一个内存映射文件的 <code>DirectByteBuffer</code>。</p>
+<p>通过 <code>buffer.get()</code> 和 <code>buffer.put()</code> 方法操作 <code>ByteBuffer</code> 的方式来读写文件。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ByteBuffer buffer = ch.map(FileChannel.MapMode.READ_WRITE, <span class="number">0</span>, Integer.MAX_VALUE);</span><br><span class="line">buffer.put(<span class="number">1</span>);</span><br><span class="line">buffer.put(<span class="string">'h'</span>);</span><br><span class="line">buffer.put(<span class="string">"hello"</span>.getBytes(StandardCharset.UTF_8));</span><br></pre></td></tr></table></figure>
+<h2 id="Transform-数据"><a href="#Transform-数据" class="headerlink" title="Transform 数据"></a>Transform 数据</h2><p>通过 <code>transformFrom()</code> 和 <code>transformTo()</code> 把数据 从其他通道写入到该通道/从该通道写入到其他通道。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferFrom</span><span class="params">(ReadableByteChannel src,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">long</span> position, <span class="keyword">long</span> count)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">long</span> count,</span></span></span><br><span class="line"><span class="function"><span class="params">                                WritableByteChannel target)</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="读取文件的拷贝次数"><a href="#读取文件的拷贝次数" class="headerlink" title="读取文件的拷贝次数"></a>读取文件的拷贝次数</h1><h2 id="内核的页缓冲"><a href="#内核的页缓冲" class="headerlink" title="内核的页缓冲"></a>内核的页缓冲</h2><p>正常的文件读写，需要使用系统调用 <code>read()</code> 和 <code>write()</code>。</p>
+<p>在内核有数据的页缓冲区。在读写数据时（以读数据为例），<code>read()</code> 系统调用首先到页缓冲区中看是否有足够的数据。</p>
+<ul>
+<li>如果没有，则去文件中，把数据拷贝到页缓冲区。</li>
+<li>如果有，则直接从页缓冲区拷贝用户空间。</li>
+</ul>
+<h2 id="堆外内存到堆内内存"><a href="#堆外内存到堆内内存" class="headerlink" title="堆外内存到堆内内存"></a>堆外内存到堆内内存</h2><p>在 Java 中读写数据时，因为系统调用 <code>read()</code> 和 <code>write</code>，需要提供要操作的内存地址。而 Java 的堆内内存的变量的内存地址是不固定的，在一次 GC 中，可能进行重排/复制等操作。所以读取数据，需要先创建一个临时的内存区域来加载数据，再从临时区域拷贝到堆内内存。</p>
+<p><code>FileInputStream.read()</code>  调用 native 的 <a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76" target="_blank" rel="noopener">readBytes 方法</a>。可以看到，在 JNI 方法中，申请了一块 <code>buf</code> 字符数组，读取数据后，使用 <a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html" target="_blank" rel="noopener">env.SetByteArrayRegion</a> 把 <code>buf</code> 内容拷贝 Java 的 byteArray中。</p>
+<p>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; JNI 临时内存 —&gt; Java 堆内内存。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">jint</span><br><span class="line">readBytes(JNIEnv *env, jobject <span class="keyword">this</span>, jbyteArray bytes,</span><br><span class="line">          jint off, jint len, jfieldID fid)</span><br><span class="line">&#123;</span><br><span class="line">    jint nread;</span><br><span class="line">    <span class="keyword">char</span> stackBuf[BUF_SIZE];</span><br><span class="line">    <span class="keyword">char</span> *buf = <span class="literal">NULL</span>;</span><br><span class="line">    FD fd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len &gt; BUF_SIZE) &#123;</span><br><span class="line">        buf = <span class="built_in">malloc</span>(len);</span><br><span class="line">        <span class="keyword">if</span> (buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="literal">NULL</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = stackBuf;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fd = GET_FD(<span class="keyword">this</span>, fid);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        JNU_ThrowIOException(env, <span class="string">"Stream Closed"</span>);</span><br><span class="line">        nread = <span class="number">-1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nread = (jint)IO_Read(fd, buf, len);</span><br><span class="line">        <span class="keyword">if</span> (nread &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            (*env)-&gt;SetByteArrayRegion(env, bytes, off, nread, (jbyte *)buf);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_ERR) &#123;</span><br><span class="line">            JNU_ThrowIOExceptionWithLastError(env, <span class="string">"Read error"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_INTR) &#123;</span><br><span class="line">            JNU_ThrowByName(env, <span class="string">"java/io/InterruptedIOException"</span>, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">/* EOF */</span></span><br><span class="line">            nread = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (buf != stackBuf) &#123;</span><br><span class="line">        <span class="built_in">free</span>(buf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>FileChannel.read()</code> 方法，会有两种情况。</p>
+<ul>
+<li><code>read</code> 传入的是 <code>DirectByteBuffer</code>，因为堆外内存一般不会 GC（什么时候GC？TODO），所以有固定的内存地址，不需要先复制到临时内存中。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存。</li>
+<li><code>read</code> 传入的是 <code>ByteBuffer</code>，需要先存储到临时的堆外内存，再拷贝到堆内内存。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存 —&gt; Java 堆外内存。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(FileDescriptor var0, ByteBuffer var1, <span class="keyword">long</span> var2, NativeDispatcher var4)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (var1.isReadOnly()) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Read-only buffer"</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (var1 <span class="keyword">instanceof</span> DirectBuffer) &#123; <span class="comment">// 如果是堆外内存，不需要申请暂时的内存区域</span></span><br><span class="line">    <span class="keyword">return</span> readIntoNativeBuffer(var0, var1, var2, var4);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> var7;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">int</span> var6 = readIntoNativeBuffer(var0, var5, var2, var4);</span><br><span class="line">      var5.flip();</span><br><span class="line">      <span class="keyword">if</span> (var6 &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        var1.put(var5);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      var7 = var6;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      Util.offerFirstTemporaryDirectBuffer(var5);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var7;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="mmap-原理"><a href="#mmap-原理" class="headerlink" title="mmap 原理"></a>mmap 原理</h1><h2 id="创建和读写过程"><a href="#创建和读写过程" class="headerlink" title="创建和读写过程"></a>创建和读写过程</h2><p><code>mmap</code> 系统调用，会建立一个 <code>vm_area_struct</code> 的数据结构，这个数据结构表示了进程虚拟地址空间中的一段，它把磁盘文件的区域和虚拟地址空间中的一段连接了起来。但是这时候物理内存中还是没有内容的，而 mmu 是在虚拟地址空间和物理内存地址之间建立映射的。</p>
+<p>在访问到这段虚拟地址空间时，由于只是建立了映射，而实际的页面还没有放置到页框中，所以会产生一个缺页中断陷入内核，然后会首先在硬盘的swap页面中寻找这个页面是否被交换出去，如果没有找到这个页面，那么会依照mmap建立的vm_area_struct这个数据结构把磁盘中的文件读到物理内存中，这样就可以访问了。</p>
+<p>所以，使用 <code>mmap</code> 经历的拷贝过程：磁盘 —&gt; Java 堆外内存。</p>
+<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><p><code>mmap</code> 创建的堆外内存，不会受 <code>-XX:MaxDirectMemorySize</code> 限制。</p>
+<p>这个参数只有在使用 <code>ByteBuffer.allocateDirect</code> 的时候，才会检查，而在使用 <code>allocateMemory</code> JNI 方法和 <code>mmap</code> 的时候，不会检查。</p>
+<p>但是 <code>mmap</code> 一次的大小不能超过 <code>Integer.MAX_INT</code> （约 2 G）。因为 <code>mmap</code> 最后会调用如下的 JNI 方法，其中的地址会被转为 int。猜测是因为 Java 为了跨平台，并不知道平台是 32 G 还是 64 G的。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span>* <span class="title">addr_from_java</span><span class="params">(jlong addr)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// This assert fails in a variety of ways on 32-bit systems.</span></span><br><span class="line">  <span class="comment">// It is impossible to predict whether native code that converts</span></span><br><span class="line">  <span class="comment">// pointers to longs will sign-extend or zero-extend the addresses.</span></span><br><span class="line">  <span class="comment">//assert(addr == (uintptr_t)addr, "must not be odd high bits");</span></span><br><span class="line">  <span class="comment">//转换为int</span></span><br><span class="line">  <span class="keyword">return</span> (<span class="keyword">void</span>*)(<span class="keyword">uintptr_t</span>)addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="文件拷贝与-FileChannel-transformTo"><a href="#文件拷贝与-FileChannel-transformTo" class="headerlink" title="文件拷贝与 FileChannel.transformTo"></a>文件拷贝与 FileChannel.transformTo</h1><ul>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/" target="_blank" rel="noopener">通过零拷贝实现有效数据传输</a></li>
+</ul>
+<p>把数据从一个文件拷贝到另外一个文件。</p>
+<p>传统的数据传输，需要先调用 <code>in.read()</code>，在调用 <code>out.write()</code>。需要 4 次拷贝、4 次内核/用户态切换。磁盘 —&gt; 读内核页缓冲区 —&gt; 用户空间 —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
+<p>传统方法的数据拷贝：</p>
+<p><img src="/images/传统-拷贝.gif" alt="传统-拷贝"></p>
+<p>传统方法的上下文切换：</p>
+<p><img src="/images/传统-上下文切换.gif" alt="传统-上下文切换"></p>
+<p>而 <code>FileChannel.transformTo</code> 可以无需 用户空间的接入，之即完成数据的传输。需要 3 次拷贝、2次切换：磁盘 —&gt; 读内核页缓冲区  —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
+<p>这个操作依赖底层操作系统对零拷贝的支持；在 UNIX 和各种 Linux 系统中，此调用被传递到 <code>sendfile()</code> 系统调用中。</p>
+<p>transformTo 的数据拷贝：</p>
+<p><img src="/images/transferTo-拷贝.gif" alt="transferTo-拷贝"></p>
+<p>transformTo 的上下文切换：</p>
+<p><img src="/images/transferTo-上下文切换.gif" alt="transferTo-上下文切换"></p>
+<p>如果底层网络接口卡支持<em>收集操作</em> 的话，那么我们就可以进一步减少内核的数据复制。在 Linux 内核 2.4 及后期版本中，套接字缓冲区描述符就做了相应调整，以满足该需求。需要2次拷贝、2次切换。</p>
+<p>transformTo + 收集 的数据拷贝：</p>
+<p><img src="/images/transferTo-拷贝2.gif" alt="transferTo-拷贝2"></p>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>io</category>
+      </categories>
+      <tags>
+        <tag>io</tag>
+        <tag>java</tag>
       </tags>
   </entry>
   <entry>

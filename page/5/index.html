@@ -182,6 +182,158 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/" class="post-title-link" itemprop="url">8. BlockingQueue 简介</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:08" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:08+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:57:36" itemprop="dateModified" datetime="2020-03-05T00:57:36+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="8-BlockingQueue-简介"><a href="#8-BlockingQueue-简介" class="headerlink" title="8. BlockingQueue 简介"></a>8. BlockingQueue 简介</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li><a href="https://www.jianshu.com/p/af6f83c78506" target="_blank" rel="noopener">SynchronousQueue原理解析</a></li>
+</ul>
+<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>阻塞队列 <code>BlockingQueue</code> 继承自 <code>Queue</code>，添加了阻塞入队、阻塞出队的功能。</p>
+<ul>
+<li><code>put(e)</code>：入队时，如果队列已满，则阻塞直到队列不满。</li>
+<li><code>take()</code>：出队时，如果队列为空，则阻塞直到队列不空。</li>
+</ul>
+<p><code>BlockingQueue</code> 提供的方法：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>返回特殊值</th>
+<th>超时退出</th>
+<th>抛出异常</th>
+<th>阻塞</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>插入</td>
+<td>offer(e)</td>
+<td>offer(e, time, unit)</td>
+<td>add(e)</td>
+<td>put(e)</td>
+</tr>
+<tr>
+<td>移除</td>
+<td>poll()</td>
+<td>poll(e, time, unit)</td>
+<td>remove()</td>
+<td>take()</td>
+</tr>
+<tr>
+<td>获取队首</td>
+<td>peek()</td>
+<td>pe(e, time, unit)</td>
+<td>element()</td>
+<td>无</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="2-7-个阻塞队列"><a href="#2-7-个阻塞队列" class="headerlink" title="2. 7 个阻塞队列"></a>2. 7 个阻塞队列</h2><ol>
+<li>ArrayBlockingQueue：数组组成、有界、一把公平/非公平锁。</li>
+<li>LinkedBlockingQueue：链表组成、有界、两把非公平锁。</li>
+<li>LinkedBlockingDeque：链表组成、有界、一把非公平锁、双向。</li>
+<li>PriorityBlockingQueue：基于数组的最小堆、无界、一把非公平锁 + 扩容自旋锁、优先级排序。</li>
+<li>DelayQueue：基于 <code>PriorityQueue</code>、无界、一把非公平锁、优先级排序。</li>
+<li>SynchronousQueue：链表组成的队列（公平）/栈（非公平）、无界、CAS 更新、每一个出队和入队操作必须匹配，否则阻塞。</li>
+<li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。TODO</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/7ConcurrentLinkedQueue源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1008,20 +1160,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">47</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
