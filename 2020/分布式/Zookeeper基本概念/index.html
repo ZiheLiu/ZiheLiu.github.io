@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引用 Zookeeper 系列（一）基本概念  深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举   属性结构ZooKeeper 使用类似文件系统的方式组织数据。 每个节点用从根节点到它的绝对路径表示 /node1/node12。 其中 /zookeeper 用以保存管理信息，比如关键配额信息。 Znode每个节点用 Znode 表示，兼具文件和目录两种特点。 由 3">
+<meta name="keywords" content="分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper 基本概念">
+<meta property="og:url" content="http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="引用 Zookeeper 系列（一）基本概念  深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举   属性结构ZooKeeper 使用类似文件系统的方式组织数据。 每个节点用从根节点到它的绝对路径表示 /node1/node12。 其中 /zookeeper 用以保存管理信息，比如关键配额信息。 Znode每个节点用 Znode 表示，兼具文件和目录两种特点。 由 3">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/ZooKeeper锁1.svg">
+<meta property="og:image" content="http://ziheliu.github.io/images/ZooKeeper锁2.svg">
+<meta property="og:updated_time" content="2020-03-06T13:10:49.778Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ZooKeeper 基本概念">
+<meta name="twitter:description" content="引用 Zookeeper 系列（一）基本概念  深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举   属性结构ZooKeeper 使用类似文件系统的方式组织数据。 每个节点用从根节点到它的绝对路径表示 /node1/node12。 其中 /zookeeper 用以保存管理信息，比如关键配额信息。 Znode每个节点用 Znode 表示，兼具文件和目录两种特点。 由 3">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/ZooKeeper锁1.svg">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>ZooKeeper 基本概念 | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ZooKeeper 基本概念
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-06 20:38:00 / Modified: 21:10:49" itemprop="dateCreated datePublished" datetime="2020-03-06T20:38:00+08:00">2020-03-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/分布式/Zookeeper基本概念/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/Zookeeper基本概念/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><p><a href="https://www.cnblogs.com/binarylei/p/8721126.html" target="_blank" rel="noopener">Zookeeper 系列（一）基本概念</a></p>
+</li>
+<li><p><a href="http://www.jasongj.com/zookeeper/distributedlock/" target="_blank" rel="noopener">深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举</a></p>
+</li>
+</ul>
+<h1 id="属性结构"><a href="#属性结构" class="headerlink" title="属性结构"></a>属性结构</h1><p>ZooKeeper 使用类似文件系统的方式组织数据。</p>
+<p>每个节点用从根节点到它的绝对路径表示 <code>/node1/node12</code>。</p>
+<p>其中 <code>/zookeeper</code> 用以保存管理信息，比如关键配额信息。</p>
+<h1 id="Znode"><a href="#Znode" class="headerlink" title="Znode"></a>Znode</h1><p>每个节点用 Znode 表示，兼具文件和目录两种特点。</p>
+<p>由 3 部分组成:</p>
+<ul>
+<li><strong>stat</strong> ：状态信息, 描述该 Znode 的版本、权限等信息</li>
+<li><strong>data</strong> ：关联的数据。最多为 1M。主要做配置、状态管理，不要用来存储大数据。</li>
+<li><strong>children</strong> ：子节点。</li>
+</ul>
+<h1 id="数据访问"><a href="#数据访问" class="headerlink" title="数据访问"></a>数据访问</h1><p>原子操作。</p>
+<p>读操作获取与节点相关的所有数据。</p>
+<p>写操作替换掉节点的所有数据。</p>
+<p>每一个节点有 ACL(访问控制列表)，这个列表规定了用户的权限，限定了特定用户对目标节点可以执行的操作。</p>
+<h1 id="节点类型"><a href="#节点类型" class="headerlink" title="节点类型"></a>节点类型</h1><h2 id="Persist-与-Ephemeral"><a href="#Persist-与-Ephemeral" class="headerlink" title="Persist 与 Ephemeral"></a>Persist 与 Ephemeral</h2><ul>
+<li>Persist 节点，一旦被创建，便不会意外丢失，即使服务器全部重启也依然存在。每个 Persist 节点即可包含数据，也可包含子节点</li>
+<li>Ephemeral 点，在创建它的客户端与服务器间的 Session 结束时自动被删除。服务器重启会导致 Session 结束，因此 Ephemeral 类型的 znode 此时也会自动删除。</li>
+</ul>
+<h2 id="Sequence-与-Non-sequence"><a href="#Sequence-与-Non-sequence" class="headerlink" title="Sequence 与 Non-sequence"></a>Sequence 与 Non-sequence</h2><ul>
+<li>Non-sequence 节点，多个客户端同时创建同一 Non-sequence 节点时，只有一个可创建成功，其它匀失败。并且创建出的节点名称与创建时指定的节点名完全一样</li>
+<li>Sequence 节点，创建出的节点名在指定的名称之后带有10位10进制数的序号。多个客户端创建同一名称的节点时，都能创建成功，只是序号不同</li>
+</ul>
+<h1 id="Zookeeper语义保证"><a href="#Zookeeper语义保证" class="headerlink" title="Zookeeper语义保证"></a>Zookeeper语义保证</h1><p>Zookeeper 简单高效，同时提供如下语义保证，从而使得我们可以利用这些特性提供复杂的服务。</p>
+<ul>
+<li>顺序性。客户端发起的更新会按发送顺序被应用到 Zookeeper 上。</li>
+<li>原子性。 更新操作要么成功要么失败，不会出现中间状态。</li>
+<li>单一系统镜像。一个客户端无论连接到哪一个服务器都能看到完全一样的系统镜像。<ul>
+<li>写操作并不保证更新被所有的 Follower 立即确认，因此通过部分 Follower 读取数据并不能保证读到最新的数据，而部分 Follwer 及 Leader 可读到最新数据。如果一定要保证单一系统镜像，可在读操作前使用 sync 方法。</li>
+</ul>
+</li>
+<li>可靠性。一个更新操作一旦被接受即不会意外丢失，除非被其它更新操作覆盖。</li>
+<li>最终一致性。写操作最终（而非立即）会对客户端可见。</li>
+</ul>
+<h1 id="Watch机制"><a href="#Watch机制" class="headerlink" title="Watch机制"></a>Watch机制</h1><p>所有对 Zookeeper 的读操作，都可附带一个 Watch 。一旦相应的数据有变化，该 Watch 即被触发。Watch 有如下特点</p>
+<ul>
+<li>主动推送。Watch被触发时，由 Zookeeper 服务器主动将更新推送给客户端，而不需要客户端轮询。</li>
+<li>一次性。数据变化时，Watch 只会被触发一次。如果客户端想得到后续更新的通知，必须要在 Watch 被触发后重新注册一个 Watch。</li>
+<li>可见性。如果一个客户端在读请求中附带 Watch，Watch 被触发的同时再次读取数据，客户端在得到 Watch 消息之前肯定不可能看到更新后的数据。换句话说，更新通知先于更新结果。</li>
+<li>顺序性。如果多个更新触发了多个 Watch ，那 Watch 被触发的顺序与更新顺序一致。</li>
+</ul>
+<h1 id="实现分布式锁"><a href="#实现分布式锁" class="headerlink" title="实现分布式锁"></a>实现分布式锁</h1><h2 id="简单版本"><a href="#简单版本" class="headerlink" title="简单版本"></a>简单版本</h2><p>基于 ZooKeeper 实现分布式锁。</p>
+<p>对于一个锁 <code>lock</code>，用一个节点表示。</p>
+<p>创建这个节点的获取锁。</p>
+<p>释放锁时删除节点。</p>
+<p><img src="/images/ZooKeeper锁1.svg" alt="ZooKeeper锁1"></p>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>惊群。在释放锁时，所有等待锁的节点都被唤醒。</p>
+<h2 id="改进版本"><a href="#改进版本" class="headerlink" title="改进版本"></a>改进版本</h2><p><code>lock</code> 目录下都是顺序节点，编号最小的节点获取到锁。</p>
+<p>每个节点 watch 编号比它小 1 的节点，而不是获取锁的节点。</p>
+<p>在前面的节点获取锁、并释放后，节点会被删除。本节点就获取到了锁。</p>
+<p><img src="/images/ZooKeeper锁2.svg" alt="ZooKeeper锁2"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/分布式/分布式ID生成/" rel="prev" title="分布式 ID 生成">
+      <i class="fa fa-chevron-left"></i> 分布式 ID 生成
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/分布式/Etcd基本概念/" rel="next" title="Etcd 基本概念">
+      Etcd 基本概念 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#属性结构"><span class="nav-number">2.</span> <span class="nav-text">属性结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Znode"><span class="nav-number">3.</span> <span class="nav-text">Znode</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据访问"><span class="nav-number">4.</span> <span class="nav-text">数据访问</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节点类型"><span class="nav-number">5.</span> <span class="nav-text">节点类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Persist-与-Ephemeral"><span class="nav-number">5.1.</span> <span class="nav-text">Persist 与 Ephemeral</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sequence-与-Non-sequence"><span class="nav-number">5.2.</span> <span class="nav-text">Sequence 与 Non-sequence</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Zookeeper语义保证"><span class="nav-number">6.</span> <span class="nav-text">Zookeeper语义保证</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Watch机制"><span class="nav-number">7.</span> <span class="nav-text">Watch机制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现分布式锁"><span class="nav-number">8.</span> <span class="nav-text">实现分布式锁</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#简单版本"><span class="nav-number">8.1.</span> <span class="nav-text">简单版本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点"><span class="nav-number">8.1.1.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#改进版本"><span class="nav-number">8.2.</span> <span class="nav-text">改进版本</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">51</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/";
+    this.page.identifier = "2020/分布式/Zookeeper基本概念/";
+    this.page.title = "ZooKeeper 基本概念";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

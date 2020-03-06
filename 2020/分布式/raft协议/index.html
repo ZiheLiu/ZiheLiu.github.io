@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:description" content="引用 RAFT协议完整笔记 Raft协议详解  节点状态 跟随者 候选者 领导者  跟随者节点收到心跳/添加日志请求后：  如果当前的term大于请求的term，返回false。 如果当前的term小于请求的term，自己变为跟随者。 如果请求的PrevLogIndex不在自己的log里，返回false。 如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-05T12:26:28.687Z">
+<meta property="og:updated_time" content="2020-03-06T11:05:13.697Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft 协议">
 <meta name="twitter:description" content="引用 RAFT协议完整笔记 Raft协议详解  节点状态 跟随者 候选者 领导者  跟随者节点收到心跳/添加日志请求后：  如果当前的term大于请求的term，返回false。 如果当前的term小于请求的term，自己变为跟随者。 如果请求的PrevLogIndex不在自己的log里，返回false。 如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term">
@@ -209,10 +209,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-05 20:24:00 / Modified: 20:26:28" itemprop="dateCreated datePublished" datetime="2020-03-05T20:24:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-05 20:24:00" itemprop="dateCreated datePublished" datetime="2020-03-05T20:24:00+08:00">2020-03-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-06 19:05:13" itemprop="dateModified" datetime="2020-03-06T19:05:13+08:00">2020-03-06</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -309,9 +315,43 @@
 <li>如果返回的是false，把rf.nextIndex[index] = reply.NextIndex，稍后心跳用新的nextIndex重试。</li>
 <li>如果返回的是true，如果大多数跟随者都返回了true，把这条记录标记为commit。</li>
 </ul>
-<h1 id="选举约束"><a href="#选举约束" class="headerlink" title="选举约束"></a>选举约束</h1><p>选举约束：lastLog的term越大谁越新，如果term相同，谁的lastLog的index越大谁越新。</p>
-<p>约束2：当前term的leader不能“直接”提交之前term的entries 必须要等到当前term有entry过半了，才顺便一起将之前term的entries进行提交。</p>
+<h1 id="选举约束"><a href="#选举约束" class="headerlink" title="选举约束"></a>选举约束</h1><p>选举约束：被选举出来的 leader 必须要包含所有已经提交的 entries。</p>
+<p>Raft 的简单实现：lastLog的term越大谁越新，如果term相同，谁的lastLog的index越大谁越新。</p>
+<p>但是这样的实现，可能会出现日志覆盖的情况（见<a href="https://zhuanlan.zhihu.com/p/27207160" target="_blank" rel="noopener">Raft协议详解</a>）。</p>
+<p>所以 Raft 添加了约束2：当前term的leader不能“直接”提交之前term的entries，必须要等到<strong>当前</strong> term 有entry过半了，才<strong>顺便</strong>一起将之前term的entries进行提交。</p>
 <p>不能覆盖已经提交的请求（因为领导者要半数节点同意才可以，而同意需要领导者的上一条的term和index最大）</p>
+<h1 id="网络分区"><a href="#网络分区" class="headerlink" title="网络分区"></a>网络分区</h1><blockquote>
+<ul>
+<li><a href="https://pingcap.com/blog-cn/linearizability-and-raft/" target="_blank" rel="noopener">PingCAP-线性一致性和 Raft</a></li>
+<li><a href="https://zhengyinyong.com/post/etcd-linearizable-read-implementation/#什么是线性一致性读" target="_blank" rel="noopener">etcd 中线性一致性读的具体实现</a></li>
+</ul>
+</blockquote>
+<p>A - D 五个节点，A 为 Leader。</p>
+<p>某一时刻，网络分区为 AB和CDE。CDE由于心跳超时，假设 C 成为新的 Leader。</p>
+<p>这样，CDE 认为 C 是 Leader，而 AB 仍然认为 A 是 Leader。</p>
+<p>这个时候，就产生了<strong>网络分区</strong>。</p>
+<h2 id="写请求"><a href="#写请求" class="headerlink" title="写请求"></a>写请求</h2><p>Client 可以把读写请求发送到集群的任意节点，节点会把请求转发给 Leader。</p>
+<p>网络分区对于写请求没有影响。</p>
+<ul>
+<li><p>因为 Client 如果向 AB 请求写入，没有办法产生过半数的同意，所以没有办法<strong>提交</strong>这个写请求。</p>
+</li>
+<li><p>只有 Client 向 CDE 请求写入，才能被<strong>提交</strong>。</p>
+</li>
+</ul>
+<h2 id="读请求"><a href="#读请求" class="headerlink" title="读请求"></a>读请求</h2><p>从 AB 读可能读到旧的数据。</p>
+<h3 id="ReadIndex"><a href="#ReadIndex" class="headerlink" title="ReadIndex"></a>ReadIndex</h3><p>使用 ReadIndex 解决这个问题，主要是第 2 步。</p>
+<ol>
+<li>记录当前的 commit index，称为 ReadIndex</li>
+<li>向 Follower 发起一次心跳，如果大多数节点回复了，那就能确定现在仍然是 Leader</li>
+<li>等待状态机<strong>至少</strong>应用到 ReadIndex 记录的 Log</li>
+<li>执行读请求，将结果返回给 Client</li>
+</ol>
+<p>1 和 3 步是为了保证线性一致性读。</p>
+<ul>
+<li>线性一致性读：当存储系统已将写操作提交成功，那此时读出的数据应是最新的数据、</li>
+</ul>
+<h3 id="LeaseRead"><a href="#LeaseRead" class="headerlink" title="LeaseRead"></a>LeaseRead</h3><p>这样每次读请求，都要发起一次心跳，网络消耗很大。使用 LeaseRead 来优化。</p>
+<p>基本的思路是 Leader 取一个比 Election Timeout 小的租期，在租期不会发生选举，确保 Leader 不会变，所以可以跳过 ReadIndex 的第二步，也就降低了延时。</p>
 
     </div>
 
@@ -403,7 +443,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节点状态"><span class="nav-number">2.</span> <span class="nav-text">节点状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跟随者"><span class="nav-number">3.</span> <span class="nav-text">跟随者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#候选者"><span class="nav-number">4.</span> <span class="nav-text">候选者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#领导者"><span class="nav-number">5.</span> <span class="nav-text">领导者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选举约束"><span class="nav-number">6.</span> <span class="nav-text">选举约束</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节点状态"><span class="nav-number">2.</span> <span class="nav-text">节点状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跟随者"><span class="nav-number">3.</span> <span class="nav-text">跟随者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#候选者"><span class="nav-number">4.</span> <span class="nav-text">候选者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#领导者"><span class="nav-number">5.</span> <span class="nav-text">领导者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选举约束"><span class="nav-number">6.</span> <span class="nav-text">选举约束</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络分区"><span class="nav-number">7.</span> <span class="nav-text">网络分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#写请求"><span class="nav-number">7.1.</span> <span class="nav-text">写请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读请求"><span class="nav-number">7.2.</span> <span class="nav-text">读请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReadIndex"><span class="nav-number">7.2.1.</span> <span class="nav-text">ReadIndex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LeaseRead"><span class="nav-number">7.2.2.</span> <span class="nav-text">LeaseRead</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -419,7 +459,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-count">51</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
