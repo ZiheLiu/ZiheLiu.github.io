@@ -20,22 +20,20 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="二叉搜索树 的中序遍历是有序的。 性质 对于一个节点，其左子树的值小于它的值，右子树的值大于它的值。 对于一个节点，其左子树和右子树的高度之差不大于1。  旋转操作 左旋 根节点的右节点成为新根节点。 旧根节点成为新根节点的左节点。 新根节点本来的左节点成为旧根节点的右节点。   右旋 根节点的左节点成为新根节点。 旧根节点成为新根节点的右节点。 新根节点本来的右节点成为旧根节点的左节点。">
-<meta name="keywords" content="algorithm">
+  <meta name="description" content="引用 IO多路复用之Reactor  Netty中的三种Reactor   简介Reactor（反应器）模式常用来实现 I/O 多路复用机制。 Reactor 管理器调用事件分离器等待事件的发生。事件发生后，Reactor 管理器被唤醒，调度事件处理器链进行事件的处理。 Reactor模式组成描述符 Handles由操作系统提供的资源，用于识别每一个事件，如 Socket 描述符、文件描述符、信号">
+<meta name="keywords" content="netty">
 <meta property="og:type" content="article">
-<meta property="og:title" content="平衡二叉树">
-<meta property="og:url" content="http://ziheliu.github.io/2020/algorithm/平衡二叉树/index.html">
+<meta property="og:title" content="Reactor 模式">
+<meta property="og:url" content="http://ziheliu.github.io/2020/netty/Reactor模式/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="二叉搜索树 的中序遍历是有序的。 性质 对于一个节点，其左子树的值小于它的值，右子树的值大于它的值。 对于一个节点，其左子树和右子树的高度之差不大于1。  旋转操作 左旋 根节点的右节点成为新根节点。 旧根节点成为新根节点的左节点。 新根节点本来的左节点成为旧根节点的右节点。   右旋 根节点的左节点成为新根节点。 旧根节点成为新根节点的右节点。 新根节点本来的右节点成为旧根节点的左节点。">
+<meta property="og:description" content="引用 IO多路复用之Reactor  Netty中的三种Reactor   简介Reactor（反应器）模式常用来实现 I/O 多路复用机制。 Reactor 管理器调用事件分离器等待事件的发生。事件发生后，Reactor 管理器被唤醒，调度事件处理器链进行事件的处理。 Reactor模式组成描述符 Handles由操作系统提供的资源，用于识别每一个事件，如 Socket 描述符、文件描述符、信号">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="http://ziheliu.github.io/images/avl.png">
-<meta property="og:updated_time" content="2020-03-05T11:43:22.896Z">
+<meta property="og:updated_time" content="2020-03-07T12:54:19.244Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="平衡二叉树">
-<meta name="twitter:description" content="二叉搜索树 的中序遍历是有序的。 性质 对于一个节点，其左子树的值小于它的值，右子树的值大于它的值。 对于一个节点，其左子树和右子树的高度之差不大于1。  旋转操作 左旋 根节点的右节点成为新根节点。 旧根节点成为新根节点的左节点。 新根节点本来的左节点成为旧根节点的右节点。   右旋 根节点的左节点成为新根节点。 旧根节点成为新根节点的右节点。 新根节点本来的右节点成为旧根节点的左节点。">
-<meta name="twitter:image" content="http://ziheliu.github.io/images/avl.png">
+<meta name="twitter:title" content="Reactor 模式">
+<meta name="twitter:description" content="引用 IO多路复用之Reactor  Netty中的三种Reactor   简介Reactor（反应器）模式常用来实现 I/O 多路复用机制。 Reactor 管理器调用事件分离器等待事件的发生。事件发生后，Reactor 管理器被唤醒，调度事件处理器链进行事件的处理。 Reactor模式组成描述符 Handles由操作系统提供的资源，用于识别每一个事件，如 Socket 描述符、文件描述符、信号">
 
-<link rel="canonical" href="http://ziheliu.github.io/2020/algorithm/平衡二叉树/">
+<link rel="canonical" href="http://ziheliu.github.io/2020/netty/Reactor模式/">
 
 
 <script id="page-configurations">
@@ -47,7 +45,7 @@
   };
 </script>
 
-  <title>平衡二叉树 | ZiheLiu</title>
+  <title>Reactor 模式 | ZiheLiu</title>
   
 
 
@@ -189,7 +187,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/平衡二叉树/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Reactor模式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -202,7 +200,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          平衡二叉树
+          Reactor 模式
         </h1>
 
         <div class="post-meta">
@@ -213,7 +211,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-03-05 19:42:00 / Modified: 19:43:22" itemprop="dateCreated datePublished" datetime="2020-03-05T19:42:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-07 20:19:00 / Modified: 20:54:19" itemprop="dateCreated datePublished" datetime="2020-03-07T20:19:00+08:00">2020-03-07</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -221,7 +219,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
                 </span>
             </span>
 
@@ -234,8 +232,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/algorithm/平衡二叉树/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/平衡二叉树/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/Reactor模式/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/Reactor模式/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -250,98 +248,53 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>二叉搜索树 的中序遍历是有序的。</p>
-<h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
-<li>对于一个节点，其左子树的值小于它的值，右子树的值大于它的值。</li>
-<li>对于一个节点，其左子树和右子树的高度之差不大于1。</li>
-</ol>
-<h1 id="旋转操作"><a href="#旋转操作" class="headerlink" title="旋转操作"></a>旋转操作</h1><ol>
-<li>左旋<ul>
-<li>根节点的右节点成为新根节点。</li>
-<li>旧根节点成为新根节点的左节点。</li>
-<li>新根节点本来的左节点成为旧根节点的右节点。</li>
-</ul>
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><p><a href="https://www.cnblogs.com/amei0/p/8117660.html" target="_blank" rel="noopener">IO多路复用之Reactor</a></p>
 </li>
-<li>右旋<ul>
-<li>根节点的左节点成为新根节点。</li>
-<li>旧根节点成为新根节点的右节点。</li>
-<li>新根节点本来的右节点成为旧根节点的左节点。</li>
-</ul>
-</li>
-</ol>
-<h1 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h1><p>对于1个节点，插入值为val的节点后，看它是否已经平衡(balance = 左子树高度-右子树高度)，如果不平衡：</p>
-<ul>
-<li>balance &gt;= 2，左子树多了节点。<ul>
-<li>如果val比左子节点的值小，说明在左子节点的左子树里多了一个节点(LL)。<ul>
-<li>对当前节点进行右旋操作。</li>
-</ul>
-</li>
-<li>否则，说明在左子节点的右子树里多了一个节点(LR)。<ul>
-<li>对左子节点进行左旋操作。</li>
-<li>随后，对当前节点进行右旋操作。</li>
-</ul>
+<li><p><a href="https://www.cnblogs.com/duanxz/p/3696849.html" target="_blank" rel="noopener">Netty中的三种Reactor</a></p>
 </li>
 </ul>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Reactor（反应器）模式常用来实现 I/O 多路复用机制。</p>
+<p>Reactor 管理器调用事件分离器等待事件的发生。事件发生后，Reactor 管理器被唤醒，调度事件处理器链进行事件的处理。</p>
+<h1 id="Reactor模式组成"><a href="#Reactor模式组成" class="headerlink" title="Reactor模式组成"></a>Reactor模式组成</h1><h2 id="描述符-Handles"><a href="#描述符-Handles" class="headerlink" title="描述符 Handles"></a>描述符 Handles</h2><p>由操作系统提供的资源，用于识别每一个事件，如 Socket 描述符、文件描述符、信号的值等。</p>
+<p>在Linux中，它用一个整数来表示。</p>
+<p>在网络编程中，一般是一个 Socket 描述符。</p>
+<h2 id="同步多路事件分离器-Event-Demultiplexer"><a href="#同步多路事件分离器-Event-Demultiplexer" class="headerlink" title="同步多路事件分离器 Event Demultiplexer"></a>同步多路事件分离器 Event Demultiplexer</h2><p>循环等待。一次同时等待多个事件的到来。</p>
+<p>在 Linux 系统上使用 select、poll 等系统调用来实现。</p>
+<p>调用者会被阻塞，直到分离器的分离的描述符集上有事件发生。</p>
+<h2 id="事件处理器-Event-Hanlder"><a href="#事件处理器-Event-Hanlder" class="headerlink" title="事件处理器 Event Hanlder"></a>事件处理器 Event Hanlder</h2><p>定义事件的处理程序，具有统一的若干种接口（出站、入站）。</p>
+<h2 id="Reactor-管理器"><a href="#Reactor-管理器" class="headerlink" title="Reactor 管理器"></a>Reactor 管理器</h2><ul>
+<li><p>管理描述符</p>
 </li>
-<li>balance &lt;= -2，左子树多了节点。<ul>
-<li>如果val比右子节点的值大，说明在右子节点的右子树里多了一个节点(RR)。<ul>
-<li>对当前节点进行左旋操作。</li>
-</ul>
+<li><p>注册/移除事件处理器</p>
 </li>
-<li>否则，说明在右子节点的左子树里多了一个节点(RL)。<ul>
-<li>对右子节点进行右旋操作。</li>
-<li>随后，对当前节点进行左旋操作。</li>
-</ul>
+<li><p>调用事件分离器来等待事件</p>
 </li>
-</ul>
-</li>
-</ul>
-<p>注意，</p>
-<ul>
-<li>旋转之后，要更新旧根节点和新根节点的高度。</li>
-<li>平衡之后，要更新当前节点的高度。</li>
-</ul>
-<p>示意图</p>
-<p><img src="/images/avl.png" alt="avl"></p>
-<h1 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h1><p>对于1个节点，要删除值为val的节点，首先找到对应的节点：</p>
-<ul>
-<li>如果当前节点为空，说明树中不存在值为val的节点，返回空。</li>
-<li>如果val比当前节点的值小，在左子树递归寻找。</li>
-<li>如果val比当前节点的值大，在右子树递归寻找。</li>
-<li>否则，找到了值为val的节点。</li>
-</ul>
-<p>找到值为val的节点root后，要删除root节点：</p>
-<ul>
-<li>如果root的左右子节点至少有 一个为空，删除root节点，新的root为那个不为空的子节点（或者为空）。</li>
-<li>如果左右子节点都不为空，去root的右子树里找最小的元素（比val大的最小的元素），把找到的值赋给root，删除那个节点（递归调用这个函数）。</li>
-</ul>
-<p>删除root节点后，要进行节点的平衡：</p>
-<ul>
-<li>如果balance &gt;= 2<ul>
-<li>如果root左子节点的balance&gt;=0，说明多的节点在左子节点的左子树里(LL)。<ul>
-<li>对root进行右旋。</li>
-</ul>
-</li>
-<li>否则，说明多的节点在左子节点的右子树里(LR)。<ul>
-<li>对root的左子节点进行左旋。</li>
-<li>随后，对root进行右旋。</li>
-</ul>
+<li><p>事件到来时，把时间分发给特定的事件处理器进行处理。</p>
 </li>
 </ul>
+<h1 id="模式-演进"><a href="#模式-演进" class="headerlink" title="模式 演进"></a>模式 演进</h1><h2 id="单线程模式"><a href="#单线程模式" class="headerlink" title="单线程模式"></a>单线程模式</h2><p>系统只使用一个线程。</p>
+<p>Reactor 管理器来分离连接/读写事件、事件处理器来处理事件 都在一个线程。</p>
+<h2 id="单-Reactor-多线程模式"><a href="#单-Reactor-多线程模式" class="headerlink" title="单 Reactor 多线程模式"></a>单 Reactor 多线程模式</h2><ul>
+<li><p>Reactor 管理器使用<strong>线程池</strong>来分离连接/读写事件。</p>
 </li>
-<li>如果balance &lt;= -2<ul>
-<li>如果root右子节点的balance&lt;0，说明多的节点在右子节点的右子树里(RR)。<ul>
-<li>对root进行左旋。</li>
-</ul>
-</li>
-<li>否则，说明多的节点在右子节点的左子树里(RL)。<ul>
-<li>对root的右子节点进行右旋。</li>
-<li>随后，对root进行左旋。</li>
-</ul>
+<li><p>事件处理器交给另外的<strong>线程池</strong>来执行。</p>
 </li>
 </ul>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><p>在客户端连接特别多的时候、或客户端与服务端需要进行安全认证时，Reactor 在建立连接上可能耗费大量资源，使得读写事件受到影响。</p>
+<p>所以有了下面的主从 Reactor 模式。</p>
+<h2 id="主从-Reactor-多线程模式"><a href="#主从-Reactor-多线程模式" class="headerlink" title="主从 Reactor 多线程模式"></a>主从 Reactor 多线程模式</h2><ul>
+<li><p>MainReactor 管理器使用<strong>线程池</strong>来分离连接事件。</p>
+</li>
+<li><p>MainReactor 将建立的连接分派给 SubReactor，SubReactor 使用另外的<strong>线程池</strong>来分离读写事件。</p>
+</li>
+<li><p>事件处理器交给另外的<strong>线程池</strong>执行。</p>
 </li>
 </ul>
+<p>在 Netty 中推荐主从 Reactor 模式，使用例子如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// MainReactor</span></span><br><span class="line">EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup(<span class="number">2</span>);</span><br><span class="line"><span class="comment">// SubReactor</span></span><br><span class="line"><span class="comment">// 默认值 CPUS * 2</span></span><br><span class="line">EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">ServerBootstrap bootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">bootstrap.group(bossGroup, workerGroup);</span><br></pre></td></tr></table></figure>
+<h1 id="Preactor-模式"><a href="#Preactor-模式" class="headerlink" title="Preactor 模式"></a>Preactor 模式</h1><p>Reactor 采用同步 I/O 网络模式。</p>
+<p>Preactor 采用异步 I/O 网络模式。</p>
 
     </div>
 
@@ -351,7 +304,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/algorithm/" rel="tag"># algorithm</a>
+              <a href="/tags/netty/" rel="tag"># netty</a>
           </div>
 
         
@@ -360,13 +313,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/algorithm/加密与哈希/" rel="prev" title="加密与哈希">
-      <i class="fa fa-chevron-left"></i> 加密与哈希
+    <a href="/2020/分布式/Etcd基本概念/" rel="prev" title="Etcd 基本概念">
+      <i class="fa fa-chevron-left"></i> Etcd 基本概念
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/algorithm/红黑树/" rel="next" title="红黑树">
-      红黑树 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -433,7 +383,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#性质"><span class="nav-number">1.</span> <span class="nav-text">性质</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#旋转操作"><span class="nav-number">2.</span> <span class="nav-text">旋转操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#插入"><span class="nav-number">3.</span> <span class="nav-text">插入</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#删除"><span class="nav-number">4.</span> <span class="nav-text">删除</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#简介"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Reactor模式组成"><span class="nav-number">3.</span> <span class="nav-text">Reactor模式组成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#描述符-Handles"><span class="nav-number">3.1.</span> <span class="nav-text">描述符 Handles</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同步多路事件分离器-Event-Demultiplexer"><span class="nav-number">3.2.</span> <span class="nav-text">同步多路事件分离器 Event Demultiplexer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#事件处理器-Event-Hanlder"><span class="nav-number">3.3.</span> <span class="nav-text">事件处理器 Event Hanlder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reactor-管理器"><span class="nav-number">3.4.</span> <span class="nav-text">Reactor 管理器</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模式-演进"><span class="nav-number">4.</span> <span class="nav-text">模式 演进</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单线程模式"><span class="nav-number">4.1.</span> <span class="nav-text">单线程模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单-Reactor-多线程模式"><span class="nav-number">4.2.</span> <span class="nav-text">单 Reactor 多线程模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缺点"><span class="nav-number">4.2.1.</span> <span class="nav-text">缺点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主从-Reactor-多线程模式"><span class="nav-number">4.3.</span> <span class="nav-text">主从 Reactor 多线程模式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Preactor-模式"><span class="nav-number">5.</span> <span class="nav-text">Preactor 模式</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -561,59 +511,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
   
 
   
-      
-
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
-
-    
 
   
 
@@ -629,9 +526,9 @@ if (document.querySelectorAll('pre.mermaid').length) {
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://ziheliu.github.io/2020/algorithm/平衡二叉树/";
-    this.page.identifier = "2020/algorithm/平衡二叉树/";
-    this.page.title = "平衡二叉树";
+    this.page.url = "http://ziheliu.github.io/2020/netty/Reactor模式/";
+    this.page.identifier = "2020/netty/Reactor模式/";
+    this.page.title = "Reactor 模式";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
