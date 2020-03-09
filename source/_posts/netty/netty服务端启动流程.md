@@ -1,11 +1,28 @@
 ---
-title: Netty 服务端启动
+title: Netty 服务端启动流程
 date: 2020-03-08 11:18:00
 categories:
 	- netty
 tags:
 	- netty
 ---
+
+# 引用
+
+- [源码剖析：启动服务](https://time.geekbang.org/course/detail/237-158209)
+
+# 主线
+
+- our thread
+  - 创建 selector。
+  - 创建 server socket channel。
+  - 初始化 server socket channel。
+  - 给 server socket channel 从 boss group 中选择一个 NioEventLoop。
+
+- boss thread 
+  - 将 server socket channel 注册到选择的 NioEventLoop 的 selector。
+  - 绑定地址启动 NioEventLoop 的线程来监听事件。
+  - 注册接受连接事件（OP_ACCEPT）到 selector 上。
 
 # 创建 Selector
 
@@ -76,8 +93,6 @@ protected DefaultChannelPipeline(Channel channel) {
         }
     });
     ```
-  
-    
 
 # 注册 NioServerSocketChannel
 
@@ -88,8 +103,32 @@ protected DefaultChannelPipeline(Channel channel) {
 
 ```java
 // class AbstractNioChannel
-// 注意，这里绑定的是 0 事件。
+// 注意，这里绑定的是 0 事件，只是为了获取到 selectionKey，在之后多态更新。
 selectionKey = javaChannel().register(eventLoop().unwrappedSelector(), 0, this);
+```
+
+提交注册任务后，`NioEventLoop` 的线程会启动起来。
+
+```java
+public void execute(Runnable task) {
+    if (task == null) {
+        throw new NullPointerException("task");
+    }
+
+    boolean inEventLoop = inEventLoop();
+    addTask(task);
+    if (!inEventLoop) {
+      	// 启动线程！！！
+        startThread();
+        if (isShutdown() && removeTask(task)) {
+            reject();
+        }
+    }
+
+    if (!addTaskWakesUp && wakesUpForTask(task)) {
+        wakeup(inEventLoop);
+    }
+}
 ```
 
 # 绑定地址
@@ -118,7 +157,7 @@ protected void doBind(SocketAddress localAddress) throws Exception {
 }
 ```
 
-# 注册 ACCEPT 事件
+# 注册 OP_ACCEPT 事件
 
 绑定地址后，调用 `pipeline.fireChannelActive()`，从 `pipeline.head` 开始执行 `channelActive()`。
 
