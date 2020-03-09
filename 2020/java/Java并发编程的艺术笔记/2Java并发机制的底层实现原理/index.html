@@ -264,7 +264,7 @@
         <h1 id="锁总线与锁缓存"><a href="#锁总线与锁缓存" class="headerlink" title="锁总线与锁缓存"></a>锁总线与锁缓存</h1><p>原子操作和 <code>volatile</code> 基于锁总线或锁缓存实现。</p>
 <h2 id="锁总线"><a href="#锁总线" class="headerlink" title="锁总线"></a>锁总线</h2><p>使用 CPU 提供的 LOCK# 信号，当一个 CPU 在总线上处理此信号时，其他 CPU 的操作请求将被阻塞住。因此这个处理器可以独占共享内存。</p>
 <h2 id="锁缓存"><a href="#锁缓存" class="headerlink" title="锁缓存"></a>锁缓存</h2><p>如果内存区域被缓存在 CPU 的缓存行中、并在 Lock 操作期间被锁定，那么当它执行锁操作写回到内存时，CPU 不在总线上声言 LOCK# 信号，而是使用缓存一致性机制来保证操作的原子性。</p>
-<p><strong>缓存一致性机制</strong>，当一个CPU 对缓存中的数据进行操作后，通知其他 CPU 放弃储存在它们内部的缓存，或者从主内存中重新读取。使用 <a href="https://blog.csdn.net/qq_35642036/article/details/82801708" target="_blank" rel="noopener">MESI （修改、独占、共享、无效）协议</a>实现。</p>
+<p><strong>缓存一致性机制</strong>，当一个CPU 对缓存中的数据进行操作后，通知其他 CPU 放弃储存在它们内部的缓存，或者从主内存中重新读取。使用 <a href="https://blog.csdn.net/qq_35642036/article/details/82801708">MESI （修改、独占、共享、无效）协议</a>实现。</p>
 <p>如果操作的数据不能被缓存在 CPU 内、或操作的数据跨多个缓存行，则<strong>不会使用锁缓存</strong>，而是锁总线。</p>
 <h1 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h1><h2 id="语义"><a href="#语义" class="headerlink" title="语义"></a>语义</h2><p>一个字段被声明为 <code>volatile</code>，Java 线程内存模型确保所有线程看到这个变亮的值是一致的。</p>
 <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ol>
@@ -279,7 +279,7 @@
 <li>静态同步方法，锁 <code>synchronized</code> 括号中的对象。</li>
 </ol>
 <h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><blockquote>
-<p>主要参考 <a href="https://github.com/farmerjohngit/myblog/issues/12" target="_blank" rel="noopener">死磕Synchronized底层实现</a></p>
+<p>主要参考 <a href="https://github.com/farmerjohngit/myblog/issues/12">死磕Synchronized底层实现</a></p>
 </blockquote>
 <p>编译器会在同步代的开始位置前添加 <code>monitorenter</code> 指令，在方法结束处、异常处添加 <code>monitorexit</code> 指令。</p>
 <p>当线程执行到 <code>monitorenter</code> 指令，会尝试获取对象所对应的 <code>monitor</code> 的所有权，即尝试获得对象锁。</p>
@@ -366,7 +366,7 @@
 <li>取出 EntryList 的首元素，唤醒ObjectWaiter对象的线程。</li>
 </ol>
 <h1 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h1><blockquote>
-<p><a href="https://zhuanlan.zhihu.com/p/40211594" target="_blank" rel="noopener">面试必备之乐观锁与悲观锁</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/40211594">面试必备之乐观锁与悲观锁</a></p>
 </blockquote>
 <h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><p>总是假设最坏的情况，每次拿数据时，都认为别人会修改。</p>
 <p>所以每次在拿数据的时候都会上锁，这样别人想拿这个数据就会阻塞直到它拿到锁。</p>

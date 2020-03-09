@@ -281,7 +281,7 @@
 <h1 id="Netty-使用的-NIO，为什么说自己是异步事件驱动的"><a href="#Netty-使用的-NIO，为什么说自己是异步事件驱动的" class="headerlink" title="Netty 使用的 NIO，为什么说自己是异步事件驱动的"></a>Netty 使用的 NIO，为什么说自己是异步事件驱动的</h1><p>Netty 的网络模型是<strong>同步非阻塞</strong>的，并不是 AIO 异步的网络模型。</p>
 <p>Netty 说的异步，是伪异步。异步事件驱动框架体现在所有的 I/O 操作是异步的，所有的 I/O 调用会立即返回，并不保证调用成功与否，但是调用会返回 <code>ChannelFuture</code>，Netty 会通过<code>ChannelFuture</code> 通知你调用是成功了还是失败了亦或是取消了。</p>
 <h1 id="为什么-Netty-使用-NIO-而不是-AIO"><a href="#为什么-Netty-使用-NIO-而不是-AIO" class="headerlink" title="为什么 Netty 使用 NIO 而不是 AIO"></a>为什么 Netty 使用 NIO 而不是 AIO</h1><blockquote>
-<p><a href="https://www.jianshu.com/p/df1d6d8c3f9d" target="_blank" rel="noopener">为什么Netty使用NIO而不是AIO？</a></p>
+<p><a href="https://www.jianshu.com/p/df1d6d8c3f9d">为什么Netty使用NIO而不是AIO？</a></p>
 </blockquote>
 <ul>
 <li>Netty的目标主要是Linux系统，AIO在linux上是使用Epoll实现，没有很好实现AIO，因此在性能上没有明显的优势。</li>

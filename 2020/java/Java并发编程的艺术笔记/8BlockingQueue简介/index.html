@@ -259,7 +259,7 @@
 
       
         <h1 id="8-BlockingQueue-简介"><a href="#8-BlockingQueue-简介" class="headerlink" title="8. BlockingQueue 简介"></a>8. BlockingQueue 简介</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://www.jianshu.com/p/af6f83c78506" target="_blank" rel="noopener">SynchronousQueue原理解析</a></li>
+<li><a href="https://www.jianshu.com/p/af6f83c78506">SynchronousQueue原理解析</a></li>
 </ul>
 <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>阻塞队列 <code>BlockingQueue</code> 继承自 <code>Queue</code>，添加了阻塞入队、阻塞出队的功能。</p>
 <ul>
@@ -362,10 +362,10 @@
 </tr>
 <tr>
 <td>SynchronousQueue TODO</td>
-<td>链表组成的队列（公平）、<br>或栈（非公平）</td>
+<td>链表组成的队列（公平）、<br />或栈（非公平）</td>
 <td>无界</td>
 <td>CAS 更新，LockSupport 等待和唤醒</td>
-<td>put 入队操作需要等待出队操作；<br>offer 入队操作需要有出队阻塞存在才可以，否则返回false。</td>
+<td>put 入队操作需要等待出队操作；<br />offer 入队操作需要有出队阻塞存在才可以，否则返回false。</td>
 </tr>
 <tr>
 <td>LinkedTransferQueue TODO</td>

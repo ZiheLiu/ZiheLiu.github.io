@@ -259,7 +259,7 @@
 
       
         <h1 id="8-4-PriorityBlockingQueue-源码分析"><a href="#8-4-PriorityBlockingQueue-源码分析" class="headerlink" title="8.4 PriorityBlockingQueue 源码分析"></a>8.4 PriorityBlockingQueue 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://www.cnblogs.com/binarylei/p/10926062.html" target="_blank" rel="noopener">JUC源码分析-集合篇（七）PriorityBlockingQueue</a></li>
+<li><a href="https://www.cnblogs.com/binarylei/p/10926062.html">JUC源码分析-集合篇（七）PriorityBlockingQueue</a></li>
 </ul>
 <h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><h3 id="基于数组的最小堆"><a href="#基于数组的最小堆" class="headerlink" title="基于数组的最小堆"></a>基于数组的最小堆</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Object[] queue;</span><br><span class="line"><span class="comment">// 存储队列中元素的数目</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">int</span> size;</span><br></pre></td></tr></table></figure>
 <h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> allocationSpinLock;</span><br></pre></td></tr></table></figure>
@@ -299,12 +299,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/" rel="prev" title="8.5 DelayQueue 源码分析">
-      <i class="fa fa-chevron-left"></i> 8.5 DelayQueue 源码分析
+    <a href="/2020/java/Java并发编程的艺术笔记/8.1LinkedBlockingQueue源码分析/" rel="prev" title="8.1 LinkedBlockingQueue 源码分析">
+      <i class="fa fa-chevron-left"></i> 8.1 LinkedBlockingQueue 源码分析
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/java/Java并发编程的艺术笔记/9CountDownLatch/" rel="next" title="9. CountDownLatch">
-      9. CountDownLatch <i class="fa fa-chevron-right"></i>
+    <a href="/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/" rel="next" title="8.5 DelayQueue 源码分析">
+      8.5 DelayQueue 源码分析 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>

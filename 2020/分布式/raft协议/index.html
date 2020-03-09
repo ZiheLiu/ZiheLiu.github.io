@@ -255,8 +255,8 @@
 
       
         <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.jianshu.com/p/ddbe4209be0f" target="_blank" rel="noopener">RAFT协议完整笔记</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/27207160" target="_blank" rel="noopener">Raft协议详解</a></li>
+<li><a href="https://www.jianshu.com/p/ddbe4209be0f">RAFT协议完整笔记</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/27207160">Raft协议详解</a></li>
 </ul>
 <h1 id="节点状态"><a href="#节点状态" class="headerlink" title="节点状态"></a>节点状态</h1><ol>
 <li>跟随者</li>
@@ -317,13 +317,13 @@
 </ul>
 <h1 id="选举约束"><a href="#选举约束" class="headerlink" title="选举约束"></a>选举约束</h1><p>选举约束：被选举出来的 leader 必须要包含所有已经提交的 entries。</p>
 <p>Raft 的简单实现：lastLog的term越大谁越新，如果term相同，谁的lastLog的index越大谁越新。</p>
-<p>但是这样的实现，可能会出现日志覆盖的情况（见<a href="https://zhuanlan.zhihu.com/p/27207160" target="_blank" rel="noopener">Raft协议详解</a>）。</p>
+<p>但是这样的实现，可能会出现日志覆盖的情况（见<a href="https://zhuanlan.zhihu.com/p/27207160">Raft协议详解</a>）。</p>
 <p>所以 Raft 添加了约束2：当前term的leader不能“直接”提交之前term的entries，必须要等到<strong>当前</strong> term 有entry过半了，才<strong>顺便</strong>一起将之前term的entries进行提交。</p>
 <p>不能覆盖已经提交的请求（因为领导者要半数节点同意才可以，而同意需要领导者的上一条的term和index最大）</p>
 <h1 id="网络分区"><a href="#网络分区" class="headerlink" title="网络分区"></a>网络分区</h1><blockquote>
 <ul>
-<li><a href="https://pingcap.com/blog-cn/linearizability-and-raft/" target="_blank" rel="noopener">PingCAP-线性一致性和 Raft</a></li>
-<li><a href="https://zhengyinyong.com/post/etcd-linearizable-read-implementation/#什么是线性一致性读" target="_blank" rel="noopener">etcd 中线性一致性读的具体实现</a></li>
+<li><a href="https://pingcap.com/blog-cn/linearizability-and-raft/">PingCAP-线性一致性和 Raft</a></li>
+<li><a href="https://zhengyinyong.com/post/etcd-linearizable-read-implementation/#什么是线性一致性读">etcd 中线性一致性读的具体实现</a></li>
 </ul>
 </blockquote>
 <p>A - D 五个节点，A 为 Leader。</p>

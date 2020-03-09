@@ -182,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/HashMap源码分析/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/2Java垃圾回收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -196,7 +196,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/basic/HashMap源码分析/" class="post-title-link" itemprop="url">HashMap源码分析</a>
+            <a href="/2020/java/jvm/2Java垃圾回收/" class="post-title-link" itemprop="url">2. Java垃圾收集器与内存分配分配策略</a>
         </h1>
 
         <div class="post-meta">
@@ -213,7 +213,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 21:30:49" itemprop="dateModified" datetime="2020-03-05T21:30:49+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-05 09:01:31" itemprop="dateModified" datetime="2020-03-05T09:01:31+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -225,7 +225,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
                 </span>
             </span>
 
@@ -238,8 +238,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/basic/HashMap源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/HashMap源码分析/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/jvm/2Java垃圾回收/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/2Java垃圾回收/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -255,19 +255,29 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://segmentfault.com/a/1190000015798586" target="_blank" rel="noopener">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
+<li>《深入理解 Java 虚拟机-第三版》</li>
+<li><a href="https://blog.csdn.net/aitangyong/article/details/41358427">java中虚引用PhantomReference与弱引用WeakReference（软引用SoftReference）的差别</a></li>
 </ul>
-<h1 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>节点 <code>Node</code> 存储：</p>
-<ul>
-<li>基本：hash 值、key值、value值。</li>
-<li>多个值存在一个位置：链表 <code>next</code>。</li>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="堆和方法区的垃圾回收"><a href="#堆和方法区的垃圾回收" class="headerlink" title="堆和方法区的垃圾回收"></a>堆和方法区的垃圾回收</h2><ul>
+<li>程序计数器、虚拟机栈、本地方法栈不需要垃圾回收。<ul>
+<li>所需要分配的内存在编译器可以确定下来，内存分配和回收具有确定性。</li>
 </ul>
-<h2 id="table"><a href="#table" class="headerlink" title="table"></a>table</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-<p>节点存储在 <code>Node</code> 数组中。</p>
+</li>
+<li>堆和方法区，内存的分配和回收是动态的。<ul>
+<li>一个接口的多个实现类需要的内存可能不同。</li>
+<li>一个方法不同的条件分支所需要的内存可能不同。</li>
+</ul>
+</li>
+</ul>
+<h2 id="垃圾回收需要完成的三件事"><a href="#垃圾回收需要完成的三件事" class="headerlink" title="垃圾回收需要完成的三件事"></a>垃圾回收需要完成的三件事</h2><ol>
+<li>哪些内存需要回收？</li>
+<li>什么时候回收？</li>
+<li>如何回收？</li>
+</ol>
+<h1 id="哪些对象需要回收"><a href="#哪些对象需要回收" class="headerlink" title="哪些对象需要回收"></a>哪些对象需要回收</h1><h2 id="没有使用引用计数的原因"><a href="#没有使用引用计数的原因" class="headerlink" title="没有使用引用计数的原因"></a>没有使用引用计数的原因</h2><p>有很多例外情况要考虑，要配合大量额外处理才能保证正确地工作。例如循环引用。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/basic/HashMap源码分析/#more" rel="contents">
+              <a class="btn" href="/2020/java/jvm/2Java垃圾回收/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -291,7 +301,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/io/io流/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -305,7 +315,138 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
+            <a href="/2020/java/io/io流/" class="post-title-link" itemprop="url">I/O流相关类</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-04 14:48:52 / Modified: 23:39:00" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/io/" itemprop="url" rel="index"><span itemprop="name">io</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/io/io流/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/io/io流/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/28286559">Java IO，硬骨头也能变软</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/31352578">PipedInputStream和PipedOutStream记录</a></li>
+<li>《Java 核心技术-卷2-第二章》</li>
+</ul>
+<h2 id="1-三种分类方式"><a href="#1-三种分类方式" class="headerlink" title="1. 三种分类方式"></a>1. 三种分类方式</h2><h3 id="字节流和字符流"><a href="#字节流和字符流" class="headerlink" title="字节流和字符流"></a>字节流和字符流</h3><ul>
+<li>字节流<ul>
+<li>以字节为单位进行读写。</li>
+<li>每次读写 1 byte 数据。</li>
+<li>可以操作任何类型的数据。</li>
+</ul>
+</li>
+<li>字符流<ul>
+<li>以字符码元为单位进行读写。</li>
+<li>每次读写 2 bytes 数据。</li>
+<li>只能操作字符类型的数据。</li>
+</ul>
+</li>
+</ul>
+<h3 id="输入流和输出流"><a href="#输入流和输出流" class="headerlink" title="输入流和输出流"></a>输入流和输出流</h3><ul>
+<li>输入流<ul>
+<li>可以进行输入相关的操作。</li>
+</ul>
+</li>
+<li>输出流<ul>
+<li>可以进行输出相关的操作。</li>
+</ul>
+</li>
+</ul>
+<h3 id="节点流和操作流"><a href="#节点流和操作流" class="headerlink" title="节点流和操作流"></a>节点流和操作流</h3><ul>
+<li>节点流<ul>
+<li>直接与数据相连，数据来源或目的地是要操作的最终数据。</li>
+</ul>
+</li>
+<li>操作流<ul>
+<li>利用装饰器模式，对节点流进行包装，提供多种方便的做操方式。</li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/io/io流/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/io/内存映射文件/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/io/内存映射文件/" class="post-title-link" itemprop="url">FileChannel与内存映射文件</a>
         </h1>
 
         <div class="post-meta">
@@ -322,7 +463,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 09:48:35" itemprop="dateModified" datetime="2020-03-06T09:48:35+08:00">2020-03-06</time>
+                <time title="Modified: 2020-03-05 14:29:19" itemprop="dateModified" datetime="2020-03-05T14:29:19+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -334,7 +475,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                  <a href="/categories/java/io/" itemprop="url" rel="index"><span itemprop="name">io</span></a>
                 </span>
             </span>
 
@@ -347,8 +488,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/io/内存映射文件/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/io/内存映射文件/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -364,26 +505,31 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8" target="_blank" rel="noopener">搞懂 Java LinkedHashMap 源码</a></li>
+<li><a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76">jdk/src/share/native/java/io/io_util.c</a></li>
+<li><a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html">JNIFunctions</a></li>
+<li><a href="https://www.jianshu.com/p/a23ca155f949">Java文件NIO读取的本质——FileInputStream与FileChannel对比</a></li>
+<li><a href="https://www.zhihu.com/question/48161206/answer/110863886">Linux 中 mmap() 函数的内存映射问题理解？</a></li>
+<li><a href="https://blog.csdn.net/zhxdick/article/details/81130102">JDK核心JAVA源码解析（5） - JAVA File MMAP原理解析</a></li>
+<li><a href="https://blog.csdn.net/yangguosb/article/details/77891275">Linux零拷贝之mmap</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/91507035">Java网络编程与NIO详解8：浅析mmap和Direct Buffer</a></li>
+<li><a href="https://www.cnkirito.moe/file-io-best-practise/">文件 IO 操作的一些最佳实践</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/">通过零拷贝实现有效数据传输</a></li>
 </ul>
-<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
-<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
-</li>
-<li><p>使用双向链表，记录节点的访问顺序。</p>
+<h1 id="FileChannel-基本用法"><a href="#FileChannel-基本用法" class="headerlink" title="FileChannel 基本用法"></a>FileChannel 基本用法</h1><h2 id="创建-FileChannel"><a href="#创建-FileChannel" class="headerlink" title="创建 FileChannel"></a>创建 FileChannel</h2><p>使用 <code>FileChannel.open</code> 创建。</p>
+<p>其中 <code>OpenOption</code> 可以有：</p>
 <ul>
-<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
-</li>
-<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
-</li>
+<li>READ</li>
+<li>WRITE</li>
+<li>APPEND</li>
+<li>CREATE：如果文件不存在，则创建一个。</li>
+<li>CREATE_NEW：创建文件，如果存在抛出异常。</li>
 </ul>
-</li>
-</ul>
-<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在节点中，添加 before 和 after，来实现双向链表。</p>
-<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FileChannel ch = FileChannel.open(Path path, OpenOption... options);</span><br></pre></td></tr></table></figure>
+<p>也可以从 <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 中通过 <code>getChannel()</code> 方法得到。<br>这种 channel 的文件描述符和  <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 使用的是同一个，文件指针位置也是共享的。</p>
+<h2 id="读写数据"><a href="#读写数据" class="headerlink" title="读写数据"></a>读写数据</h2>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
+              <a class="btn" href="/2020/java/io/内存映射文件/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -511,7 +657,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/java基础知识汇总/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/HashMap源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -525,7 +671,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/basic/java基础知识汇总/" class="post-title-link" itemprop="url">Java 基础知识汇总</a>
+            <a href="/2020/java/basic/HashMap源码分析/" class="post-title-link" itemprop="url">HashMap源码分析</a>
         </h1>
 
         <div class="post-meta">
@@ -542,7 +688,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 10:06:23" itemprop="dateModified" datetime="2020-03-06T10:06:23+08:00">2020-03-06</time>
+                <time title="Modified: 2020-03-05 21:30:49" itemprop="dateModified" datetime="2020-03-05T21:30:49+08:00">2020-03-05</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -567,115 +713,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/basic/java基础知识汇总/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/java基础知识汇总/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Java 区分大小写。</p>
-<p>源代码的文件名必须与公共类的名字相同。</p>
-<p>main 方法必须声明为 public。</p>
-<p>允许在运行时确定数组的长度。</p>
-<p>javabeans TODO</p>
-<h1 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h1><p>“is-a” 关系是继承的一个明显特征。</p>
-<p>继承使用 <code>extends</code> 来表示。</p>
-<p>Java 只存在公有继承。</p>
-<p>超类不能使用子类定义的方法和域。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/basic/java基础知识汇总/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/1Java内存区域/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/jvm/1Java内存区域/" class="post-title-link" itemprop="url">1. Java内存区域</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 07:57:42" itemprop="dateModified" datetime="2020-03-05T07:57:42+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/jvm/1Java内存区域/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/1Java内存区域/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/basic/HashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/HashMap源码分析/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -691,25 +730,19 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机 - 第三版》</li>
+<li><a href="https://segmentfault.com/a/1190000015798586">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
 </ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
-<ol>
-<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
-</li>
-<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
-</li>
-</ol>
-<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
-<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
-<p>较小的内存空间。</p>
+<h1 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>节点 <code>Node</code> 存储：</p>
 <ul>
-<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
-<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
+<li>基本：hash 值、key值、value值。</li>
+<li>多个值存在一个位置：链表 <code>next</code>。</li>
 </ul>
+<h2 id="table"><a href="#table" class="headerlink" title="table"></a>table</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+<p>节点存储在 <code>Node</code> 数组中。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/1Java内存区域/#more" rel="contents">
+              <a class="btn" href="/2020/java/basic/HashMap源码分析/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -733,7 +766,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/4类加载器/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -747,7 +780,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/java/jvm/4类加载器/" class="post-title-link" itemprop="url">4. 类加载器</a>
+            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
         </h1>
 
         <div class="post-meta">
@@ -764,7 +797,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 08:02:44" itemprop="dateModified" datetime="2020-03-05T08:02:44+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-06 09:48:35" itemprop="dateModified" datetime="2020-03-06T09:48:35+08:00">2020-03-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -776,7 +809,7 @@
                 </span>
                   , 
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
                 </span>
             </span>
 
@@ -789,8 +822,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/jvm/4类加载器/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/4类加载器/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -806,25 +839,26 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/51374915" target="_blank" rel="noopener">知乎-老大难的 Java ClassLoader 再不理解就老了</a></li>
-<li>《Java 核心技术-卷2-第九章》</li>
-<li>[<a href="https://www.hollischuang.com/archives/199" target="_blank" rel="noopener">深度分析Java的ClassLoader机制（源码级别）</a>]</li>
-<li>[<a href="https://www.hollischuang.com/archives/201" target="_blank" rel="noopener">Java类的加载、链接和初始化</a>]</li>
+<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8">搞懂 Java LinkedHashMap 源码</a></li>
 </ul>
-<h1 id="ClassLoader-的用途"><a href="#ClassLoader-的用途" class="headerlink" title="ClassLoader 的用途"></a>ClassLoader 的用途</h1><p>加载 .class 字节码的二进制文件，转换成内存形式的<code>Class</code> 对象。</p>
-<p>.class 文件可以来自于磁盘、jar包中、远程服务器的字节流。</p>
-<h1 id="延迟加载"><a href="#延迟加载" class="headerlink" title="延迟加载"></a>延迟加载</h1><p>虚拟机值加载程序执行是所需要的类文件。</p>
-<p>假设从 MyProgram.class 开始执行，虚拟机的执行步骤：</p>
-<ol>
-<li>加载 MyProgram.class 类文件的内容。</li>
-<li>类 MyProgram 中另静态域（非基本类型）、超类也会被加载。</li>
-<li>执行静态 main 方法。</li>
-<li>加载 main 方法、main 调用的方法中使用的类。</li>
-</ol>
-<h1 id="四种类加载器"><a href="#四种类加载器" class="headerlink" title="四种类加载器"></a>四种类加载器</h1>
+<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
+<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
+</li>
+<li><p>使用双向链表，记录节点的访问顺序。</p>
+<ul>
+<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
+</li>
+<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在节点中，添加 before 和 after，来实现双向链表。</p>
+<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/4类加载器/#more" rel="contents">
+              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1157,7 +1191,7 @@
 
       
           <h1 id="14-ScheduledThreadPoolExecutor"><a href="#14-ScheduledThreadPoolExecutor" class="headerlink" title="14. ScheduledThreadPoolExecutor"></a>14. ScheduledThreadPoolExecutor</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://www.cnblogs.com/binarylei/p/10963067.html" target="_blank" rel="noopener">JUC源码分析-线程池篇（三）ScheduledThreadPoolExecutor</a></li>
+<li><a href="https://www.cnblogs.com/binarylei/p/10963067.html">JUC源码分析-线程池篇（三）ScheduledThreadPoolExecutor</a></li>
 </ul>
 <h2 id="1-基本用法"><a href="#1-基本用法" class="headerlink" title="1. 基本用法"></a>1. 基本用法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在 delay 时间后执行 command 或 callable。</span></span><br><span class="line"><span class="keyword">public</span> ScheduledFuture&lt;?&gt; schedule(Runnable command, <span class="keyword">long</span> delay, TimeUnit unit);</span><br><span class="line"><span class="keyword">public</span> &lt;V&gt; <span class="function">ScheduledFuture&lt;V&gt; <span class="title">schedule</span><span class="params">(Callable&lt;V&gt; callable, <span class="keyword">long</span> delay, TimeUnit unit)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 直接执行任务。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">execute</span><span class="params">(Runnable command)</span>；</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="comment">// 以固定频率执行 command。</span></span></span><br><span class="line"><span class="function"><span class="comment">// initialDelay 后执行第一次，initialDelay + period 后执行第二次，</span></span></span><br><span class="line"><span class="function"><span class="comment">// initialDelay + 2*period 后执行第三次。</span></span></span><br><span class="line"><span class="function"><span class="comment">// 如果一次执行时间超过了 period，后面的任务需要等待这次执行完才能执行，不会并行执行。</span></span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ScheduledFuture&lt;?&gt; <span class="title">scheduleAtFixedRate</span><span class="params">(Runnable command, </span></span></span><br><span class="line"><span class="function"><span class="params">                                              <span class="keyword">long</span> initialDelay, </span></span></span><br><span class="line"><span class="function"><span class="params">                                              <span class="keyword">long</span> period, </span></span></span><br><span class="line"><span class="function"><span class="params">                                              TimeUnit unit)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 每次执行任务结束，过 delay 时间后，再执行下一次。</span></span><br><span class="line"><span class="keyword">public</span> ScheduledFuture&lt;?&gt; scheduleWithFixedDelay(Runnable command,</span><br><span class="line">                                                 <span class="keyword">long</span> initialDelay,</span><br><span class="line">                                                 <span class="keyword">long</span> delay,</span><br><span class="line">                                                 TimeUnit unit);</span><br></pre></td></tr></table></figure>
 <h2 id="2-基本思想"><a href="#2-基本思想" class="headerlink" title="2. 基本思想"></a>2. 基本思想</h2><p><code>ScheduledThreadPoolExecutor</code> 继承自 <code>ThreadPoolExecutor</code>，使用 <code>DelayedWorkQueue</code> + <code>ThreadPoolExecutor</code> + <code>ScheduledFutureTask</code> 实现。</p>
@@ -1262,7 +1296,7 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="http://www.throwable.club/2019/07/27/java-concurrency-executor-service/" target="_blank" rel="noopener"><a href="http://www.throwable.club/2019/07/27/java-concurrency-executor-service/" target="_blank" rel="noopener">JUC线程池服务ExecutorService接口实现源码分析</a></a></li>
+<li><a href="http://www.throwable.club/2019/07/27/java-concurrency-executor-service/"><a href="http://www.throwable.club/2019/07/27/java-concurrency-executor-service/">JUC线程池服务ExecutorService接口实现源码分析</a></a></li>
 </ul>
 <h1 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h1><h2 id="主要接口"><a href="#主要接口" class="headerlink" title="主要接口"></a>主要接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">RunnableFuture</span>&lt;<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">Runnable</span>, <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span></span>;</span><br><span class="line">&#125;    </span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Future</span>&lt;<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 取消任务。</span></span><br><span class="line">  	<span class="comment">//		1. mayInterruptIfRunning 用于控制是否要中断任务。</span></span><br><span class="line">  	<span class="comment">//				注意，任务可能不响应中断。</span></span><br><span class="line">  	<span class="comment">//		2. 会唤醒所有调用 get() 的线程。</span></span><br><span class="line">  	<span class="comment">//		3. 调用 get() 的线程抛出 CancellationException。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">cancel</span><span class="params">(<span class="keyword">boolean</span> mayInterruptIfRunning)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 任务是否被取消了。</span></span><br><span class="line">  	<span class="comment">//	状态是否为 CANCELLED、INTERRUPTING、INTERRUPTED。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isCancelled</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 任务是否结束了.</span></span><br><span class="line">  	<span class="comment">//	包括正常和异常的情况。</span></span><br><span class="line">  	<span class="comment">//	状态是否不等于 NEW。</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isDone</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 永久阻塞获取结果，响应中断</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException, ExecutionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 带超时的阻塞获取结果，响应中断</span></span><br><span class="line">    <span class="function">V <span class="title">get</span><span class="params">(<span class="keyword">long</span> timeout, TimeUnit unit)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> InterruptedException, ExecutionException, TimeoutException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p><code>FutureTask</code> 一般是 <code>AbstractExecutorService</code> 在 <code>submit()</code> 时候创建的。</p>

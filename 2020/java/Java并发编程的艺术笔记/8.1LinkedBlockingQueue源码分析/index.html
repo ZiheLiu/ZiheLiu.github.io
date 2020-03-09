@@ -259,8 +259,8 @@
 
       
         <h1 id="8-1-LinkedBlockingQueue-源码分析"><a href="#8-1-LinkedBlockingQueue-源码分析" class="headerlink" title="8.1 LinkedBlockingQueue 源码分析"></a>8.1 LinkedBlockingQueue 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://blog.csdn.net/levena/article/details/78322573" target="_blank" rel="noopener">阻塞队列LinkedBlockingQueue源码分析</a></li>
-<li><a href="https://www.cnblogs.com/binarylei/p/10925048.html" target="_blank" rel="noopener">JUC源码分析-集合篇（六）LinkedBlockingQueue</a></li>
+<li><a href="https://blog.csdn.net/levena/article/details/78322573">阻塞队列LinkedBlockingQueue源码分析</a></li>
+<li><a href="https://www.cnblogs.com/binarylei/p/10925048.html">JUC源码分析-集合篇（六）LinkedBlockingQueue</a></li>
 </ul>
 <h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1. 准备"></a>1. 准备</h2><h3 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(E x) &#123; item = x; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; head;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Node&lt;E&gt; last;</span><br></pre></td></tr></table></figure>
 <p><code>Node</code> 的成员域、<code>head</code>、<code>last</code> 不用设为 <code>volatile</code>。</p>
@@ -324,8 +324,8 @@
       <i class="fa fa-chevron-left"></i> 8. BlockingQueue 简介
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/" rel="next" title="8.5 DelayQueue 源码分析">
-      8.5 DelayQueue 源码分析 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/java/Java并发编程的艺术笔记/8.4PriorityBlockingQueue源码分析/" rel="next" title="8.4 PriorityBlockingQueue 源码分析">
+      8.4 PriorityBlockingQueue 源码分析 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>

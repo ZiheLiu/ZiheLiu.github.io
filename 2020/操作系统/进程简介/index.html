@@ -249,7 +249,7 @@
 
       
         <h1 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/82840452" target="_blank" rel="noopener">进程间通信的7种方式你都了解吗-知乎</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/82840452">进程间通信的7种方式你都了解吗-知乎</a></li>
 </ul>
 <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>每个进程各自有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到。</p>
 <p>所以进程之间要交换数据必须通过内核，在内核中开辟一块缓冲区，进程 A 把数据从用户空间拷到内核缓冲区，进程 B 再从内核缓冲区把数据读走，内核提供的这种机制称为<strong>进程间通信</strong>。</p>
@@ -310,8 +310,8 @@
 </li>
 </ul>
 <h1 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h1><h2 id="引用-1"><a href="#引用-1" class="headerlink" title="引用"></a>引用</h2><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/60248566" target="_blank" rel="noopener">进程、线程、以及它们之间的区别与联系</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/46410285" target="_blank" rel="noopener">谈谈进程和线程的区别</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/60248566">进程、线程、以及它们之间的区别与联系</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/46410285">谈谈进程和线程的区别</a></li>
 </ul>
 <h2 id="根本区别"><a href="#根本区别" class="headerlink" title="根本区别"></a>根本区别</h2><ul>
 <li>进程是操作系统资源分配的基本单位。</li>
@@ -324,7 +324,7 @@
 <li>线程之间切换的开销小。</li>
 </ul>
 <h1 id="进程的状态"><a href="#进程的状态" class="headerlink" title="进程的状态"></a>进程的状态</h1><h2 id="引用-2"><a href="#引用-2" class="headerlink" title="引用"></a>引用</h2><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/96098130" target="_blank" rel="noopener">进程状态与僵尸进程、孤儿进程</a> </li>
+<li><a href="https://zhuanlan.zhihu.com/p/96098130">进程状态与僵尸进程、孤儿进程</a> </li>
 </ul>
 <h2 id="状态种类"><a href="#状态种类" class="headerlink" title="状态种类"></a>状态种类</h2><h3 id="概念上进程的状态"><a href="#概念上进程的状态" class="headerlink" title="概念上进程的状态"></a>概念上进程的状态</h3><ul>
 <li>创建</li>
@@ -357,7 +357,7 @@
 <p>孤儿进程将被 init 进程（进程号为1）所收养，并由 init 进程对它们完成状态收集工作。</p>
 <h1 id="软中断"><a href="#软中断" class="headerlink" title="软中断"></a>软中断</h1><blockquote>
 <ul>
-<li><a href="https://zhuanlan.zhihu.com/p/80371745" target="_blank" rel="noopener">Linux的中断处理机制(四) </a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/80371745">Linux的中断处理机制(四) </a></li>
 </ul>
 </blockquote>
 <p>中断的上半段不能被延后执行，而下半段可以。</p>
@@ -379,8 +379,8 @@
 <p>在执行完之后，原调用进程的内容除了 PID 外，其他全部都被替换了。</p>
 <h1 id="会话与进程组"><a href="#会话与进程组" class="headerlink" title="会话与进程组"></a>会话与进程组</h1><blockquote>
 <ul>
-<li><a href="https://yq.aliyun.com/articles/8874" target="_blank" rel="noopener">linux会话浅析</a></li>
-<li><a href="https://www.cnblogs.com/klb561/p/12051027.html" target="_blank" rel="noopener"><a href="https://www.cnblogs.com/klb561/p/12051027.html" target="_blank" rel="noopener">linux下的SIGHUP系统信号</a></a></li>
+<li><a href="https://yq.aliyun.com/articles/8874">linux会话浅析</a></li>
+<li><a href="https://www.cnblogs.com/klb561/p/12051027.html"><a href="https://www.cnblogs.com/klb561/p/12051027.html">linux下的SIGHUP系统信号</a></a></li>
 </ul>
 </blockquote>
 <h2 id="进程组"><a href="#进程组" class="headerlink" title="进程组"></a>进程组</h2><p>线程组是一组进程的集合，可以一次性送信号给进程组的所有进程。</p>

@@ -608,7 +608,7 @@
 <p>一个类不能同时成为两个接口类型的子类，这两个接口类型是同一个接口的不同参数化。</p>
 <p>如下，<code>Fruit</code> 实现了 <code>Comparable&lt;Food&gt;</code> 和 <code>Comparable&lt;Fruit&gt;</code>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Food</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Food</span>&gt; </span>&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> <span class="keyword">extends</span> <span class="title">Food</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Fruit</span>&gt; </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><p><a href="https://www.zhihu.com/question/20400700/answer/117464182" target="_blank" rel="noopener">知乎-通配符</a></p>
+<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><p><a href="https://www.zhihu.com/question/20400700/answer/117464182">知乎-通配符</a></p>
 <h3 id="8-4-1-继承关系"><a href="#8-4-1-继承关系" class="headerlink" title="8.4.1 继承关系"></a>8.4.1 继承关系</h3><p><code>Pair&lt;Fruit&gt;</code> 与 <code>Pair&lt;Food&gt;</code> 没有什么关系，他们都是 <code>Pair</code> 的子类。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Pair&lt;Food&gt; pair = <span class="keyword">new</span> Pair&lt;Fruit&gt;(); <span class="comment">// 编译错误</span></span><br></pre></td></tr></table></figure>
 <h3 id="8-4-2-上界通配符-extends"><a href="#8-4-2-上界通配符-extends" class="headerlink" title="8.4.2 上界通配符 extends"></a>8.4.2 上界通配符 extends</h3><p><code>Pair&lt;? exnteds Food&gt;</code> 表示这里最通用可以是 <code>Food</code>，即 <code>Food</code> 和 <code>Food</code> 的子类。</p>
@@ -637,12 +637,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/jvm/1Java内存区域/" rel="prev" title="1. Java内存区域">
-      <i class="fa fa-chevron-left"></i> 1. Java内存区域
+    <a href="/2020/java/jvm/SPI/" rel="prev" title="SPI 机制">
+      <i class="fa fa-chevron-left"></i> SPI 机制
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/java/basic/enum/" rel="next" title="Enum">
-      Enum <i class="fa fa-chevron-right"></i>
+    <a href="/2020/java/jvm/4类加载器/" rel="next" title="4. 类加载器">
+      4. 类加载器 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
