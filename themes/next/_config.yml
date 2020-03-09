@@ -830,6 +830,7 @@ pdf:
 # Mermaid tag
 mermaid:
   enable: true
+  version: "7.1.2"
   # Available themes: default | dark | forest | neutral
   theme: forest
 
