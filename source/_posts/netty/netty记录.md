@@ -326,5 +326,5 @@ volatile long -> AtomicLong
 
 ### Recycler
 
-- - - 
+见 {% post_link netty/Recycler对象池 %}
 
