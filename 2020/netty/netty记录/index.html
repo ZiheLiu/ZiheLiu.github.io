@@ -20,18 +20,21 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引用 Netty 零拷贝（三）Netty 对零拷贝的改进 Netty 之 FileRegion 文件传输  Netty 中的零拷贝零拷贝指在整个数据传输过程中，消除了一部分操作的拷贝代价。 零拷贝的操作 Netty 接收和发送 ByteBuffer 使用 DirectByteBuffer。消除了从堆外内存拷贝到堆内内存。 通过 FileRegion 包装的 FileChannel#transfer">
+  <meta name="description" content="为什么不直接用 JDK NIONetty 做的更多 支持常用应用层协议。 解决传输问题：粘包、板报现象。 支持流量整形。 完善的断连、Idle 等异常处理。  Netty 做的更好 规避 JDK NIO bug。 epoll bug：异常唤醒空转导致 CPU 100%。 IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。   API 更友好、更强大。 ByteBuffer 读写">
 <meta name="keywords" content="record,netty">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Netty记录">
+<meta property="og:title" content="Netty 记录">
 <meta property="og:url" content="http://ziheliu.github.io/2020/netty/netty记录/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="引用 Netty 零拷贝（三）Netty 对零拷贝的改进 Netty 之 FileRegion 文件传输  Netty 中的零拷贝零拷贝指在整个数据传输过程中，消除了一部分操作的拷贝代价。 零拷贝的操作 Netty 接收和发送 ByteBuffer 使用 DirectByteBuffer。消除了从堆外内存拷贝到堆内内存。 通过 FileRegion 包装的 FileChannel#transfer">
+<meta property="og:description" content="为什么不直接用 JDK NIONetty 做的更多 支持常用应用层协议。 解决传输问题：粘包、板报现象。 支持流量整形。 完善的断连、Idle 等异常处理。  Netty 做的更好 规避 JDK NIO bug。 epoll bug：异常唤醒空转导致 CPU 100%。 IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。   API 更友好、更强大。 ByteBuffer 读写">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-05T07:56:43.416Z">
+<meta property="og:image" content="http://ziheliu.github.io/images/netty锁的粒度.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/nettyLongCounter.png">
+<meta property="og:updated_time" content="2020-03-09T07:34:08.299Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Netty记录">
-<meta name="twitter:description" content="引用 Netty 零拷贝（三）Netty 对零拷贝的改进 Netty 之 FileRegion 文件传输  Netty 中的零拷贝零拷贝指在整个数据传输过程中，消除了一部分操作的拷贝代价。 零拷贝的操作 Netty 接收和发送 ByteBuffer 使用 DirectByteBuffer。消除了从堆外内存拷贝到堆内内存。 通过 FileRegion 包装的 FileChannel#transfer">
+<meta name="twitter:title" content="Netty 记录">
+<meta name="twitter:description" content="为什么不直接用 JDK NIONetty 做的更多 支持常用应用层协议。 解决传输问题：粘包、板报现象。 支持流量整形。 完善的断连、Idle 等异常处理。  Netty 做的更好 规避 JDK NIO bug。 epoll bug：异常唤醒空转导致 CPU 100%。 IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。   API 更友好、更强大。 ByteBuffer 读写">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/netty锁的粒度.png">
 
 <link rel="canonical" href="http://ziheliu.github.io/2020/netty/netty记录/">
 
@@ -45,7 +48,7 @@
   };
 </script>
 
-  <title>Netty记录 | ZiheLiu</title>
+  <title>Netty 记录 | ZiheLiu</title>
   
 
 
@@ -200,7 +203,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Netty记录
+          Netty 记录
         </h1>
 
         <div class="post-meta">
@@ -209,10 +212,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-05 14:33:57 / Modified: 15:56:43" itemprop="dateCreated datePublished" datetime="2020-03-05T14:33:57+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-08 23:56:00" itemprop="dateCreated datePublished" datetime="2020-03-08T23:56:00+08:00">2020-03-08</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-09 15:34:08" itemprop="dateModified" datetime="2020-03-09T15:34:08+08:00">2020-03-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -248,22 +257,225 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.cnblogs.com/binarylei/p/10117437.html" target="_blank" rel="noopener">Netty 零拷贝（三）Netty 对零拷贝的改进</a></li>
-<li><a href="https://cloud.tencent.com/developer/article/1402669" target="_blank" rel="noopener">Netty 之 FileRegion 文件传输</a></li>
+        <h1 id="为什么不直接用-JDK-NIO"><a href="#为什么不直接用-JDK-NIO" class="headerlink" title="为什么不直接用 JDK NIO"></a>为什么不直接用 JDK NIO</h1><h2 id="Netty-做的更多"><a href="#Netty-做的更多" class="headerlink" title="Netty 做的更多"></a>Netty 做的更多</h2><ul>
+<li>支持常用应用层协议。</li>
+<li>解决传输问题：粘包、板报现象。</li>
+<li>支持流量整形。</li>
+<li>完善的断连、Idle 等异常处理。</li>
 </ul>
-<h1 id="Netty-中的零拷贝"><a href="#Netty-中的零拷贝" class="headerlink" title="Netty 中的零拷贝"></a>Netty 中的零拷贝</h1><p>零拷贝指在整个数据传输过程中，消除了一部分操作的拷贝代价。</p>
-<h2 id="零拷贝的操作"><a href="#零拷贝的操作" class="headerlink" title="零拷贝的操作"></a>零拷贝的操作</h2><ol>
-<li>Netty 接收和发送 <code>ByteBuffer</code> 使用 <code>DirectByteBuffer</code>。消除了从堆外内存拷贝到堆内内存。</li>
-<li>通过 <code>FileRegion</code> 包装的 <code>FileChannel#transferTo()</code> 方法实现文件传输。消除了内核与用户空间的拷贝。</li>
-<li><code>CompositeByteBuf</code> 类，将多个 <code>ByteBuf</code> 在逻辑上合并为一个 <code>ByteBuf</code>。消除了合并时的拷贝。</li>
-<li>通过 <code>wrap</code> 操作，将 <code>byte[]</code>、<code>ByteBuf</code>、<code>ByteBuffer</code> 等包装成一个 <code>ByteBuf</code>，避免了拷贝操作。</li>
-<li>通过 <code>slice</code> 操作，获得 <code>ByteBuf</code> 逻辑上的切片。</li>
+<h2 id="Netty-做的更好"><a href="#Netty-做的更好" class="headerlink" title="Netty 做的更好"></a>Netty 做的更好</h2><ul>
+<li>规避 JDK NIO bug。<ul>
+<li>epoll bug：异常唤醒空转导致 CPU 100%。</li>
+<li>IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。</li>
+</ul>
+</li>
+<li>API 更友好、更强大。<ul>
+<li>ByteBuffer 读写切换、无法扩容 -&gt; ByteBuf。</li>
+<li>ThreadLocal -&gt; FastThreadLocal。</li>
+</ul>
+</li>
+<li>隔离变化、屏蔽细节。</li>
+</ul>
+<h1 id="为什么只支持-NIO"><a href="#为什么只支持-NIO" class="headerlink" title="为什么只支持 NIO"></a>为什么只支持 NIO</h1><h2 id="为什么不建议阻塞-I-O"><a href="#为什么不建议阻塞-I-O" class="headerlink" title="为什么不建议阻塞 I/O"></a>为什么不建议阻塞 I/O</h2><ul>
+<li><p>连接数少时，并发度低，BIO 性能不差于 NIO。</p>
+</li>
+<li><p>连接数高时，阻塞-&gt;耗资源、效率低。</p>
+</li>
+</ul>
+<h2 id="为什么不再支持-AIO"><a href="#为什么不再支持-AIO" class="headerlink" title="为什么不再支持 AIO"></a>为什么不再支持 AIO</h2><p>Linux 中 AIO 实现不成熟。相比较 NIO 性能提升不明显。</p>
+<h1 id="为什么-Netty-自己实现了-Epoll"><a href="#为什么-Netty-自己实现了-Epoll" class="headerlink" title="为什么 Netty 自己实现了 Epoll"></a>为什么 Netty 自己实现了 Epoll</h1><ul>
+<li>Netty 暴露了更多的可控参数。<ul>
+<li>JDK 的 NIO 只有水平触发</li>
+<li>Netty 默认是边缘触发、可切换为水平触发。</li>
+</ul>
+</li>
+<li>Netty 实现的垃圾回收更少、性能搞好。</li>
+</ul>
+<h2 id="边缘触发与水平触发"><a href="#边缘触发与水平触发" class="headerlink" title="边缘触发与水平触发"></a>边缘触发与水平触发</h2><blockquote>
+<p><a href="https://blog.csdn.net/dongfuye/article/details/50880251">epoll LT/ET 深入剖析</a>（主要参考）</p>
+<p><a href="https://www.zhihu.com/question/22524908/answer/69054646">java nio使用的是水平触发还是边缘触发</a></p>
+</blockquote>
+<h3 id="水平触发-Level-Triggered-LT"><a href="#水平触发-Level-Triggered-LT" class="headerlink" title="水平触发 Level Triggered (LT)"></a>水平触发 Level Triggered (LT)</h3><ul>
+<li>socket 接收缓冲区不为空，有数据可读， 读事件一直触发。</li>
+<li>.socket发送缓冲区不满，可以继续写入数据， 写事件一直触发。</li>
+</ul>
+<h3 id="边缘触发-Edge-Triggered-ET"><a href="#边缘触发-Edge-Triggered-ET" class="headerlink" title="边缘触发 Edge Triggered (ET)"></a>边缘触发 Edge Triggered (ET)</h3><p>仅在状态变化时触发事件。</p>
+<ul>
+<li>socket 的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时，触发读事件。</li>
+<li>socket 的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时，触发写事件。</li>
+</ul>
+<h3 id="LT-处理过程"><a href="#LT-处理过程" class="headerlink" title="LT 处理过程"></a>LT 处理过程</h3><ul>
+<li>accept 一个连接，添加到 epoll 中监听 <code>EPOLLIN</code> 事件。</li>
+<li>当 <code>EPOLLIN</code> 事件到达时，read fd 中的数据并处理。</li>
+<li>当需要写出数据时，把数据 write 到 fd 中；如果数据较大，无法一次性写出，那么在 epoll 中监听 <code>EPOLLOUT</code>事件。</li>
+<li>当 <code>EPOLLOUT</code> 事件到达时，继续把数据 write 到 fd 中；如果数据写出完毕，那么在 epoll 中关闭 <code>EPOLLOUT</code> 事件。</li>
+</ul>
+<h3 id="ET-处理过程"><a href="#ET-处理过程" class="headerlink" title="ET 处理过程"></a>ET 处理过程</h3><ul>
+<li>accept 一个一个连接，添加到 epoll 中监听 <code>EPOLLIN|EPOLLOUT</code> 事件。</li>
+<li>当 <code>EPOLLIN</code> 事件到达时，read fd 中的数据并处理，read 需要一直读，直到返回 <code>EAGAIN</code> 为止。</li>
+<li>当需要写出数据时，把数据 write 到 fd 中，直到数据全部写完，或者 write 返回 <code>EAGAIN</code>。</li>
+<li>当 <code>EPOLLOUT</code> 事件到达时，继续把数据 write 到 fd 中，直到数据全部写完，或者 write 返回 <code>EAGAIN</code>。</li>
+</ul>
+<h3 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h3><ul>
+<li><p>ET 的要求是需要一直读写，直到返回 <code>EAGAIN</code>，否则就会遗漏事件。</p>
+</li>
+<li><p>LT 的处理过程中，直到返回 <code>EAGAIN</code> 不是硬性要求，但通常的处理过程都会读写直到返回 <code>EAGAIN</code>。</p>
+</li>
+<li>LT 比 ET 多了一个开关 <code>EPOLLOUT</code> 事件的系统调用。</li>
+</ul>
+<h1 id="Netty-与-Reactor-模式"><a href="#Netty-与-Reactor-模式" class="headerlink" title="Netty 与 Reactor 模式"></a>Netty 与 Reactor 模式</h1><h2 id="MainReactor-一般单线程"><a href="#MainReactor-一般单线程" class="headerlink" title="MainReactor 一般单线程"></a>MainReactor 一般单线程</h2><p>Netty 的 MainReactor，每次 <code>bind(address)</code> 会注册一次 <code>ServerSocketChannel</code> 到 <code>EventLoopGroup</code> 上，只能使用一个线程。</p>
+<h2 id="分配-EventLoop-规则"><a href="#分配-EventLoop-规则" class="headerlink" title="分配 EventLoop 规则"></a>分配 EventLoop 规则</h2><p>为 Channel 分配 EventLoop 时，循环选择下一个。线程池数为 2 的次幂时，则用位运算优化。</p>
+<h2 id="通用模式的-NIO-实现多路复用器跨平台"><a href="#通用模式的-NIO-实现多路复用器跨平台" class="headerlink" title="通用模式的 NIO 实现多路复用器跨平台"></a>通用模式的 NIO 实现多路复用器跨平台</h2><p><code>DefaultSelectorProvider.create()</code> 不同操作系统会创建不同的 <code>SelectorProvider</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> sun.nio.ch;</span><br><span class="line"><span class="comment">// MaxOS</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultSelectorProvider</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SelectorProvider <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> sun.nio.ch.KQueueSelectorProvider();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// Windows</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultSelectorProvider</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SelectorProvider <span class="title">create</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> WindowsSelectorProvider();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="粘包与半包"><a href="#粘包与半包" class="headerlink" title="粘包与半包"></a>粘包与半包</h1><h2 id="粘包原因"><a href="#粘包原因" class="headerlink" title="粘包原因"></a>粘包原因</h2><ul>
+<li><p>发送方每次写入数据 &lt; 套接字缓冲区大小。</p>
+</li>
+<li><p>接收方读取套接字缓冲区数据不够及时。</p>
+</li>
+</ul>
+<h2 id="半包原因"><a href="#半包原因" class="headerlink" title="半包原因"></a>半包原因</h2><ul>
+<li>发送方写入数据 &gt; 套接字缓冲距大小。</li>
+<li>发送的数据大于协议的 MTU（Maximum Transmission Unit，最大传输单元），必须拆包。</li>
+</ul>
+<h2 id="根本原因"><a href="#根本原因" class="headerlink" title="根本原因"></a>根本原因</h2><p>TCP 是流式协议，消息无边界。</p>
+<h2 id="UDP"><a href="#UDP" class="headerlink" title="UDP"></a>UDP</h2><p>UDP 像邮寄的包裹，虽然一次运输多个，但每个包裹都有“界限”，一个一个签收， 所以无粘包、半包问题。</p>
+<h2 id="如何解决"><a href="#如何解决" class="headerlink" title="如何解决"></a>如何解决</h2><p>找出消息的边界：封装成帧。</p>
+<ul>
+<li>固定长度。浪费空间。<code>FixedLengthFramDecoder</code>。</li>
+<li>分隔符。内容本身出现分隔符时需要转移。<code>DelimiterBasedFrameDecoder</code>。</li>
+<li>固定字节数size存长度信息。长度受字节数size限制，需要提前预知可能的最大长度。<code>LengthFieldBasedFrameDecoder</code>解码 与 <code>LengthFieldPrepender</code> 编码。</li>
+</ul>
+<h3 id="ByteToMessageDecoder"><a href="#ByteToMessageDecoder" class="headerlink" title="ByteToMessageDecoder"></a>ByteToMessageDecoder</h3><p>需要积累数据。两种方式：</p>
+<ol>
+<li><p>拷贝到一个 <code>ByteBuf</code> 里。</p>
+</li>
+<li><p>使用 <code>CompositeByteBuf</code> 视图组装多个 <code>ByteBuf</code>。</p>
+</li>
 </ol>
-<h2 id="FileRegion"><a href="#FileRegion" class="headerlink" title="FileRegion"></a>FileRegion</h2><p>在将文件写入 <code>channel</code> 时，可以使用 <code>FileRegion</code>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileServerHandler</span> <span class="keyword">extends</span> <span class="title">SimpleChannelInboundHandler</span>&lt;<span class="title">String</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">channelRead0</span><span class="params">(ChannelHandlerContext ctx, String msg)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(msg, <span class="string">"r"</span>);</span><br><span class="line">     		ctx.write(<span class="keyword">new</span> DefaultFileRegion(raf.getChannel(), <span class="number">0</span>, length));</span><br><span class="line">        ctx.writeAndFlush(<span class="string">"\n"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>查看 <code>DefaultFileRegion</code> 源码，可以看到写入操作是使用 <code>FileChannel#transferTo()</code> （见 <a href="/2020/java/io/内存映射文件/" title="FileChannel 与内存映射文件">FileChannel 与内存映射文件</a>）实现的。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultFileRegion</span> <span class="keyword">extends</span> <span class="title">AbstractReferenceCounted</span> <span class="keyword">implements</span> <span class="title">FileRegion</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(WritableByteChannel target, <span class="keyword">long</span> position)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="comment">// 省略了好多代码。</span></span><br><span class="line">    <span class="comment">// Call open to make sure fc is initialized. This is a no-oop if we called it before.</span></span><br><span class="line">    open();</span><br><span class="line">    <span class="comment">// call FileChannel#transferTo。</span></span><br><span class="line">    <span class="keyword">long</span> written = file.transferTo(<span class="keyword">this</span>.position + position, count, target);</span><br><span class="line">    <span class="keyword">if</span> (written &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      transferred += written;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> written;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是第 2 种方式使用了更为复杂的索引方式，根据使用场景、实现解码方式的不同，可能效率比第一种低。</p>
+<p>扩容发生在：</p>
+<ul>
+<li>第 1 种方式，<code>cumulation</code> 放不下下一个 <code>inByteBuf</code> 了、或 <code>cumulation</code> 被调用了 <code>retain()</code> 或者是只读的。</li>
+<li>第 2 种方式，<code>cumulation</code> 被调用了 <code>retain()</code>。</li>
+</ul>
+<h1 id="二次解码器"><a href="#二次解码器" class="headerlink" title="二次解码器"></a>二次解码器</h1><ul>
+<li><p>一次解码器：<code>ByteToMessageDecoder</code></p>
+<ul>
+<li>io.netty.buffer.ByteBuf （原始数据流）-&gt; io.netty.buffer.ByteBuf （用户数据）</li>
+</ul>
+</li>
+<li><p>二次解码器：<code>MessageToMessageDecoder&lt;I&gt;</code></p>
+<ul>
+<li>io.netty.buffer.ByteBuf （用户数据）-&gt; Java Object</li>
+</ul>
+</li>
+</ul>
+<h2 id="对-JDK-Serialization-的支持"><a href="#对-JDK-Serialization-的支持" class="headerlink" title="对 JDK Serialization 的支持"></a>对 JDK Serialization 的支持</h2><p>Netty 进行了优化。</p>
+<ul>
+<li>解码后，压缩。</li>
+<li>JDK 写入了每个变量的类型、所有修饰符。Netty 只写入了名字，运行时通过反射找到它的其他信息。</li>
+</ul>
+<h2 id="对-protobuf-的支持"><a href="#对-protobuf-的支持" class="headerlink" title="对 protobuf 的支持"></a>对 protobuf 的支持</h2><ul>
+<li><p>一次解码时，没有使用<code>LengthFieldBasedFrameDecoder</code>，而是进行了优化。</p>
+<ul>
+<li>记录长度的字节数目是可变的，<code>VarInt</code>。</li>
+</ul>
+</li>
+<li><p>二次解码时，把一次解码得到的字节数组，根据 protobuf 的规则解析为对象。</p>
+</li>
+</ul>
+<h1 id="KeepAlive"><a href="#KeepAlive" class="headerlink" title="KeepAlive"></a>KeepAlive</h1><h2 id="开启-TCP-keepalive"><a href="#开启-TCP-keepalive" class="headerlink" title="开启 TCP keepalive"></a>开启 TCP keepalive</h2><p>在 Server 端</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方式一</span></span><br><span class="line">bootstrap.childOption(ChannelOption.SO_KEEPALIVE,<span class="keyword">true</span>) </span><br><span class="line"><span class="comment">// 方式二  </span></span><br><span class="line">bootstrap.childOption(NioChannelOption.of(StandardSocketOptions.SO_KEEPALIVE), <span class="keyword">true</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="应用层-KeepAlive"><a href="#应用层-KeepAlive" class="headerlink" title="应用层 KeepAlive"></a>应用层 KeepAlive</h2><h3 id="方法一-定时发送"><a href="#方法一-定时发送" class="headerlink" title="方法一 定时发送"></a>方法一 定时发送</h3><p>每隔一段时间，分别向所有客户端发送一个 keepalive 消息。</p>
+<p>耗费资源，如果客户端太多。</p>
+<h3 id="方法二-空闲-Idle-检测"><a href="#方法二-空闲-Idle-检测" class="headerlink" title="方法二 空闲 Idle 检测"></a>方法二 空闲 Idle 检测</h3><p>无数据传输超过一段时间，判定为 Idle，再发 keepalive 消息。</p>
+<p>快速释放损坏的、恶意的、很久不用的连接。</p>
+<h2 id="Idle-检测"><a href="#Idle-检测" class="headerlink" title="Idle 检测"></a>Idle 检测</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ch.pipeline().addLast(<span class="string">"idleCheckHandler"</span>, <span class="keyword">new</span> IdleStateHandler(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, TimeUnit.SECONDS));</span><br></pre></td></tr></table></figure>
+<h3 id="ReaderIdle"><a href="#ReaderIdle" class="headerlink" title="ReaderIdle"></a>ReaderIdle</h3><ol>
+<li>在 <code>channelActive()</code> 中注册延时（<code>readerIdleTimeNanos</code> 纳秒） 任务。</li>
+<li>在 <code>channelRead()</code> 中把 <code>reading</code> 设为 true。</li>
+<li>在 <code>channelReadComplete()</code> 中把 <code>reading</code> 设为 false。</li>
+<li>延时时间到了，执行检测任务，如果没有正在发生读事件（<code>reading</code> 为 false）、且距离上次读完成超过了 <code>readerIdleTimeNanos</code> 纳秒，就在pipeline上传递一个 <code>READER_IDLE</code> 事件。</li>
+</ol>
+<h3 id="WriterIdle"><a href="#WriterIdle" class="headerlink" title="WriterIdle"></a>WriterIdle</h3><ol>
+<li>在 <code>channelActive()</code> 中注册延时（<code>writerIdleTimeNanos</code> 纳秒） 任务。</li>
+<li>延时时间到了，执行检测任务。<ul>
+<li>如果距离上次写完成超过了 <code>writerIdleTimeNanos</code> 纳秒，就在pipeline上传递一个 <code>WRITER_IDLE</code> 事件。</li>
+<li>如果开启了 <code>observeOutput</code>，则只要有写意图（还没有写完），就不会认为是 Idle 状态。</li>
+</ul>
+</li>
+</ol>
+<h3 id="使用例子"><a href="#使用例子" class="headerlink" title="使用例子"></a>使用例子</h3><h4 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h4><ul>
+<li><p>客户端隔一段<strong>空闲</strong>时间向服务端发送 HEART_BEAT 消息。</p>
+</li>
+<li><p>服务端隔一段<strong>空闲</strong>时间没有收到客户端的 HEAR_BEAT 消息，就关闭这个连接。</p>
+</li>
+</ul>
+<h4 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h4><ul>
+<li>在客户端开启一个 WriterIdle 检测，超过给定时间后，发送 HEART_BEAT 消息给服务端。</li>
+<li>在服务端开启一个 ReaderIdle 检测，超过给定时间没有收到消息后，关闭连接。</li>
+<li>客户端在 <code>channelInactive()</code> 中，尝试重连服务端。</li>
+</ul>
+<h1 id="Netty-中锁的使用"><a href="#Netty-中锁的使用" class="headerlink" title="Netty 中锁的使用"></a>Netty 中锁的使用</h1><h2 id="注意锁的对象和范围-减小粒度"><a href="#注意锁的对象和范围-减小粒度" class="headerlink" title="注意锁的对象和范围 减小粒度"></a>注意锁的对象和范围 减小粒度</h2><p>Synchronized method -&gt; Synchronized block</p>
+<p><img src="/images/netty锁的粒度.png" alt="netty锁的粒度"></p>
+<h2 id="注意锁的对象本身大小-减少空间占用"><a href="#注意锁的对象本身大小-减少空间占用" class="headerlink" title="注意锁的对象本身大小 减少空间占用"></a>注意锁的对象本身大小 减少空间占用</h2><ul>
+<li><p>volatile long = 8 bytes</p>
+</li>
+<li><p>AtomicLong = 8 bytes （volatile long）+ 16bytes （对象头）+ 8 bytes (引用) = 32 bytes</p>
+</li>
+</ul>
+<h2 id="注意锁的速度-提高并发性"><a href="#注意锁的速度-提高并发性" class="headerlink" title="注意锁的速度 提高并发性"></a>注意锁的速度 提高并发性</h2><p>结论： 及时衡量、使用 JDK 最新的功能</p>
+<p><img src="/images/nettyLongCounter.png" alt="nettyLongCounter"></p>
+<h2 id="不同场景选择不同的并发包-因需而变"><a href="#不同场景选择不同的并发包-因需而变" class="headerlink" title="不同场景选择不同的并发包 因需而变"></a>不同场景选择不同的并发包 因需而变</h2><p><code>NioEventloop</code> 中负责存储 task 的 Queue，单线程的，只有一个消费者。</p>
+<p>JDK LinkedBlockingQueue (MPMC) -&gt; jctools’ MPSC</p>
+<p>单消费者：出队不用加锁。</p>
+<h2 id="衡量好锁的价值-尽量不用锁"><a href="#衡量好锁的价值-尽量不用锁" class="headerlink" title="衡量好锁的价值 尽量不用锁"></a>衡量好锁的价值 尽量不用锁</h2><h3 id="EventLoop"><a href="#EventLoop" class="headerlink" title="EventLoop"></a>EventLoop</h3><p>Netty 使用局部串行 + 整体并行，而不是 一个队列 + 多个线程模式。</p>
+<ul>
+<li><p>一个 Channel 只由一个 EventLoop（一个线程）负责。</p>
+</li>
+<li><p>一个 EventLoop 负责多个 Channel。</p>
+</li>
+</ul>
+<p>优点</p>
+<ul>
+<li><p>降低用户开发难度、逻辑简单、提升处理性能。</p>
+</li>
+<li><p>避免锁带来的上下文切换、并发保护等额外开销。</p>
+</li>
+</ul>
+<h3 id="Recycler"><a href="#Recycler" class="headerlink" title="Recycler"></a>Recycler</h3><p>用 ThreadLocal 来避免资源争用，例如 Netty 轻量级的线程池实现</p>
+<h1 id="Netty-内存使用技巧"><a href="#Netty-内存使用技巧" class="headerlink" title="Netty 内存使用技巧"></a>Netty 内存使用技巧</h1><h2 id="减少对像本身大小"><a href="#减少对像本身大小" class="headerlink" title="减少对像本身大小"></a>减少对像本身大小</h2><ol>
+<li>用基本类型就不要用包装类。</li>
+<li>应该定义成类变量的不要定义为实例变量。</li>
+</ol>
+<p>volatile long -&gt; AtomicLong</p>
+<h2 id="预测分配大小"><a href="#预测分配大小" class="headerlink" title="预测分配大小"></a>预测分配大小</h2><p>根据接受到的数据动态调整（guess）下个要分配的 Buffer 的大小。</p>
+<h2 id="零拷贝"><a href="#零拷贝" class="headerlink" title="零拷贝"></a>零拷贝</h2><ul>
+<li>使用逻辑组合，代替实际复制。<ul>
+<li>CompositeByteBuf</li>
+</ul>
+</li>
+<li>使用包装，代替实际复制。<ul>
+<li>ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes)。</li>
+</ul>
+</li>
+<li>调用 JDK 的 Zero-Copy 接口。<ul>
+<li>DefaultFileRegion 中包装了 NIO 的 FileChannel.transferTo()</li>
+</ul>
+</li>
+<li>对外内存。</li>
+</ul>
+<h2 id="内存池"><a href="#内存池" class="headerlink" title="内存池"></a>内存池</h2><h3 id="为什么引入对象池"><a href="#为什么引入对象池" class="headerlink" title="为什么引入对象池"></a>为什么引入对象池</h3><ul>
+<li><p>创建对象开销大。</p>
+</li>
+<li><p>对象高频率创建且可复用。</p>
+</li>
+<li><p>支持并发、又能保护系统。</p>
+</li>
+<li><p>维护、共享有限的资源。</p>
+</li>
+</ul>
+<h3 id="Recycler-1"><a href="#Recycler-1" class="headerlink" title="Recycler"></a>Recycler</h3><hr>
 
     </div>
 
@@ -283,12 +495,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/jvm/3类加载机制/" rel="prev" title="3. 类加载机制">
-      <i class="fa fa-chevron-left"></i> 3. 类加载机制
+    <a href="/2020/netty/服务端启动/" rel="prev" title="服务端启动">
+      <i class="fa fa-chevron-left"></i> 服务端启动
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/操作系统/进程简介/" rel="next" title="进程简介">
-      进程简介 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/netty/Recycler对象池/" rel="next" title="Recycler 对象池">
+      Recycler 对象池 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -356,7 +568,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-中的零拷贝"><span class="nav-number">2.</span> <span class="nav-text">Netty 中的零拷贝</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#零拷贝的操作"><span class="nav-number">2.1.</span> <span class="nav-text">零拷贝的操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FileRegion"><span class="nav-number">2.2.</span> <span class="nav-text">FileRegion</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么不直接用-JDK-NIO"><span class="nav-number">1.</span> <span class="nav-text">为什么不直接用 JDK NIO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Netty-做的更多"><span class="nav-number">1.1.</span> <span class="nav-text">Netty 做的更多</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Netty-做的更好"><span class="nav-number">1.2.</span> <span class="nav-text">Netty 做的更好</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么只支持-NIO"><span class="nav-number">2.</span> <span class="nav-text">为什么只支持 NIO</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么不建议阻塞-I-O"><span class="nav-number">2.1.</span> <span class="nav-text">为什么不建议阻塞 I/O</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为什么不再支持-AIO"><span class="nav-number">2.2.</span> <span class="nav-text">为什么不再支持 AIO</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么-Netty-自己实现了-Epoll"><span class="nav-number">3.</span> <span class="nav-text">为什么 Netty 自己实现了 Epoll</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#边缘触发与水平触发"><span class="nav-number">3.1.</span> <span class="nav-text">边缘触发与水平触发</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#水平触发-Level-Triggered-LT"><span class="nav-number">3.1.1.</span> <span class="nav-text">水平触发 Level Triggered (LT)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#边缘触发-Edge-Triggered-ET"><span class="nav-number">3.1.2.</span> <span class="nav-text">边缘触发 Edge Triggered (ET)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LT-处理过程"><span class="nav-number">3.1.3.</span> <span class="nav-text">LT 处理过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ET-处理过程"><span class="nav-number">3.1.4.</span> <span class="nav-text">ET 处理过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对比"><span class="nav-number">3.1.5.</span> <span class="nav-text">对比</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-与-Reactor-模式"><span class="nav-number">4.</span> <span class="nav-text">Netty 与 Reactor 模式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MainReactor-一般单线程"><span class="nav-number">4.1.</span> <span class="nav-text">MainReactor 一般单线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分配-EventLoop-规则"><span class="nav-number">4.2.</span> <span class="nav-text">分配 EventLoop 规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通用模式的-NIO-实现多路复用器跨平台"><span class="nav-number">4.3.</span> <span class="nav-text">通用模式的 NIO 实现多路复用器跨平台</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#粘包与半包"><span class="nav-number">5.</span> <span class="nav-text">粘包与半包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#粘包原因"><span class="nav-number">5.1.</span> <span class="nav-text">粘包原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#半包原因"><span class="nav-number">5.2.</span> <span class="nav-text">半包原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#根本原因"><span class="nav-number">5.3.</span> <span class="nav-text">根本原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#UDP"><span class="nav-number">5.4.</span> <span class="nav-text">UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何解决"><span class="nav-number">5.5.</span> <span class="nav-text">如何解决</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ByteToMessageDecoder"><span class="nav-number">5.5.1.</span> <span class="nav-text">ByteToMessageDecoder</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二次解码器"><span class="nav-number">6.</span> <span class="nav-text">二次解码器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#对-JDK-Serialization-的支持"><span class="nav-number">6.1.</span> <span class="nav-text">对 JDK Serialization 的支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对-protobuf-的支持"><span class="nav-number">6.2.</span> <span class="nav-text">对 protobuf 的支持</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#KeepAlive"><span class="nav-number">7.</span> <span class="nav-text">KeepAlive</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#开启-TCP-keepalive"><span class="nav-number">7.1.</span> <span class="nav-text">开启 TCP keepalive</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#应用层-KeepAlive"><span class="nav-number">7.2.</span> <span class="nav-text">应用层 KeepAlive</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#方法一-定时发送"><span class="nav-number">7.2.1.</span> <span class="nav-text">方法一 定时发送</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法二-空闲-Idle-检测"><span class="nav-number">7.2.2.</span> <span class="nav-text">方法二 空闲 Idle 检测</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Idle-检测"><span class="nav-number">7.3.</span> <span class="nav-text">Idle 检测</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReaderIdle"><span class="nav-number">7.3.1.</span> <span class="nav-text">ReaderIdle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WriterIdle"><span class="nav-number">7.3.2.</span> <span class="nav-text">WriterIdle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用例子"><span class="nav-number">7.3.3.</span> <span class="nav-text">使用例子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#目的"><span class="nav-number">7.3.3.1.</span> <span class="nav-text">目的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#实现"><span class="nav-number">7.3.3.2.</span> <span class="nav-text">实现</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-中锁的使用"><span class="nav-number">8.</span> <span class="nav-text">Netty 中锁的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#注意锁的对象和范围-减小粒度"><span class="nav-number">8.1.</span> <span class="nav-text">注意锁的对象和范围 减小粒度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意锁的对象本身大小-减少空间占用"><span class="nav-number">8.2.</span> <span class="nav-text">注意锁的对象本身大小 减少空间占用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注意锁的速度-提高并发性"><span class="nav-number">8.3.</span> <span class="nav-text">注意锁的速度 提高并发性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同场景选择不同的并发包-因需而变"><span class="nav-number">8.4.</span> <span class="nav-text">不同场景选择不同的并发包 因需而变</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#衡量好锁的价值-尽量不用锁"><span class="nav-number">8.5.</span> <span class="nav-text">衡量好锁的价值 尽量不用锁</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#EventLoop"><span class="nav-number">8.5.1.</span> <span class="nav-text">EventLoop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Recycler"><span class="nav-number">8.5.2.</span> <span class="nav-text">Recycler</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-内存使用技巧"><span class="nav-number">9.</span> <span class="nav-text">Netty 内存使用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#减少对像本身大小"><span class="nav-number">9.1.</span> <span class="nav-text">减少对像本身大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#预测分配大小"><span class="nav-number">9.2.</span> <span class="nav-text">预测分配大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#零拷贝"><span class="nav-number">9.3.</span> <span class="nav-text">零拷贝</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内存池"><span class="nav-number">9.4.</span> <span class="nav-text">内存池</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么引入对象池"><span class="nav-number">9.4.1.</span> <span class="nav-text">为什么引入对象池</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Recycler-1"><span class="nav-number">9.4.2.</span> <span class="nav-text">Recycler</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -372,7 +584,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -501,7 +713,7 @@ if (document.querySelectorAll('pre.mermaid').length) {
   var disqus_config = function() {
     this.page.url = "http://ziheliu.github.io/2020/netty/netty记录/";
     this.page.identifier = "2020/netty/netty记录/";
-    this.page.title = "Netty记录";
+    this.page.title = "Netty 记录";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

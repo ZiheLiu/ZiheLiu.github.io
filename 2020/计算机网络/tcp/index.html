@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:description" content="引用 TCP短连接和长连接的区别 为什么基于TCP的应用需要心跳包（TCP keep-alive原理分析） 聊聊 TCP 中的 KeepAlive 机制 TCP新手误区—心跳的意义  长连接、短连接在TCP连接建立后，发送 一次数据后，就关闭连接。一般是由client关闭的。 建立连接后，双方不主动关闭连接。要使用keepalive来保活，活着使用应用层的心跳机制。 长连接的优点 长连接可以省去较">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-05T10:46:37.462Z">
+<meta property="og:updated_time" content="2020-03-09T04:21:03.086Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP 协议">
 <meta name="twitter:description" content="引用 TCP短连接和长连接的区别 为什么基于TCP的应用需要心跳包（TCP keep-alive原理分析） 聊聊 TCP 中的 KeepAlive 机制 TCP新手误区—心跳的意义  长连接、短连接在TCP连接建立后，发送 一次数据后，就关闭连接。一般是由client关闭的。 建立连接后，双方不主动关闭连接。要使用keepalive来保活，活着使用应用层的心跳机制。 长连接的优点 长连接可以省去较">
@@ -209,10 +209,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-05 17:55:00 / Modified: 18:46:37" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-05 17:55:00" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-09 12:21:03" itemprop="dateModified" datetime="2020-03-09T12:21:03+08:00">2020-03-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -249,10 +255,10 @@
 
       
         <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/47074758" target="_blank" rel="noopener">TCP短连接和长连接的区别</a></li>
-<li><a href="http://hengyunabc.github.io/why-we-need-heartbeat/" target="_blank" rel="noopener">为什么基于TCP的应用需要心跳包（TCP keep-alive原理分析）</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/28894266" target="_blank" rel="noopener">聊聊 TCP 中的 KeepAlive 机制</a></li>
-<li><a href="https://blog.csdn.net/bjrxyz/article/details/71076442" target="_blank" rel="noopener">TCP新手误区—心跳的意义</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/47074758">TCP短连接和长连接的区别</a></li>
+<li><a href="http://hengyunabc.github.io/why-we-need-heartbeat/">为什么基于TCP的应用需要心跳包（TCP keep-alive原理分析）</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/28894266">聊聊 TCP 中的 KeepAlive 机制</a></li>
+<li><a href="https://blog.csdn.net/bjrxyz/article/details/71076442">TCP新手误区—心跳的意义</a></li>
 </ul>
 <h1 id="长连接、短连接"><a href="#长连接、短连接" class="headerlink" title="长连接、短连接"></a>长连接、短连接</h1><p>在TCP连接建立后，发送 一次数据后，就关闭连接。一般是由client关闭的。</p>
 <p>建立连接后，双方不主动关闭连接。要使用keepalive来保活，活着使用应用层的心跳机制。</p>
@@ -298,19 +304,31 @@
 <li>哪一端想要探测对方端是否挂了，就需要开启keepalive。</li>
 </ul>
 <p>和应用层自己实现的心跳的对比：</p>
+<p>缺点</p>
 <ol>
-<li>它不是 TCP 的标准协议, 并且是默认关闭的.</li>
-<li>TCP的keepalive的数据包更小（数据长度为0）。</li>
-<li>TCP的keepalive只能告诉应用这个连接还活着，但是上层的应用可能已经死循环了；而上层的心跳包可以告诉应用是否还能正确处理数据。</li>
+<li>它不是 TCP 的标准协议, 并且是默认关闭的，且经过路由等中转设备 keepalive 包可能会被丢弃。</li>
+<li>协议分层，各层关注点不同。<ul>
+<li>传输层关注是否“通”。</li>
+<li>应用层关注是否可服务。</li>
+</ul>
+</li>
 <li>TCP的keepalive的数据长度为0，无法自定义；上层的心跳包可以自定义，携带更多的数据。</li>
+<li>TCP 层的 keepalive 时间太长。<ul>
+<li>默认 &gt; 2 小时，虽然可改，但属于系统参数，改动影响所有应用。</li>
+</ul>
+</li>
 </ol>
+<p>缺点</p>
+<ul>
+<li>TCP的keepalive的数据包更小（数据长度为0）。</li>
+</ul>
 <p>与HTTP中Connection: keep-alive的对比：</p>
 <ol>
 <li>HTTP中Connection: keep-alive是说要复用这个TCP连接。</li>
 <li>TCP中的keepalive是用探测机制看对方是否还活着。</li>
 </ol>
 <h1 id="三次握手与四次挥手"><a href="#三次握手与四次挥手" class="headerlink" title="三次握手与四次挥手"></a>三次握手与四次挥手</h1><blockquote>
-<p><a href="https://cyc2018.github.io/CS-Notes/#/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%20-%20%E4%BC%A0%E8%BE%93%E5%B1%82?id=tcp-%e7%9a%84%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b" target="_blank" rel="noopener">计算机网络 - 传输层</a></p>
+<p><a href="https://cyc2018.github.io/CS-Notes/#/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%20-%20%E4%BC%A0%E8%BE%93%E5%B1%82?id=tcp-%e7%9a%84%e4%b8%89%e6%ac%a1%e6%8f%a1%e6%89%8b">计算机网络 - 传输层</a></p>
 </blockquote>
 <p>四次挥手中，第三次通信 B 向 A 发送关闭确认后，为什么 A 要 向 B 进行第四次通信？</p>
 <ul>
@@ -318,9 +336,9 @@
 </ul>
 <h1 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h1><blockquote>
 <ul>
-<li><p><a href="http://mrpeak.cn/blog/tcp-flow-control00/" target="_blank" rel="noopener">TCP/IP 系列之 TCP 流控与拥塞控制</a></p>
+<li><p><a href="http://mrpeak.cn/blog/tcp-flow-control00/">TCP/IP 系列之 TCP 流控与拥塞控制</a></p>
 </li>
-<li><p><a href="https://cyc2018.github.io/CS-Notes/#/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%20-%20%E4%BC%A0%E8%BE%93%E5%B1%82?id=tcp-%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3" target="_blank" rel="noopener">计算机网络 - 传输层</a></p>
+<li><p><a href="https://cyc2018.github.io/CS-Notes/#/notes/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%20-%20%E4%BC%A0%E8%BE%93%E5%B1%82?id=tcp-%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3">计算机网络 - 传输层</a></p>
 </li>
 </ul>
 </blockquote>
@@ -357,8 +375,8 @@
       <i class="fa fa-chevron-left"></i> HTTP 协议
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/计算机网络/1应用层/" rel="next" title="1. 应用层">
-      1. 应用层 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/计算机网络/代理/" rel="next" title="正向代理、反向代理、透明代理">
+      正向代理、反向代理、透明代理 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -442,7 +460,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -182,6 +182,348 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Recycler对象池/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/Recycler对象池/" class="post-title-link" itemprop="url">Recycler 对象池</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-09 15:34:00 / Modified: 16:25:53" itemprop="dateCreated datePublished" datetime="2020-03-09T15:34:00+08:00">2020-03-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/Recycler对象池/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/Recycler对象池/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://stackoverflow.com/questions/1468007/atomicinteger-lazyset-vs-set">AtomicInteger lazySet vs. set</a></li>
+<li><a href="https://github.com/netty/netty/issues/8215">why use lazySet instead set in WeakOrderQueue#add</a></li>
+<li><a href="https://blog.csdn.net/alex_xfboy/article/details/90384332">冷知识：netty的Recycler对象池</a></li>
+</ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Netty 场景下的轻量级对象池 Recycler。</p>
+<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="stack"><a href="#stack" class="headerlink" title="stack"></a>stack</h2><p>每个线程使用一个 <code>stack</code> 存储对象池。避免线程同步的问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> FastThreadLocal&lt;Stack&lt;T&gt;&gt; threadLocal</span><br></pre></td></tr></table></figure>
+<h2 id="WeakOrderQueue"><a href="#WeakOrderQueue" class="headerlink" title="WeakOrderQueue"></a>WeakOrderQueue</h2><p>在回收对象时，要释放对象的线程可能不是对象的 <code>stack</code> 线程。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/Recycler对象池/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty记录/" class="post-title-link" itemprop="url">Netty 记录</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-08 23:56:00" itemprop="dateCreated datePublished" datetime="2020-03-08T23:56:00+08:00">2020-03-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-09 15:34:08" itemprop="dateModified" datetime="2020-03-09T15:34:08+08:00">2020-03-09</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty记录/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty记录/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="为什么不直接用-JDK-NIO"><a href="#为什么不直接用-JDK-NIO" class="headerlink" title="为什么不直接用 JDK NIO"></a>为什么不直接用 JDK NIO</h1><h2 id="Netty-做的更多"><a href="#Netty-做的更多" class="headerlink" title="Netty 做的更多"></a>Netty 做的更多</h2><ul>
+<li>支持常用应用层协议。</li>
+<li>解决传输问题：粘包、板报现象。</li>
+<li>支持流量整形。</li>
+<li>完善的断连、Idle 等异常处理。</li>
+</ul>
+<h2 id="Netty-做的更好"><a href="#Netty-做的更好" class="headerlink" title="Netty 做的更好"></a>Netty 做的更好</h2><ul>
+<li>规避 JDK NIO bug。<ul>
+<li>epoll bug：异常唤醒空转导致 CPU 100%。</li>
+<li>IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。</li>
+</ul>
+</li>
+<li>API 更友好、更强大。<ul>
+<li>ByteBuffer 读写切换、无法扩容 -&gt; ByteBuf。</li>
+<li>ThreadLocal -&gt; FastThreadLocal。</li>
+</ul>
+</li>
+<li>隔离变化、屏蔽细节。</li>
+</ul>
+<h1 id="为什么只支持-NIO"><a href="#为什么只支持-NIO" class="headerlink" title="为什么只支持 NIO"></a>为什么只支持 NIO</h1><h2 id="为什么不建议阻塞-I-O"><a href="#为什么不建议阻塞-I-O" class="headerlink" title="为什么不建议阻塞 I/O"></a>为什么不建议阻塞 I/O</h2><ul>
+<li><p>连接数少时，并发度低，BIO 性能不差于 NIO。</p>
+</li>
+<li><p>连接数高时，阻塞-&gt;耗资源、效率低。</p>
+</li>
+</ul>
+<h2 id="为什么不再支持-AIO"><a href="#为什么不再支持-AIO" class="headerlink" title="为什么不再支持 AIO"></a>为什么不再支持 AIO</h2><p>Linux 中 AIO 实现不成熟。相比较 NIO 性能提升不明显。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/netty记录/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/服务端启动/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/服务端启动/" class="post-title-link" itemprop="url">服务端启动</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-08 11:18:00 / Modified: 16:13:53" itemprop="dateCreated datePublished" datetime="2020-03-08T11:18:00+08:00">2020-03-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/服务端启动/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/服务端启动/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.cnblogs.com/binarylei/p/10040765.html">Netty 源码（一）服务端启动</a></li>
+</ul>
+<h1 id="类的继承关系"><a href="#类的继承关系" class="headerlink" title="类的继承关系"></a>类的继承关系</h1><ul>
+<li><p>服务端使用 <code>ServerBootstrap</code> 启动服务。</p>
+</li>
+<li><p>客户端使用 <code>Bootstrap</code> 连接服务端。</p>
+</li>
+</ul>
+<p>类的继承关系如下：</p>
+<pre class="mermaid">classDiagram
+  AbstractBootstrap <|-- ServerBootstrap
+  AbstractBootstrap <|-- Bootstrap</pre>
+
+
+
+<h1 id="参数配置"><a href="#参数配置" class="headerlink" title="参数配置"></a>参数配置</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ServerBootstrap bootstrap = <span class="keyword">new</span> ServerBootstrap();</span><br><span class="line">EventLoopGroup bossGroup = <span class="keyword">new</span> NioEventLoopGroup(<span class="number">2</span>);</span><br><span class="line">EventLoopGroup workerGroup = <span class="keyword">new</span> NioEventLoopGroup();</span><br><span class="line">bootstrap</span><br><span class="line">  <span class="comment">// 线程池</span></span><br><span class="line">  .group(bossGroup, workerGroup)</span><br><span class="line">  <span class="comment">// 指定 Channel 的实现类</span></span><br><span class="line">  .channel(NioServerSocketChannel.class)</span><br><span class="line">  <span class="comment">// 处理连接事件</span></span><br><span class="line">  .handler(<span class="keyword">new</span> LoggerHandler())</span><br><span class="line">  <span class="comment">// 处理读写事件</span></span><br><span class="line">  .childHandler(<span class="keyword">new</span> ChannelInitializer&lt;SocketChannel&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(SocketChannel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      ch.pipeline()</span><br><span class="line">        .addLast(<span class="keyword">new</span> EchoServerHandler());</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="设置线程池"><a href="#设置线程池" class="headerlink" title="设置线程池"></a>设置线程池</h2><p>设置 <code>bossGroup</code> 和 <code>workerGroup</code>。</p>
+<ul>
+<li><code>bossGroup</code> 存储在 <code>ServerBootstrap</code> 中 。来处理连接事件。</li>
+<li><code>workerGroup</code> 存储在父类中。来处理读写事件、具体任务。</li>
+</ul>
+<p>如果只传入一个 group，则共用一个线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class ServerBootstrap</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerBootstrap <span class="title">group</span><span class="params">(EventLoopGroup group)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> group(group, group);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerBootstrap <span class="title">group</span><span class="params">(EventLoopGroup parentGroup, EventLoopGroup childGroup)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.group(parentGroup);</span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line">    <span class="keyword">this</span>.childGroup = childGroup;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// class AbstractBootstrap</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> B <span class="title">group</span><span class="params">(EventLoopGroup group)</span> </span>&#123;</span><br><span class="line">  <span class="comment">/// 省略...</span></span><br><span class="line">  <span class="keyword">this</span>.group = group;</span><br><span class="line">  <span class="keyword">return</span> self();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>NioEventLoopGroup</code> 会创建一个 <code>SelectorProvider</code>，用于接收特定的事件。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认 CPUS * 2 个线程。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">NioEventLoopGroup</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">NioEventLoopGroup</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(nThreads, (Executor) <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">NioEventLoopGroup</span><span class="params">(<span class="keyword">int</span> nThreads, Executor executor)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(nThreads, executor, SelectorProvider.provider());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="设置-Channel"><a href="#设置-Channel" class="headerlink" title="设置 Channel"></a>设置 Channel</h2><p>根据给定的 <code>Channel</code> 的实现类型，创建工厂对象，之后创建 channel 对象时使用这个实现类型创建。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractBootstrap</span></span></span><br><span class="line"><span class="class">  &lt;<span class="title">B</span> <span class="keyword">extends</span> <span class="title">AbstractBootstrap</span>&lt;<span class="title">B</span>, <span class="title">C</span>&gt;, <span class="title">C</span> <span class="keyword">extends</span> <span class="title">Channel</span>&gt; <span class="keyword">implements</span> <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// C 是 Channel 的子类</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> B <span class="title">channel</span><span class="params">(Class&lt;? extends C&gt; channelClass)</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 省略...</span></span><br><span class="line">      <span class="keyword">return</span> channelFactory(<span class="keyword">new</span> ReflectiveChannelFactory&lt;C&gt;(channelClass));</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// bind 方法时会用反射创建对应的 channel</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> B <span class="title">channelFactory</span><span class="params">(ChannelFactory&lt;? extends C&gt; channelFactory)</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 省略...</span></span><br><span class="line">      <span class="keyword">this</span>.channelFactory = channelFactory;</span><br><span class="line">      <span class="keyword">return</span> self();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="设置-Handler"><a href="#设置-Handler" class="headerlink" title="设置 Handler"></a>设置 Handler</h2><p><code>Channel</code> 处理连接事件。</p>
+<p>存储在 <code>AbstractBootstrap</code> 的域中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class AbstractBootstrap</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> B <span class="title">handler</span><span class="params">(ChannelHandler handler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (handler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"handler"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.handler = handler;</span><br><span class="line">    <span class="keyword">return</span> self();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="设置-ChildHandler"><a href="#设置-ChildHandler" class="headerlink" title="设置 ChildHandler"></a>设置 ChildHandler</h2><p><code>ChildHandler</code> 处理读写事件。</p>
+<p>存储在 <code>ServerBootstrap</code> 的域中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class ServerBootstrap</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ServerBootstrap <span class="title">childHandler</span><span class="params">(ChannelHandler childHandler)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (childHandler == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"childHandler"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.childHandler = childHandler;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="启动服务"><a href="#启动服务" class="headerlink" title="启动服务"></a>启动服务</h1><h2 id="bind"><a href="#bind" class="headerlink" title="bind()"></a>bind()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class AbstractBootstrap</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ChannelFuture <span class="title">bind</span><span class="params">(SocketAddress localAddress)</span> </span>&#123;</span><br><span class="line">  validate();</span><br><span class="line">  <span class="keyword">if</span> (localAddress == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException(<span class="string">"localAddress"</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> doBind(localAddress);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> ChannelFuture <span class="title">doBind</span><span class="params">(<span class="keyword">final</span> SocketAddress localAddress)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1. 创建 channel，将其绑定到 EventLoopGroup 上。</span></span><br><span class="line">    <span class="keyword">final</span> ChannelFuture regFuture = initAndRegister();</span><br><span class="line">    <span class="keyword">final</span> Channel channel = regFuture.channel();</span><br><span class="line">    <span class="keyword">if</span> (regFuture.cause() != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> regFuture;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (regFuture.isDone()) &#123;</span><br><span class="line">        <span class="comment">// At this point we know that the registration was complete and successful.</span></span><br><span class="line">        ChannelPromise promise = channel.newPromise();</span><br><span class="line">        <span class="comment">// 2. 如果已经注册成功了。同步绑定端口、启动服务。</span></span><br><span class="line">      	doBind0(regFuture, channel, localAddress, promise);</span><br><span class="line">        <span class="keyword">return</span> promise;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      	<span class="comment">// 3. 如果还没有注册好，异步同步绑定端口、启动服务。</span></span><br><span class="line">        <span class="keyword">final</span> PendingRegistrationPromise promise = <span class="keyword">new</span> PendingRegistrationPromise(channel);</span><br><span class="line">        regFuture.addListener(<span class="keyword">new</span> ChannelFutureListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">operationComplete</span><span class="params">(ChannelFuture future)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">                Throwable cause = future.cause();</span><br><span class="line">                <span class="keyword">if</span> (cause != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// Registration on the EventLoop failed so fail the ChannelPromise directly to not cause an</span></span><br><span class="line">                    <span class="comment">// IllegalStateException once we try to access the EventLoop of the Channel.</span></span><br><span class="line">                    promise.setFailure(cause);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// Registration was successful, so set the correct executor to use.</span></span><br><span class="line">                    <span class="comment">// See https://github.com/netty/netty/issues/2586</span></span><br><span class="line">                    promise.registered();</span><br><span class="line"></span><br><span class="line">                    doBind0(regFuture, channel, localAddress, promise);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">return</span> promise;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注册的时候，如果当前线程是 EventLoop 的线程，则直接同步注册，否则放入 EventLoop 中异步注册。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">register</span><span class="params">(EventLoop eventLoop, <span class="keyword">final</span> ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    AbstractChannel.<span class="keyword">this</span>.eventLoop = eventLoop;</span><br><span class="line">    <span class="comment">// 同一个 channel 的注册、读、写等都在 eventLoop 完成，避免多线程的锁竞争</span></span><br><span class="line">    <span class="keyword">if</span> (eventLoop.inEventLoop()) &#123;</span><br><span class="line">        <span class="comment">// 将 channel 注册到 eventLoop 上</span></span><br><span class="line">        register0(promise);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            eventLoop.execute(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    register0(promise);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">            <span class="comment">// 省略...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="initAndRegister"><a href="#initAndRegister" class="headerlink" title="initAndRegister()"></a>initAndRegister()</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class AbstractBootstrap</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> ChannelFuture <span class="title">initAndRegister</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Channel channel = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 1. 创建一个 socket 的封装的 NioServerSocketChannel。</span></span><br><span class="line">        channel = channelFactory.newChannel();</span><br><span class="line">      	<span class="comment">// 2. 配置参数、绑定自定义 handler、绑定 AcceptorHandler。</span></span><br><span class="line">        init(channel);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable t) &#123;</span><br><span class="line">        <span class="keyword">if</span> (channel != <span class="keyword">null</span>) &#123;</span><br><span class="line">            channel.unsafe().closeForcibly();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> DefaultChannelPromise(channel, GlobalEventExecutor.INSTANCE).setFailure(t);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> DefaultChannelPromise(<span class="keyword">new</span> FailedChannel(), GlobalEventExecutor.INSTANCE).setFailure(t);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 将 channel 注册到 EventLoopGroup 上 </span></span><br><span class="line">    <span class="comment">//    a. 将 channel 绑定到 group 中的一个 EventLoop 上。（channel.eventLoop)。</span></span><br><span class="line">    <span class="comment">//    b. goup 的 selector 上，监听 `OP_ACCEPT` 事件。</span></span><br><span class="line">    ChannelFuture regFuture = config().group().register(channel);</span><br><span class="line">    <span class="keyword">if</span> (regFuture.cause() != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (channel.isRegistered()) &#123;</span><br><span class="line">            channel.close();</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            channel.unsafe().closeForcibly();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> regFuture;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="channelFactory-newChannel"><a href="#channelFactory-newChannel" class="headerlink" title="channelFactory.newChannel()"></a>channelFactory.newChannel()</h3><p><code>channelFactory.newChannel()</code> 使用反射，构造之前设置的 <code>channel</code> 类的对象。</p>
+<ul>
+<li><code>NioServerSocketChannel</code> 调用 <code>java.nio</code> 包，创建一个 socket（类型为 <code>java.nio.channels. ServerSocketChannel</code>）。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class NioServerSocketChannel</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> SelectorProvider DEFAULT_SELECTOR_PROVIDER = SelectorProvider.provider();</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">NioServerSocketChannel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(newSocket(DEFAULT_SELECTOR_PROVIDER));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> ServerSocketChannel <span class="title">newSocket</span><span class="params">(SelectorProvider provider)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> provider.openServerSocketChannel();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">NioServerSocketChannel</span><span class="params">(ServerSocketChannel channel)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">super</span>(<span class="keyword">null</span>, channel, SelectionKey.OP_ACCEPT);</span><br><span class="line">  config = <span class="keyword">new</span> NioServerSocketChannelConfig(<span class="keyword">this</span>, javaChannel().socket());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置成非阻塞模式，并注册感兴趣的事件。</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="title">AbstractNioChannel</span><span class="params">(Channel parent, SelectableChannel ch, <span class="keyword">int</span> readInterestOp)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>(parent);</span><br><span class="line">    <span class="keyword">this</span>.ch = ch;</span><br><span class="line">    <span class="keyword">this</span>.readInterestOp = readInterestOp;</span><br><span class="line">    ch.configureBlocking(<span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建 channel 是创建对应的 pipeline。</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="title">AbstractChannel</span><span class="params">(Channel parent)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.parent = parent;</span><br><span class="line">    id = newId();</span><br><span class="line">    unsafe = newUnsafe();</span><br><span class="line">    pipeline = newChannelPipeline();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="init"><a href="#init" class="headerlink" title="init()"></a>init()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class ServerBootstrap</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">init</span><span class="params">(Channel channel)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    <span class="comment">// 1. 设置参数</span></span><br><span class="line">    <span class="keyword">final</span> Map&lt;ChannelOption&lt;?&gt;, Object&gt; options = options0();</span><br><span class="line">    <span class="keyword">synchronized</span> (options) &#123;</span><br><span class="line">        setChannelOptions(channel, options, logger);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> Map&lt;AttributeKey&lt;?&gt;, Object&gt; attrs = attrs0();</span><br><span class="line">    <span class="keyword">synchronized</span> (attrs) &#123;</span><br><span class="line">        <span class="keyword">for</span> (Entry&lt;AttributeKey&lt;?&gt;, Object&gt; e: attrs.entrySet()) &#123;</span><br><span class="line">            <span class="meta">@SuppressWarnings</span>(<span class="string">"unchecked"</span>)</span><br><span class="line">            AttributeKey&lt;Object&gt; key = (AttributeKey&lt;Object&gt;) e.getKey();</span><br><span class="line">            channel.attr(key).set(e.getValue());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ChannelPipeline p = channel.pipeline();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> EventLoopGroup currentChildGroup = childGroup;</span><br><span class="line">    <span class="keyword">final</span> ChannelHandler currentChildHandler = childHandler;</span><br><span class="line">    <span class="keyword">final</span> Entry&lt;ChannelOption&lt;?&gt;, Object&gt;[] currentChildOptions;</span><br><span class="line">    <span class="keyword">final</span> Entry&lt;AttributeKey&lt;?&gt;, Object&gt;[] currentChildAttrs;</span><br><span class="line">    <span class="keyword">synchronized</span> (childOptions) &#123;</span><br><span class="line">        currentChildOptions = childOptions.entrySet().toArray(newOptionArray(childOptions.size()));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">synchronized</span> (childAttrs) &#123;</span><br><span class="line">        currentChildAttrs = childAttrs.entrySet().toArray(newAttrArray(childAttrs.size()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    p.addLast(<span class="keyword">new</span> ChannelInitializer&lt;Channel&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initChannel</span><span class="params">(<span class="keyword">final</span> Channel ch)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> ChannelPipeline pipeline = ch.pipeline();</span><br><span class="line">            <span class="comment">// 2. 应用 bootstrap.handler() 传入的 handler。</span></span><br><span class="line">            ChannelHandler handler = config.handler();</span><br><span class="line">            <span class="keyword">if</span> (handler != <span class="keyword">null</span>) &#123;</span><br><span class="line">                pipeline.addLast(handler);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 3. 将接收客户端的 ServerBootstrapAcceptor 注册到 pipeline 中</span></span><br><span class="line">            ch.eventLoop().execute(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    pipeline.addLast(<span class="keyword">new</span> ServerBootstrapAcceptor(</span><br><span class="line">                            ch, currentChildGroup, currentChildHandler, currentChildOptions, currentChildAttrs));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Reactor模式/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -205,10 +547,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-07 20:19:00 / Modified: 20:54:19" itemprop="dateCreated datePublished" datetime="2020-03-07T20:19:00+08:00">2020-03-07</time>
+              <time title="Created: 2020-03-07 20:19:00" itemprop="dateCreated datePublished" datetime="2020-03-07T20:19:00+08:00">2020-03-07</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-09 09:51:03" itemprop="dateModified" datetime="2020-03-09T09:51:03+08:00">2020-03-09</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -245,16 +593,16 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><p><a href="https://www.cnblogs.com/amei0/p/8117660.html" target="_blank" rel="noopener">IO多路复用之Reactor</a></p>
+<li><p><a href="https://www.cnblogs.com/amei0/p/8117660.html">IO多路复用之Reactor</a></p>
 </li>
-<li><p><a href="https://www.cnblogs.com/duanxz/p/3696849.html" target="_blank" rel="noopener">Netty中的三种Reactor</a></p>
+<li><p><a href="https://www.cnblogs.com/duanxz/p/3696849.html">Netty中的三种Reactor</a></p>
 </li>
 </ul>
 <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Reactor（反应器）模式常用来实现 I/O 多路复用机制。</p>
 <p>Reactor 管理器调用事件分离器等待事件的发生。事件发生后，Reactor 管理器被唤醒，调度事件处理器链进行事件的处理。</p>
+<p>核心流程：注册感兴趣的事件 -&gt; 扫描是否有感兴趣的事件发生 -&gt; 事件发生后做出相应的处理。</p>
 <h1 id="Reactor模式组成"><a href="#Reactor模式组成" class="headerlink" title="Reactor模式组成"></a>Reactor模式组成</h1><h2 id="描述符-Handles"><a href="#描述符-Handles" class="headerlink" title="描述符 Handles"></a>描述符 Handles</h2><p>由操作系统提供的资源，用于识别每一个事件，如 Socket 描述符、文件描述符、信号的值等。</p>
 <p>在Linux中，它用一个整数来表示。</p>
-<p>在网络编程中，一般是一个 Socket 描述符。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/netty/Reactor模式/#more" rel="contents">
@@ -863,343 +1211,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/raft协议/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/raft协议/" class="post-title-link" itemprop="url">Raft 协议</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-05 20:24:00" itemprop="dateCreated datePublished" datetime="2020-03-05T20:24:00+08:00">2020-03-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 19:05:13" itemprop="dateModified" datetime="2020-03-06T19:05:13+08:00">2020-03-06</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/分布式/raft协议/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/raft协议/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.jianshu.com/p/ddbe4209be0f" target="_blank" rel="noopener">RAFT协议完整笔记</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/27207160" target="_blank" rel="noopener">Raft协议详解</a></li>
-</ul>
-<h1 id="节点状态"><a href="#节点状态" class="headerlink" title="节点状态"></a>节点状态</h1><ol>
-<li>跟随者</li>
-<li>候选者</li>
-<li>领导者</li>
-</ol>
-<h1 id="跟随者"><a href="#跟随者" class="headerlink" title="跟随者"></a>跟随者</h1><p>节点收到心跳/添加日志请求后：</p>
-<ol>
-<li>如果当前的term大于请求的term，返回false。</li>
-<li>如果当前的term小于请求的term，自己变为跟随者。</li>
-<li>如果请求的PrevLogIndex不在自己的log里，返回false。</li>
-<li>如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term的log，返回最右边不是这个term的log的index，返回false。</li>
-<li>否则可以添加请求中的log entries。</li>
-<li>更新commitIndex为请求中的commitIndex（如果更大的话）。</li>
-<li>返回true。</li>
-</ol>
-<h1 id="候选者"><a href="#候选者" class="headerlink" title="候选者"></a>候选者</h1><p>跟随者转变为候选者的时机：</p>
-<ul>
-<li>如果跟随者 一定时间内 没有收到领导者的心跳消息，则转变为候选者。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/分布式/raft协议/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/排序/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/algorithm/排序/" class="post-title-link" itemprop="url">排序</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 19:44:00 / Modified: 19:45:14" itemprop="dateCreated datePublished" datetime="2020-03-05T19:44:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/algorithm/排序/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/排序/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p><a href="https://www.zhihu.com/question/51337272/answer/572455307" target="_blank" rel="noopener">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/红黑树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/algorithm/红黑树/" class="post-title-link" itemprop="url">红黑树</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 19:44:00 / Modified: 19:45:02" itemprop="dateCreated datePublished" datetime="2020-03-05T19:44:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/algorithm/红黑树/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/红黑树/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
-<li>所有节点都是红色或者黑色。</li>
-<li>根节点为黑色。</li>
-<li>每个叶子节点下挂两个NULL节点，并且NULL节点为黑色。</li>
-<li>如果该节点是红色的，那么该节点的子节点一定都是黑色。</li>
-<li>从根节点到叶子节点的路径，每条路径的黑色节点数目是相同的。</li>
-</ol>
-<h1 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h1><ol>
-<li>插入节点X到对应位置，初始为红色。</li>
-<li>如果X是根节点，则标记为黑色。</li>
-<li>如果X的父节点是根节点，返回。</li>
-<li>否则，X和X的父节点都不是根节点：<ol>
-<li>如果X的父节点是黑色，返回。</li>
-<li>否则，看X的uncle节点是不是红色：<ol>
-<li>如果X的父节点和X的uncle都是红色，变色，<strong>向上检查</strong>X的父亲的父亲节点的颜色。</li>
-<li>否则，如果X在父节点是X的祖先节点的左子节点<ol>
-<li>如果X也是父节点的左子节点（LL），右旋变色。<strong>返回。</strong></li>
-<li>如果X是父节点的右子节点（LR），先左旋、再右旋变色。<strong>返回。</strong></li>
-</ol>
-</li>
-<li>如果X在父节点是X的祖先节点的右子节点<ol>
-<li>如果X也是父节点的右子节点（RR），左旋变色。<strong>返回。</strong></li>
-<li>如果X是父节点的左子节点（RL），先右旋、再左旋变色。<strong>返回。</strong></li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="平衡二叉树与红黑树的对比"><a href="#平衡二叉树与红黑树的对比" class="headerlink" title="平衡二叉树与红黑树的对比"></a>平衡二叉树与红黑树的对比</h1><ol>
-<li>搜索长度<ul>
-<li>红黑树搜索路径的最大长度不超过搜索路径的最短长度的2倍。</li>
-<li>平衡二叉树差值不大于1。</li>
-</ul>
-</li>
-<li>插入<ul>
-<li>红黑树在插入的时候，只有X的父节点和Uncle都是红色，才要递归到根节点变色，否则只要旋转1-2次就可以。</li>
-<li>AVL在插入时，要找到最低的不平衡位置，向上递归到根节点旋转。</li>
-</ul>
-</li>
-<li>删除<ul>
-<li>红黑树只有个别情况才会递归平衡父节点，它发生在：兄弟节点是黑色，两个侄儿也是黑色。当兄弟节点是红色的时候，转化为兄弟节点是黑色的情况处理，当两个侄儿有红色节点的时候，则在常数时间内就可以达到平衡。</li>
-<li>AVL和插入类似，找到第一个不平衡位置，向上递归到根节点。</li>
-</ul>
-</li>
-</ol>
-<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ol>
-<li><a href="https://zhuanlan.zhihu.com/p/34840762" target="_blank" rel="noopener">一篇搞懂AVL平衡二叉树</a></li>
-<li><a href="[https://pjmike.github.io/2018/08/09/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5%E4%B8%8E%E5%88%A0%E9%99%A4/](https://pjmike.github.io/2018/08/09/平衡二叉树的插入与删除/">平衡二叉树的插入与删除</a>)</li>
-<li><a href="https://acm.sdut.edu.cn/onlinejudge2/index.php/Home/Index/problemdetail/pid/3374.html" target="_blank" rel="noopener">sdut-数据结构实验之查找二：平衡二叉树</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/79980618" target="_blank" rel="noopener">红黑树，超强动静图详解，简单易懂</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/22800206" target="_blank" rel="noopener">数据结构：红黑树的删除</a></li>
-<li><a href="https://www.zhihu.com/question/19856999" target="_blank" rel="noopener">红黑树比 AVL 树具体更高效在哪里？</a></li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1272,7 +1283,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">52</span>
+          <span class="site-state-item-count">55</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1384,59 +1395,6 @@ if (document.querySelectorAll('pre.mermaid').length) {
   
 
   
-      
-
-<script>
-  if (typeof MathJax === 'undefined') {
-    window.MathJax = {
-      loader: {
-        source: {
-          '[tex]/amsCd': '[tex]/amscd',
-          '[tex]/AMScd': '[tex]/amscd'
-        }
-      },
-      tex: {
-        inlineMath: {'[+]': [['$', '$']]},
-        tags: 'ams'
-      },
-      options: {
-        renderActions: {
-          findScript: [10, doc => {
-            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
-              const display = !!node.type.match(/; *mode=display/);
-              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
-              const text = document.createTextNode('');
-              node.parentNode.replaceChild(text, node);
-              math.start = {node: text, delim: '', n: 0};
-              math.end = {node: text, delim: '', n: 0};
-              doc.math.push(math);
-            });
-          }, '', false],
-          insertedScript: [200, () => {
-            document.querySelectorAll('mjx-container').forEach(node => {
-              let target = node.parentNode;
-              if (target.nodeName.toLowerCase() === 'li') {
-                target.parentNode.classList.add('has-jax');
-              }
-            });
-          }, '', false]
-        }
-      }
-    };
-    (function () {
-      var script = document.createElement('script');
-      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
-      script.defer = true;
-      document.head.appendChild(script);
-    })();
-  } else {
-    MathJax.startup.document.state(0);
-    MathJax.texReset();
-    MathJax.typeset();
-  }
-</script>
-
-    
 
   
 
