@@ -182,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty读数据流程/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty写数据流程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -196,7 +196,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/netty/netty读数据流程/" class="post-title-link" itemprop="url">Netty 读数据流程</a>
+            <a href="/2020/netty/netty写数据流程/" class="post-title-link" itemprop="url">Netty 写数据流程</a>
         </h1>
 
         <div class="post-meta">
@@ -207,7 +207,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-03-09 23:21:00 / Modified: 23:27:45" itemprop="dateCreated datePublished" datetime="2020-03-09T23:21:00+08:00">2020-03-09</time>
+              <time title="Created: 2020-03-10 18:32:00 / Modified: 19:50:51" itemprop="dateCreated datePublished" datetime="2020-03-10T18:32:00+08:00">2020-03-10</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -228,8 +228,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/netty/netty读数据流程/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty读数据流程/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/netty写数据流程/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty写数据流程/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -244,17 +244,365 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="读缓存"><a href="#读缓存" class="headerlink" title="读缓存"></a>读缓存</h1><p>当读事件发生时，WorkerEventLoop 调用 <code>unsafe.read()</code>（<code>NioByteUnsafe#read()</code>）。</p>
-<p>根据 <code>continueReading()</code> 最多只会读取 16 次。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NioByteUnsafe#read()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      byteBuf = allocHandle.allocate(allocator);</span><br><span class="line">      allocHandle.lastBytesRead(doReadBytes(byteBuf));</span><br><span class="line">      <span class="comment">// 省略 ...</span></span><br><span class="line">    &#125; <span class="keyword">while</span> (allocHandle.continueReading());</span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DefaultMaxMessagesRecvByteBufAllocator#continueReading()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">continueReading</span><span class="params">(UncheckedBooleanSupplier maybeMoreDataSupplier)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> config.isAutoRead() &amp;&amp;</span><br><span class="line">           (!respectMaybeMoreData || maybeMoreDataSupplier.get()) &amp;&amp;</span><br><span class="line">           totalMessages &lt; maxMessagePerRead &amp;&amp; <span class="comment">// 默认 16</span></span><br><span class="line">           totalBytesRead &gt; <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="Epoll-ET-模式"><a href="#Epoll-ET-模式" class="headerlink" title="Epoll ET 模式"></a>Epoll ET 模式</h2><p>对于 Epoll ET 模式，只有从不可读变为可读才会触发，如果只读取 16 次，剩下的数据将没有办法继续读取。</p>
-<p>所以 <code>EpollSocketChannel</code> 会在时 Epoll ET 模式时，如果数据没有读取完，会重新触发一个 EPOLLIN 事件。</p>
-<p><img src="/images/EpollRecvByteAllocatorHandle-3767276.png" alt="EpollRecvByteAllocatorHandle"></p>
-<p>如下，在 <code>AbstractEpollChannel#epollInFinally()</code> 中，如果是 EPOLLET 模式、且还有数据没有读完，会再触发一次 EPOLLIN 事件。</p>
-<p><img src="/images/image-20200309232504893.png" alt="image-20200309232504893"></p>
+          <h1 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h1><ul>
+<li><p>Write操作：写数据到 buffer。</p>
+<ul>
+<li>写数据到缓存 <code>ChannelOutboundBuffer#addMessage()</code>。<ul>
+<li>把数据缓存在链表 <code>unflushedEntry</code> 上。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Flush 操作：发送 buffer 里面的数据。</p>
+<ul>
+<li><code>AbstractChannel.AbstractUnsafe#flush()</code>。</li>
+<li>准备数据 <code>ChannelOutboundBuffer#addFlush()</code> <ul>
+<li>把链表 <code>unflushedEntry</code> 上的数据转移到链表 <code>flushedEntry</code> 上。</li>
+</ul>
+</li>
+<li>发送数据到 socket <code>NioSocketChannel#doWrite()</code>。<ul>
+<li>循环写入到 socket 中。<ul>
+<li>如果没有数据要写了，清除 OP_WRITE 事件。</li>
+<li>每次写入时，把链表缓存的一部分转化为数组。转化的长度会在每次写入后进行调整。</li>
+<li>如果发现写不进去 socket 了，注册一个 OP_WRITE 事件。</li>
+<li>如果写了 16 次还有数据，先结束写操作。清除 OP_WRITE，把继续写的任务放到 <code>EventLoop</code> 里。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/netty写数据流程.png" alt="netty写数据流程"></p>
+<h1 id="写数据到-buffer"><a href="#写数据到-buffer" class="headerlink" title="写数据到 buffer"></a>写数据到 buffer</h1><h2 id="写入方法的调用位置"><a href="#写入方法的调用位置" class="headerlink" title="写入方法的调用位置"></a>写入方法的调用位置</h2><ul>
+<li><code>ChannelHandlerContext#write(msg)</code> 把 <code>msg</code> 写入到前一个 <code>OutboundHandler</code> 中。</li>
+<li><code>ChannelHandlerContext#handler().write(msg)</code> 把 <code>msg</code> 写入到 <code>pipeline.tail</code> 中。</li>
+</ul>
+<p>最后实际写数据到 buffer，都是在 <code>pipeline.head.write(msg)</code> 中 完成。</p>
+<p>最终在 <code>unsafe.write()</code>中调用了 <code>ChannelOutboundBuffer#addMessage(msg, size, promise)</code>。</p>
+<p>这也意味着，每个 Channel 会有一个 <code>outboundBuffer</code> 缓存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pipeline.head.write()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">    unsafe.write(msg, promise);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// AbstractChannel.AbstractUnsafe#write()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(Object msg, ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    outboundBuffer.addMessage(msg, size, promise);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/netty/netty读数据流程/#more" rel="contents">
+              <a class="btn" href="/2020/netty/netty写数据流程/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/epoll的et与lt/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/epoll的et与lt/" class="post-title-link" itemprop="url">Epoll 边缘触发与水平触发</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-10 16:12:00 / Modified: 16:23:00" itemprop="dateCreated datePublished" datetime="2020-03-10T16:12:00+08:00">2020-03-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/epoll的et与lt/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/epoll的et与lt/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><a href="https://blog.csdn.net/dongfuye/article/details/50880251">epoll LT/ET 深入剖析</a>（主要参考）</p>
+<p><a href="https://www.zhihu.com/question/22524908/answer/69054646">java nio使用的是水平触发还是边缘触发</a></p>
+</blockquote>
+<h1 id="水平触发-Level-Triggered-LT"><a href="#水平触发-Level-Triggered-LT" class="headerlink" title="水平触发 Level Triggered (LT)"></a>水平触发 Level Triggered (LT)</h1><ul>
+<li>socket 接收缓冲区不为空，有数据可读， 读事件一直触发。</li>
+<li>socket 发送缓冲区不满，可以继续写入数据， 写事件一直触发。</li>
+</ul>
+<h1 id="边缘触发-Edge-Triggered-ET"><a href="#边缘触发-Edge-Triggered-ET" class="headerlink" title="边缘触发 Edge Triggered (ET)"></a>边缘触发 Edge Triggered (ET)</h1><p>仅在状态变化时触发事件。</p>
+<ul>
+<li>socket 的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时，触发读事件。</li>
+<li>socket 的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时，触发写事件。</li>
+</ul>
+<h1 id="LT-处理过程"><a href="#LT-处理过程" class="headerlink" title="LT 处理过程"></a>LT 处理过程</h1><h2 id="监听"><a href="#监听" class="headerlink" title="监听"></a>监听</h2><p>select 一个一个连接，监听每个连接的 <code>EPOLLIN</code> 事件。</p>
+<h2 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/epoll的et与lt/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/EventLoop介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/EventLoop介绍/" class="post-title-link" itemprop="url">EventLoop 主流程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-10 15:11:00 / Modified: 15:31:50" itemprop="dateCreated datePublished" datetime="2020-03-10T15:11:00+08:00">2020-03-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/EventLoop介绍/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/EventLoop介绍/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.jianshu.com/p/3ebd4e997242">Netty NioEventLoop源码解读</a></li>
+<li><a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">Java NIO epoll bug 以及 Netty 的解决之道</a></li>
+</ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>作为 Worker 的 <code>EventLoop</code>，负责多路复用 <code>select/epoll</code> 来监听多个 socket 连接的读写事件，并在有读写事件时 进行逻辑的处理、从 socket 读取数据、向socket 写入数据。</p>
+<p>而 <code>EventLoop</code> 是单线程的，如何同时阻塞监听读写事件、并处理业务逻辑？</p>
+<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
+<li>每次循环，先检测是否有任务要处理。<ul>
+<li>如果没有任务，就进行 <code>select(timeout)</code>。<ul>
+<li><code>timeout</code> 的时间是“下一次要执行任务的时间 + 0.5 ms”，没有要执行的任务，就是 “1s + 0.5 ms”</li>
+</ul>
+</li>
+<li>如果有任务，就不进行 <code>select()</code>。</li>
+</ul>
+</li>
+<li>然后，处理到达的读写事件。</li>
+<li>最后，执行所有待执行的任务。</li>
+<li>随后，重复步骤1。</li>
+</ol>
+<h1 id="解决-JDK-NIO-空轮询-Bug"><a href="#解决-JDK-NIO-空轮询-Bug" class="headerlink" title="解决 JDK NIO 空轮询 Bug"></a>解决 JDK NIO 空轮询 Bug</h1><h2 id="Bug-简介"><a href="#Bug-简介" class="headerlink" title="Bug 简介"></a>Bug 简介</h2><p><code>selector.select()</code> 应该 <strong>一直阻塞</strong>，直到有就绪事件到达。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/EventLoop介绍/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty接收数据流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty接收数据流程/" class="post-title-link" itemprop="url">Netty 接收数据流程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-09 23:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T23:21:00+08:00">2020-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-10 18:31:28" itemprop="dateModified" datetime="2020-03-10T18:31:28+08:00">2020-03-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty接收数据流程/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty接收数据流程/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://time.geekbang.org/course/detail/237-158157">源码剖析：接收数据</a></li>
+</ul>
+<h1 id="触发读操作"><a href="#触发读操作" class="headerlink" title="触发读操作"></a>触发读操作</h1><p>当读事件发生时，WorkerEventLoop 调用 <code>unsafe.read()</code>，这里是  <code>NioSocketChannel. NioByteUnsafe#read()</code>。</p>
+<h1 id="循环读取"><a href="#循环读取" class="headerlink" title="循环读取"></a>循环读取</h1><p>循环读取，根据 <code>continueReading</code> 判断是否还要继续读取。</p>
+<ul>
+<li>每次读取后，调用 <code>pipeline.fireChannelRead(byteBuf)</code> 把读到的数据传播到链中。</li>
+<li>读取结束后，调用 <code>pipeline.fireChannelReadComplete()</code> 传播读取完成事件。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NioByteUnsafe#read()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      byteBuf = allocHandle.allocate(allocator);</span><br><span class="line">      allocHandle.lastBytesRead(doReadBytes(byteBuf));</span><br><span class="line">      <span class="comment">// 省略 ...</span></span><br><span class="line">      pipeline.fireChannelRead(byteBuf);</span><br><span class="line">    &#125; <span class="keyword">while</span> (allocHandle.continueReading());</span><br><span class="line">  	</span><br><span class="line">    allocHandle.readComplete();</span><br><span class="line">    pipeline.fireChannelReadComplete();</span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="分配-ByteBuf"><a href="#分配-ByteBuf" class="headerlink" title="分配 ByteBuf"></a>分配 ByteBuf</h2><blockquote>
+<p><a href="https://www.jianshu.com/p/e12c7f3861e1">Netty 源码解析 ——— AdaptiveRecvByteBufAllocator</a></p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/netty接收数据流程/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -301,10 +649,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-09 20:21:00 / Modified: 23:30:16" itemprop="dateCreated datePublished" datetime="2020-03-09T20:21:00+08:00">2020-03-09</time>
+              <time title="Created: 2020-03-09 20:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T20:21:00+08:00">2020-03-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-10 18:29:07" itemprop="dateModified" datetime="2020-03-10T18:29:07+08:00">2020-03-10</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -346,19 +700,21 @@
 <h1 id="主线"><a href="#主线" class="headerlink" title="主线"></a>主线</h1><ul>
 <li><p>boss thread</p>
 <ul>
-<li>NioEventLoop 中的 selector 轮询创建连接事件（OP_ACCEPT）。</li>
+<li>NioEventLoop 中的 selector 轮询监听连接事件 <code>OP_ACCEPT</code>。</li>
 <li>创建 socket channel。</li>
-<li>初始化 socket channel 并从 worker group 中选择一个 NioEventLoop。</li>
+<li>初始化 socket channel、并从 <code>workerEventLoopGroup</code> 中选择一个 <code>EventLoop</code>。</li>
 </ul>
 </li>
 <li><p>worker thread</p>
 <ul>
 <li>将 socket channel 注册到选择的 NioEventLoop 的 selector。</li>
-<li>注册读事件（OP_READ）到 selector 上。</li>
+<li>注册读事件 <code>OP_READ</code> 到 selector 上。</li>
 </ul>
 </li>
 </ul>
-<h1 id="创建-SocketChannel"><a href="#创建-SocketChannel" class="headerlink" title="创建 SocketChannel"></a>创建 SocketChannel</h1><p>NioEventLoop 的<strong>死循环</strong>中，接收到 <code>OP_ACCEPT</code> 事件后，调用 <code>unsafe.read()</code>，最终调用 <code>serverSocketChannel.accept()</code> 得到 <code>socketChannel</code>。</p>
+<h1 id="创建-SocketChannel"><a href="#创建-SocketChannel" class="headerlink" title="创建 SocketChannel"></a>创建 SocketChannel</h1><p>NioEventLoop 的 <code>select(timeout)</code> 调用中，接收到 <code>OP_ACCEPT</code> 事件被唤醒。</p>
+<p>调用 <code>unsafe.read()</code>，也就是 <code>NioServerSocketChannel.NioMessageUnsafe#read()</code>，来处理连接事件。</p>
+<p>最终调用 <code>serverSocketChannel.accept()</code> 得到 <code>socketChannel</code>。</p>
 <ul>
 <li><code>unsafe.read()</code> 有两种<ul>
 <li><code>NioMessageUnsafe#read()</code> 处理 OP_ACCEPT 事件。这里是调用这个。</li>
@@ -366,7 +722,7 @@
 </ul>
 </li>
 </ul>
-<h1 id="注册-SocketChannel"><a href="#注册-SocketChannel" class="headerlink" title="注册 SocketChannel"></a>注册 SocketChannel</h1><h2 id="传播-SocketChannel-到-handler-链中"><a href="#传播-SocketChannel-到-handler-链中" class="headerlink" title="传播 SocketChannel 到 handler 链中"></a>传播 SocketChannel 到 handler 链中</h2><p>把创建的 <code>socketChannel</code> 放到 <code>readBuf</code> 中。通过 <code>pipeline.fireChannelRead(readBuf)</code> 把 <code>socketChannel</code> 传播到 handler 链中。</p>
+<h1 id="注册-SocketChannel"><a href="#注册-SocketChannel" class="headerlink" title="注册 SocketChannel"></a>注册 SocketChannel</h1>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/netty/netty构建连接流程/#more" rel="contents">
@@ -521,7 +877,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 16:46:09" itemprop="dateModified" datetime="2020-03-09T16:46:09+08:00">2020-03-09</time>
+                <time title="Modified: 2020-03-10 16:23:52" itemprop="dateModified" datetime="2020-03-10T16:23:52+08:00">2020-03-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -932,299 +1288,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/Zookeeper基本概念/" class="post-title-link" itemprop="url">ZooKeeper 基本概念</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 20:38:00 / Modified: 21:10:49" itemprop="dateCreated datePublished" datetime="2020-03-06T20:38:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/分布式/Zookeeper基本概念/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/Zookeeper基本概念/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><p><a href="https://www.cnblogs.com/binarylei/p/8721126.html">Zookeeper 系列（一）基本概念</a></p>
-</li>
-<li><p><a href="http://www.jasongj.com/zookeeper/distributedlock/">深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举</a></p>
-</li>
-</ul>
-<h1 id="属性结构"><a href="#属性结构" class="headerlink" title="属性结构"></a>属性结构</h1><p>ZooKeeper 使用类似文件系统的方式组织数据。</p>
-<p>每个节点用从根节点到它的绝对路径表示 <code>/node1/node12</code>。</p>
-<p>其中 <code>/zookeeper</code> 用以保存管理信息，比如关键配额信息。</p>
-<h1 id="Znode"><a href="#Znode" class="headerlink" title="Znode"></a>Znode</h1><p>每个节点用 Znode 表示，兼具文件和目录两种特点。</p>
-<p>由 3 部分组成:</p>
-<ul>
-<li><strong>stat</strong> ：状态信息, 描述该 Znode 的版本、权限等信息</li>
-<li><strong>data</strong> ：关联的数据。最多为 1M。主要做配置、状态管理，不要用来存储大数据。</li>
-<li><strong>children</strong> ：子节点。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/分布式/Zookeeper基本概念/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/分布式ID生成/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/分布式ID生成/" class="post-title-link" itemprop="url">分布式 ID 生成</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 20:24:00 / Modified: 20:38:19" itemprop="dateCreated datePublished" datetime="2020-03-06T20:24:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/分布式/分布式ID生成/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/分布式ID生成/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://tech.meituan.com/2017/04/21/mt-leaf.html">Leaf——美团点评分布式ID生成系统</a></li>
-</ul>
-<h1 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h1><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
-<li>性能非常高：本地生成，没有网络消耗。</li>
-</ul>
-<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
-<li>不易于存储：UUID太长，16字节128位，通常以36长度的字符串表示，很多场景不适用。</li>
-<li>信息不安全：基于MAC地址生成UUID的算法可能会造成MAC地址泄露。</li>
-<li>ID 作为数据库主键时，UUID 会引起位置变化频繁。</li>
-<li>不是递增的。</li>
-</ul>
-<h1 id="类-snowflake-方案"><a href="#类-snowflake-方案" class="headerlink" title="类 snowflake 方案"></a>类 snowflake 方案</h1><p>时间戳 + workerID + 每毫秒的递增序列号。</p>
-<p>需要单独部署服务。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/分布式/分布式ID生成/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/数据库/B树与B+树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/数据库/B树与B+树/" class="post-title-link" itemprop="url">B 树与 B+ 树</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 13:01:00 / Modified: 13:05:02" itemprop="dateCreated datePublished" datetime="2020-03-06T13:01:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/数据库/B树与B+树/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/数据库/B树与B+树/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<ul>
-<li><a href="https://www.cnblogs.com/nullzx/p/8729425.html">B树和B+树的插入、删除图文详解</a></li>
-<li><a href="https://www.cs.usfca.edu/~galles/visualization/BTree.html">B-Tree Visualization</a></li>
-</ul>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1297,7 +1360,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

@@ -182,6 +182,358 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/LinkedHashMap源码分析/" class="post-title-link" itemprop="url">LinkedHashMap 源码分析</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-06 09:48:35" itemprop="dateModified" datetime="2020-03-06T09:48:35+08:00">2020-03-06</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8">搞懂 Java LinkedHashMap 源码</a></li>
+</ul>
+<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
+<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
+</li>
+<li><p>使用双向链表，记录节点的访问顺序。</p>
+<ul>
+<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
+</li>
+<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在节点中，添加 before 和 after，来实现双向链表。</p>
+<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/LinkedHashMap源码分析/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/16Executors工具类/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/Java并发编程的艺术笔记/16Executors工具类/" class="post-title-link" itemprop="url">16. Executors 工具类</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:18" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:18+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:57:45" itemprop="dateModified" datetime="2020-03-05T00:57:45+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/16Executors工具类/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/16Executors工具类/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="16-Executors-工具类"><a href="#16-Executors-工具类" class="headerlink" title="16. Executors 工具类"></a>16. Executors 工具类</h1><p><code>Executors</code> 工具类提供了创建各类线程池的静态方法，这些方法都是基于 <code>ThreadPoolExecutor</code> 和 <code>ScheduledThreadPoolExecutor</code> 实现的。</p>
+<h2 id="1-基于-ThreadPoolExecutor"><a href="#1-基于-ThreadPoolExecutor" class="headerlink" title="1. 基于 ThreadPoolExecutor"></a>1. 基于 ThreadPoolExecutor</h2><h3 id="1-1-newSingleThreadExecutor"><a href="#1-1-newSingleThreadExecutor" class="headerlink" title="1.1 newSingleThreadExecutor()"></a>1.1 newSingleThreadExecutor()</h3><ul>
+<li><p>唯一一个核心工作线程不断从任务队列中取任务去执行。</p>
+<ul>
+<li>只有一个核心工作线程。</li>
+<li>使用 <code>LinkedBlockingQueue</code>  <strong>无界</strong>模式 作为任务队列，所以任务总是可以放到队列里。</li>
+</ul>
+</li>
+<li><p>使用 <code>FinalizableDelegatedExecutorService</code> 代理了 <code>ThreadPoolExecutor</code>。</p>
+<ul>
+<li>在被 GC 的时候，会调用 <code>shutdown()</code>。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadPoolExecutor</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                            <span class="keyword">int</span> maximumPoolSize,</span></span></span><br><span class="line"><span class="function"><span class="params">                            <span class="keyword">long</span> keepAliveTime,</span></span></span><br><span class="line"><span class="function"><span class="params">                            TimeUnit unit,</span></span></span><br><span class="line"><span class="function"><span class="params">                            BlockingQueue&lt;Runnable&gt; workQueue)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newSingleThreadExecutor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> FinalizableDelegatedExecutorService</span><br><span class="line">        (<span class="keyword">new</span> ThreadPoolExecutor(<span class="number">1</span>, <span class="number">1</span>,</span><br><span class="line">                                <span class="number">0L</span>, TimeUnit.MILLISECONDS, <span class="comment">// poll(0) 等同于 poll()</span></span><br><span class="line">                                <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;()));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">FinalizableDelegatedExecutorService</span></span></span><br><span class="line"><span class="class">    <span class="keyword">extends</span> <span class="title">DelegatedExecutorService</span> </span>&#123;</span><br><span class="line">    FinalizableDelegatedExecutorService(ExecutorService executor) &#123;</span><br><span class="line">        <span class="keyword">super</span>(executor);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finalize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.shutdown();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-2-newFixedThreadPool"><a href="#1-2-newFixedThreadPool" class="headerlink" title="1.2 newFixedThreadPool()"></a>1.2 newFixedThreadPool()</h3><ul>
+<li><code>nThreads</code> 个核心工作线程不断从任务队列中取任务去执行。<ul>
+<li>有 <code>nThreads</code> 个核心工作线程。</li>
+<li>使用 <code>LinkedBlockingQueue</code> <strong>无界</strong>模式 作为任务队列，所以任务总是可以放到队列里。</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecutorService <span class="title">newFixedThreadPool</span><span class="params">(<span class="keyword">int</span> nThreads)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ThreadPoolExecutor(nThreads, nThreads,</span><br><span class="line">                                  <span class="number">0L</span>, TimeUnit.MILLISECONDS,</span><br><span class="line">                                  <span class="keyword">new</span> LinkedBlockingQueue&lt;Runnable&gt;());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-3-newCachedThreadPool"><a href="#1-3-newCachedThreadPool" class="headerlink" title="1.3 newCachedThreadPool()"></a>1.3 newCachedThreadPool()</h3>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/16Executors工具类/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/15Timer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/Java并发编程的艺术笔记/15Timer/" class="post-title-link" itemprop="url">15. Timer</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-04 14:48:17" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:17+08:00">2020-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-05 00:57:45" itemprop="dateModified" datetime="2020-03-05T00:57:45+08:00">2020-03-05</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/15Timer/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/15Timer/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="15-Timer"><a href="#15-Timer" class="headerlink" title="15. Timer"></a>15. Timer</h1><p><code>Timer</code> 是 <code>java.util</code> 包的定时任务。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ol>
+<li>使用一个数组实现的最小堆 <code>TaskQueue queue</code>。</li>
+<li>在操作 <code>queue</code> 时，使用 <code>synchronized</code> 对加锁。</li>
+<li>启动一个线程 TimerThread，循环去查看 <code>queue</code> 的首节点的时间是否到了，<ul>
+<li>没有到则在 <code>queue</code> 上沉睡对应的时间。</li>
+<li>如果首节点可以执行了，在执行前检查是否需要重复执行。<ul>
+<li>如果需要，更新节点的 <code>nextExecutionTime</code>，重新放入堆中。</li>
+<li>否则，从堆中删掉。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>在有新的任务加到 <code>timer</code> 中后，如果新加的任务成为了首节点，因为需要睡眠的时间变小了，所以唤醒 TimerThread。</li>
+</ol>
+<h2 id="缺陷"><a href="#缺陷" class="headerlink" title="缺陷"></a>缺陷</h2><p>由于是只用一个线程去循环执行多个定时任务，会有两个缺陷：</p>
+<ol>
+<li>当前正在执行的任务耗时太久，导致后边的任务即使时间已经到了，也无法执行。</li>
+<li>当前正在执行的任务抛出异常（除了 <code>InterruptedException</code>)，会使这个线程结束，后边的任务都不执行了。</li>
+</ol>
+<ul>
+<li>此外，<code>Timer</code> 不能像 <code>ScheduleThreadPoolExecutor</code> 那样 <code>cancel(taks)</code> 掉一个任务。<br>只能用 <code>cancel()</code> 取消掉所有任务。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/14ScheduledThreadPoolExecutor/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -840,124 +1192,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8.4PriorityBlockingQueue源码分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/Java并发编程的艺术笔记/8.4PriorityBlockingQueue源码分析/" class="post-title-link" itemprop="url">8.4 PriorityBlockingQueue 源码分析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:10" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:10+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:37" itemprop="dateModified" datetime="2020-03-05T00:57:37+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/8.4PriorityBlockingQueue源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/8.4PriorityBlockingQueue源码分析/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="8-4-PriorityBlockingQueue-源码分析"><a href="#8-4-PriorityBlockingQueue-源码分析" class="headerlink" title="8.4 PriorityBlockingQueue 源码分析"></a>8.4 PriorityBlockingQueue 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://www.cnblogs.com/binarylei/p/10926062.html">JUC源码分析-集合篇（七）PriorityBlockingQueue</a></li>
-</ul>
-<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><h3 id="基于数组的最小堆"><a href="#基于数组的最小堆" class="headerlink" title="基于数组的最小堆"></a>基于数组的最小堆</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Object[] queue;</span><br><span class="line"><span class="comment">// 存储队列中元素的数目</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">int</span> size;</span><br></pre></td></tr></table></figure>
-<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock lock;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="keyword">volatile</span> <span class="keyword">int</span> allocationSpinLock;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用 <code>ReentrantLock lock</code> 非公平锁，在所有出队、入队操作前后都要使用锁。</li>
-<li>使用 <code>Condition notEmpty</code> 作为 <code>take()</code> 操作时队列为空的等待队列。<ul>
-<li>在入队操作后，唤醒 <code>notEmpty</code> 上的一个线程。</li>
-<li>因为队列无界，不需要 <code>notFull</code>，总是能填进去，除非到达最大值 <code>MAX_ARRAY_SIZE</code>。</li>
-</ul>
-</li>
-<li>扩容的如下操作，避免扩容时，不能出队。<ol>
-<li>先释放锁，</li>
-<li>使用 <code>allocationSpinLock</code> 自旋锁创建新的数组。</li>
-<li>再获取锁，拷贝数据。</li>
-</ol>
-</li>
-</ul>
-<h2 id="2-构造函数"><a href="#2-构造函数" class="headerlink" title="2. 构造函数"></a>2. 构造函数</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/8.4PriorityBlockingQueue源码分析/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8.5DelayQueue源码分析/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1070,267 +1304,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8.1LinkedBlockingQueue源码分析/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/Java并发编程的艺术笔记/8.1LinkedBlockingQueue源码分析/" class="post-title-link" itemprop="url">8.1 LinkedBlockingQueue 源码分析</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:09" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:09+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:38" itemprop="dateModified" datetime="2020-03-05T00:57:38+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/8.1LinkedBlockingQueue源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/8.1LinkedBlockingQueue源码分析/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="8-1-LinkedBlockingQueue-源码分析"><a href="#8-1-LinkedBlockingQueue-源码分析" class="headerlink" title="8.1 LinkedBlockingQueue 源码分析"></a>8.1 LinkedBlockingQueue 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://blog.csdn.net/levena/article/details/78322573">阻塞队列LinkedBlockingQueue源码分析</a></li>
-<li><a href="https://www.cnblogs.com/binarylei/p/10925048.html">JUC源码分析-集合篇（六）LinkedBlockingQueue</a></li>
-</ul>
-<h2 id="1-准备"><a href="#1-准备" class="headerlink" title="1. 准备"></a>1. 准备</h2><h3 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    E item;</span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line"></span><br><span class="line">    Node(E x) &#123; item = x; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; head;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Node&lt;E&gt; last;</span><br></pre></td></tr></table></figure>
-<p><code>Node</code> 的成员域、<code>head</code>、<code>last</code> 不用设为 <code>volatile</code>。</p>
-<h3 id="ReentrantLock"><a href="#ReentrantLock" class="headerlink" title="ReentrantLock"></a>ReentrantLock</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** Lock held by take, poll, etc */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock takeLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="comment">// 集合已空则调用notEmpty.await，等集合添加元素后调用notEmpty.singal</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notEmpty = takeLock.newCondition();</span><br><span class="line"></span><br><span class="line"><span class="comment">/** Lock held by put, offer, etc */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ReentrantLock putLock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line"><span class="comment">// 集合已满则调用notFull.await，等集合取出元素后调用notFull.singal</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Condition notFull = putLock.newCondition();</span><br></pre></td></tr></table></figure>
-<ul>
-<li>分离入队锁、出队锁。</li>
-<li>非公平锁。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/8.1LinkedBlockingQueue源码分析/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/" class="post-title-link" itemprop="url">8. BlockingQueue 简介</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:08" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:08+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 00:57:36" itemprop="dateModified" datetime="2020-03-05T00:57:36+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/concurrency/" itemprop="url" rel="index"><span itemprop="name">concurrency</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="8-BlockingQueue-简介"><a href="#8-BlockingQueue-简介" class="headerlink" title="8. BlockingQueue 简介"></a>8. BlockingQueue 简介</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
-<li><a href="https://www.jianshu.com/p/af6f83c78506">SynchronousQueue原理解析</a></li>
-</ul>
-<h2 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h2><p>阻塞队列 <code>BlockingQueue</code> 继承自 <code>Queue</code>，添加了阻塞入队、阻塞出队的功能。</p>
-<ul>
-<li><code>put(e)</code>：入队时，如果队列已满，则阻塞直到队列不满。</li>
-<li><code>take()</code>：出队时，如果队列为空，则阻塞直到队列不空。</li>
-</ul>
-<p><code>BlockingQueue</code> 提供的方法：</p>
-<div class="table-container">
-<table>
-<thead>
-<tr>
-<th>操作</th>
-<th>返回特殊值</th>
-<th>超时退出</th>
-<th>抛出异常</th>
-<th>阻塞</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>插入</td>
-<td>offer(e)</td>
-<td>offer(e, time, unit)</td>
-<td>add(e)</td>
-<td>put(e)</td>
-</tr>
-<tr>
-<td>移除</td>
-<td>poll()</td>
-<td>poll(e, time, unit)</td>
-<td>remove()</td>
-<td>take()</td>
-</tr>
-<tr>
-<td>获取队首</td>
-<td>peek()</td>
-<td>pe(e, time, unit)</td>
-<td>element()</td>
-<td>无</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="2-7-个阻塞队列"><a href="#2-7-个阻塞队列" class="headerlink" title="2. 7 个阻塞队列"></a>2. 7 个阻塞队列</h2><ol>
-<li>ArrayBlockingQueue：数组组成、有界、一把公平/非公平锁。</li>
-<li>LinkedBlockingQueue：链表组成、有界、两把非公平锁。</li>
-<li>LinkedBlockingDeque：链表组成、有界、一把非公平锁、双向。</li>
-<li>PriorityBlockingQueue：基于数组的最小堆、无界、一把非公平锁 + 扩容自旋锁、优先级排序。</li>
-<li>DelayQueue：基于 <code>PriorityQueue</code>、无界、一把非公平锁、优先级排序。</li>
-<li>SynchronousQueue：链表组成的队列（公平）/栈（非公平）、无界、CAS 更新、每一个出队和入队操作必须匹配，否则阻塞。</li>
-<li>LinkedTransferQueue：一个由链表结构组成的无界阻塞队列。TODO</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/Java并发编程的艺术笔记/8BlockingQueue简介/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1403,7 +1376,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

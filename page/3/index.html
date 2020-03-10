@@ -182,6 +182,320 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/四种io/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/计算机网络/四种io/" class="post-title-link" itemprop="url">同步/异步IO与阻塞/非阻塞IO</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-05 19:18:00" itemprop="dateCreated datePublished" datetime="2020-03-05T19:18:00+08:00">2020-03-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-07 20:19:23" itemprop="dateModified" datetime="2020-03-07T20:19:23+08:00">2020-03-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/计算机网络/四种io/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/四种io/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>对于读/写 I/O 操作，流程分为两步（以读事件为例）：</p>
+<ol>
+<li><p>等待数据准备好。（例如从网络来的数据写入网卡、再复制进内核）。</p>
+</li>
+<li><p>数据从内核空间复制到用户空间。</p>
+</li>
+</ol>
+<h1 id="阻塞与非阻塞-I-O"><a href="#阻塞与非阻塞-I-O" class="headerlink" title="阻塞与非阻塞 I/O"></a>阻塞与非阻塞 I/O</h1><p>阻  I/O 和非阻塞 I/O 是看在调用 <code>read()</code>接口时，在阶段 1 数据没有准备好时，处理的方法。</p>
+<ul>
+<li>阻塞 I/O 调用 read()` 接口在数据没有准备好时，会阻塞在这个系统调用出。（这个进程被放入了等待队列）。</li>
+<li>非阻塞 I/O 调用 <code>read()</code> 接口在数据没有准备好时，会直接返回失败。</li>
+</ul>
+<p><img src="/images/阻塞io.jpg" alt="阻塞I/O"><br><img src="/images/非阻塞io.jpg" alt="非阻塞I/O"></p>
+<h1 id="同步与异步-I-O"><a href="#同步与异步-I-O" class="headerlink" title="同步与异步 I/O"></a>同步与异步 I/O</h1><p>同步 I/O 和异步 I/O 是看在有数据可读时，是否要等待从内核拷贝到用户空间的过程。</p>
+<ul>
+<li>同步 I/O 在有数据可读时，会等待从内核拷贝到用户的过程。</li>
+<li><p>异步 I/O 在有数据可读时，会继续做其他的，等内核已经拷贝数据到用户空间，再进行数据的处理。</p>
+<p><img src="/images/异步io.jpg" alt="异步I/O"></p>
+</li>
+</ul>
+<h1 id="Netty-使用的-NIO，为什么说自己是异步事件驱动的"><a href="#Netty-使用的-NIO，为什么说自己是异步事件驱动的" class="headerlink" title="Netty 使用的 NIO，为什么说自己是异步事件驱动的"></a>Netty 使用的 NIO，为什么说自己是异步事件驱动的</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/计算机网络/四种io/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/3网络层/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/计算机网络/3网络层/" class="post-title-link" itemprop="url">3. 网络层</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-05 19:01:00 / Modified: 19:24:16" itemprop="dateCreated datePublished" datetime="2020-03-05T19:01:00+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/计算机网络/3网络层/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/3网络层/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="IP协议首部的部分字段"><a href="#IP协议首部的部分字段" class="headerlink" title="IP协议首部的部分字段"></a>IP协议首部的部分字段</h1><ol>
+<li>源地址</li>
+<li>目标地址</li>
+<li>标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。</li>
+<li>片偏移：单位为8个字节，在需要分片时和标识一起使用。</li>
+</ol>
+<h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><p>IP地址共4个字节，</p>
+<p>IP地址 = <code>&lt;网络号&gt; &lt;主机号&gt;</code>，分为：</p>
+<ul>
+<li>A类地址：0开头，网络号8位，主机号24位</li>
+<li>B类地址：10开头，网络号16位，主机号16位</li>
+<li>C类地址：110开头，网络号24位，主机号8位。</li>
+<li>D类地址：1110开头，多播地址 #TODO。</li>
+<li>E类地址：11110开头，保留，为以后使用。</li>
+</ul>
+<h1 id="子网划分"><a href="#子网划分" class="headerlink" title="子网划分"></a>子网划分</h1><p>​    从主机号中分出一部分用来表示子网号，需要和子网掩码配合使用。子网掩码为1的bit位说明是主机号或子网号。例如B类地址默认子网掩码为255.255.0.0。</p>
+<h1 id="NAT"><a href="#NAT" class="headerlink" title="NAT"></a>NAT</h1><p>NAT网络地址转换协议，把内网请求的源IP地址替换为整个公网IP的地址。位置在网关出。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/计算机网络/3网络层/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/2传输层/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/计算机网络/2传输层/" class="post-title-link" itemprop="url">2. 传输层</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-05 18:56:00 / Modified: 18:58:43" itemprop="dateCreated datePublished" datetime="2020-03-05T18:56:00+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/计算机网络/2传输层/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/2传输层/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="UDP报文的最大长度"><a href="#UDP报文的最大长度" class="headerlink" title="UDP报文的最大长度"></a>UDP报文的最大长度</h1><p>根据IP协议的规范，IP包的长度不大于65535 bytes。所以，理论上UDP报文的最大字节数是 - IP头部（20 bytes） - UDP头部（8bytes）。</p>
+<p>但是这么长的数据包已经超过了以太网和通信线路传输的上限，需要让IP模块对数据包进行分片后再传输。分片有时候会带来组包的错误，所以UDP的包长度不要超过MTU值（1500字节），一般不建议超过1K。</p>
+<h1 id="基于TCP的应用层协议"><a href="#基于TCP的应用层协议" class="headerlink" title="基于TCP的应用层协议"></a>基于TCP的应用层协议</h1><ul>
+<li>Telnet</li>
+<li>HTTP</li>
+<li>SMTP</li>
+<li>POP3</li>
+<li>FTP</li>
+</ul>
+<h1 id="基于UDP的应用层协议"><a href="#基于UDP的应用层协议" class="headerlink" title="基于UDP的应用层协议"></a>基于UDP的应用层协议</h1><ul>
+<li>DNS</li>
+</ul>
+<h1 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h1><p>MSL是Maximum Segment Lifetime的英文缩写，可译为“最长报文段寿命”，它是任何报文在网络上存在的最长的最长时间，超过这个时间报文将被丢弃</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/1应用层/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -268,105 +582,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/计算机网络/1应用层/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/代理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/计算机网络/代理/" class="post-title-link" itemprop="url">正向代理、反向代理、透明代理</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 17:55:00 / Modified: 18:22:33" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/计算机网络/代理/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/代理/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/68560128">彻底理解正向代理、反向代理、透明代理</a></li>
-<li><a href="https://foofish.net/proxy-and-reverse-proxy.html">正向代理与反向代理</a></li>
-<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理">Shadowsocks原理详解</a></li>
-<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html">HTTP协议和SOCKS5协议</a></li>
-</ul>
-<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
-<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
-<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
-<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
-<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/计算机网络/代理/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -595,6 +810,105 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/计算机网络/tcp/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/代理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/计算机网络/代理/" class="post-title-link" itemprop="url">正向代理、反向代理、透明代理</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-05 17:55:00 / Modified: 18:22:33" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/计算机网络/代理/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/代理/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/68560128">彻底理解正向代理、反向代理、透明代理</a></li>
+<li><a href="https://foofish.net/proxy-and-reverse-proxy.html">正向代理与反向代理</a></li>
+<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理">Shadowsocks原理详解</a></li>
+<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html">HTTP协议和SOCKS5协议</a></li>
+</ul>
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
+<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
+<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
+<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/计算机网络/代理/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -958,344 +1272,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/3类加载机制/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/jvm/3类加载机制/" class="post-title-link" itemprop="url">3. 类加载机制</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 10:42:00 / Modified: 11:43:09" itemprop="dateCreated datePublished" datetime="2020-03-05T10:42:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/jvm/3类加载机制/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/3类加载机制/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机-第三版》</li>
-</ul>
-<h1 id="类加载时机"><a href="#类加载时机" class="headerlink" title="类加载时机"></a>类加载时机</h1><h2 id="类的生命周期"><a href="#类的生命周期" class="headerlink" title="类的生命周期"></a>类的生命周期</h2><p>类的生命周期如下图。</p>
-<p><img src="/images/类的生命周期.png" alt="类的生命周期"></p>
-<p>加载、验证、准备、初始化、卸载 这五个阶段的顺序是确定的。</p>
-<p>解析阶段，在某些情况下可以在初始化阶段之后再开始，来支持 Java 运行时绑定特性。</p>
-<h2 id="何时进行"><a href="#何时进行" class="headerlink" title="何时进行"></a>何时进行</h2><h3 id="类初始化时机"><a href="#类初始化时机" class="headerlink" title="类初始化时机"></a>类初始化时机</h3>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/3类加载机制/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/SPI/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/jvm/SPI/" class="post-title-link" itemprop="url">SPI 机制</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 08:03:39" itemprop="dateModified" datetime="2020-03-05T08:03:39+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/jvm/SPI/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/SPI/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
-<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">Java SPI机制详解</a></li>
-<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
-</ul>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
-<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
-</li>
-<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
-</li>
-</ul>
-<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
-<li><strong>服务</strong> 一般是系统定义好的接口，</li>
-<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
-<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
-<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
-</ul>
-</li>
-</ul>
-<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/SPI/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/jvm/2Java垃圾回收/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/java/jvm/2Java垃圾回收/" class="post-title-link" itemprop="url">2. Java垃圾收集器与内存分配分配策略</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 09:01:31" itemprop="dateModified" datetime="2020-03-05T09:01:31+08:00">2020-03-05</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/jvm/" itemprop="url" rel="index"><span itemprop="name">jvm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/java/jvm/2Java垃圾回收/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/jvm/2Java垃圾回收/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机-第三版》</li>
-<li><a href="https://blog.csdn.net/aitangyong/article/details/41358427">java中虚引用PhantomReference与弱引用WeakReference（软引用SoftReference）的差别</a></li>
-</ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><h2 id="堆和方法区的垃圾回收"><a href="#堆和方法区的垃圾回收" class="headerlink" title="堆和方法区的垃圾回收"></a>堆和方法区的垃圾回收</h2><ul>
-<li>程序计数器、虚拟机栈、本地方法栈不需要垃圾回收。<ul>
-<li>所需要分配的内存在编译器可以确定下来，内存分配和回收具有确定性。</li>
-</ul>
-</li>
-<li>堆和方法区，内存的分配和回收是动态的。<ul>
-<li>一个接口的多个实现类需要的内存可能不同。</li>
-<li>一个方法不同的条件分支所需要的内存可能不同。</li>
-</ul>
-</li>
-</ul>
-<h2 id="垃圾回收需要完成的三件事"><a href="#垃圾回收需要完成的三件事" class="headerlink" title="垃圾回收需要完成的三件事"></a>垃圾回收需要完成的三件事</h2><ol>
-<li>哪些内存需要回收？</li>
-<li>什么时候回收？</li>
-<li>如何回收？</li>
-</ol>
-<h1 id="哪些对象需要回收"><a href="#哪些对象需要回收" class="headerlink" title="哪些对象需要回收"></a>哪些对象需要回收</h1><h2 id="没有使用引用计数的原因"><a href="#没有使用引用计数的原因" class="headerlink" title="没有使用引用计数的原因"></a>没有使用引用计数的原因</h2><p>有很多例外情况要考虑，要配合大量额外处理才能保证正确地工作。例如循环引用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/java/jvm/2Java垃圾回收/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1368,7 +1344,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">57</span>
+          <span class="site-state-item-count">60</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
