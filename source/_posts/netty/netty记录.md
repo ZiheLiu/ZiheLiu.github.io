@@ -9,6 +9,7 @@ tags:
 typora-root-url: ../../
 ---
 
+
 # 为什么不直接用 JDK NIO
 
 ## Netty 做的更多
@@ -47,42 +48,7 @@ Linux 中 AIO 实现不成熟。相比较 NIO 性能提升不明显。
   - Netty 默认是边缘触发、可切换为水平触发。
 - Netty 实现的垃圾回收更少、性能搞好。
 
-## 边缘触发与水平触发
-
-> [epoll LT/ET 深入剖析](https://blog.csdn.net/dongfuye/article/details/50880251)（主要参考）
->
-> [java nio使用的是水平触发还是边缘触发](https://www.zhihu.com/question/22524908/answer/69054646)
-
-### 水平触发 Level Triggered (LT) 
-- socket 接收缓冲区不为空，有数据可读， 读事件一直触发。
-- .socket发送缓冲区不满，可以继续写入数据， 写事件一直触发。
-
-### 边缘触发 Edge Triggered (ET) 
-
-仅在状态变化时触发事件。
-
-- socket 的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时，触发读事件。
-- socket 的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时，触发写事件。
-
-### LT 处理过程
-- accept 一个连接，添加到 epoll 中监听 `EPOLLIN` 事件。
-- 当 `EPOLLIN` 事件到达时，read fd 中的数据并处理。
-- 当需要写出数据时，把数据 write 到 fd 中；如果数据较大，无法一次性写出，那么在 epoll 中监听 `EPOLLOUT`事件。
-- 当 `EPOLLOUT` 事件到达时，继续把数据 write 到 fd 中；如果数据写出完毕，那么在 epoll 中关闭 `EPOLLOUT` 事件。
-
-### ET 处理过程
-
-- accept 一个一个连接，添加到 epoll 中监听 `EPOLLIN|EPOLLOUT` 事件。
-- 当 `EPOLLIN` 事件到达时，read fd 中的数据并处理，read 需要一直读，直到返回 `EAGAIN` 为止。
-- 当需要写出数据时，把数据 write 到 fd 中，直到数据全部写完，或者 write 返回 `EAGAIN`。
-- 当 `EPOLLOUT` 事件到达时，继续把数据 write 到 fd 中，直到数据全部写完，或者 write 返回 `EAGAIN`。
-
-### 对比
-
-- ET 的要求是需要一直读写，直到返回 `EAGAIN`，否则就会遗漏事件。
-
-- LT 的处理过程中，直到返回 `EAGAIN` 不是硬性要求，但通常的处理过程都会读写直到返回 `EAGAIN`。
-- LT 比 ET 多了一个开关 `EPOLLOUT` 事件的系统调用。
+见 {% post_link netty/epoll的et与lt %}
 
 # Netty 与 Reactor 模式
 

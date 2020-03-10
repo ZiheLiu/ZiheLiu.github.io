@@ -14,17 +14,21 @@ tags:
 # 主线
 
 - boss thread
-  - NioEventLoop 中的 selector 轮询创建连接事件（OP_ACCEPT）。
+  - NioEventLoop 中的 selector 轮询监听连接事件 `OP_ACCEPT`。
   - 创建 socket channel。
-  - 初始化 socket channel 并从 worker group 中选择一个 NioEventLoop。
+  - 初始化 socket channel、并从 `workerEventLoopGroup` 中选择一个 `EventLoop`。
 
 - worker thread
   - 将 socket channel 注册到选择的 NioEventLoop 的 selector。
-  - 注册读事件（OP_READ）到 selector 上。
+  - 注册读事件 `OP_READ` 到 selector 上。
 
 # 创建 SocketChannel
 
-NioEventLoop 的**死循环**中，接收到 `OP_ACCEPT` 事件后，调用 `unsafe.read()`，最终调用 `serverSocketChannel.accept()` 得到 `socketChannel`。
+NioEventLoop 的 `select(timeout)` 调用中，接收到 `OP_ACCEPT` 事件被唤醒。
+
+调用 `unsafe.read()`，也就是 `NioServerSocketChannel.NioMessageUnsafe#read()`，来处理连接事件。
+
+最终调用 `serverSocketChannel.accept()` 得到 `socketChannel`。
 
 - `unsafe.read()` 有两种
   - `NioMessageUnsafe#read()` 处理 OP_ACCEPT 事件。这里是调用这个。
