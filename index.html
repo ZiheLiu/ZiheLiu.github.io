@@ -182,6 +182,104 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty堆外内存/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty堆外内存/" class="post-title-link" itemprop="url">Netty 堆外内存</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-11 13:48:00 / Modified: 15:04:10" itemprop="dateCreated datePublished" datetime="2020-03-11T13:48:00+08:00">2020-03-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty堆外内存/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty堆外内存/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><p><a href="https://segmentfault.com/a/1190000021469481">Netty堆外内存泄漏排查，这一篇全讲清楚了</a></p>
+</li>
+<li><p><a href="https://www.cnblogs.com/duanxz/p/6089485.html">Java堆外内存之三：堆外内存回收方法</a></p>
+</li>
+</ul>
+<h1 id="Java-nio-堆外内存"><a href="#Java-nio-堆外内存" class="headerlink" title="Java.nio 堆外内存"></a>Java.nio 堆外内存</h1><h2 id="申请内存"><a href="#申请内存" class="headerlink" title="申请内存"></a>申请内存</h2><p><code>DirectByteBuffer</code> 通过 <code>unsafe.allocateMemory(size)</code> 申请堆外内存。</p>
+<h2 id="释放内存"><a href="#释放内存" class="headerlink" title="释放内存"></a>释放内存</h2><h3 id="手动释放"><a href="#手动释放" class="headerlink" title="手动释放"></a>手动释放</h3><p>调用 <code>DirectByteBuffer#cleaner.clean()</code> 可以手动释放掉堆外的内存。</p>
+<p>实际上通过调用 <code>unsafe.freeMemory(address)</code> 来释放的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (address == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// Paranoia</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    unsafe.freeMemory(address);</span><br><span class="line">    address = <span class="number">0</span>;</span><br><span class="line">    Bits.unreserveMemory(size, capacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/netty堆外内存/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty写数据流程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1189,110 +1287,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/Etcd基本概念/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/Etcd基本概念/" class="post-title-link" itemprop="url">Etcd 基本概念</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 21:11:00 / Modified: 21:27:14" itemprop="dateCreated datePublished" datetime="2020-03-06T21:11:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/分布式/Etcd基本概念/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/Etcd基本概念/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://youyou-tech.com/2019/07/01/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B9%8B%EF%BC%9A%E5%9F%BA%E4%BA%8EEtcd%E7%9A%84%E5%88%86%E5%B8%83/">分布式锁的最佳实践之：基于 Etcd 的分布式锁</a></li>
-<li><a href="https://www.jianshu.com/p/7abfb83cfa08">分布式锁第五篇 基于etcd</a></li>
-<li><a href="https://www.codedump.info/post/20181125-etcd-server/#revision概念">Etcd存储的实现</a></li>
-</ul>
-<h1 id="Lease-机制"><a href="#Lease-机制" class="headerlink" title="Lease 机制"></a>Lease 机制</h1><p>租约机制（TTL，Time To Live）。Etcd 可以为存储的 key-value 对设置租约，当租约到期，key-value 将失效删除。</p>
-<p>支持续约，通过客户端可以在<strong>租约到期之前</strong>续约，以避免 key-value 对过期失效。</p>
-<p>支持解约，一旦解约，与该租约绑定的 key-value 将失效删除。</p>
-<h1 id="Prefix-机制"><a href="#Prefix-机制" class="headerlink" title="Prefix 机制"></a>Prefix 机制</h1><p>前缀机制，也称目录机制。</p>
-<p>如两个 key 命名如下：key1=<code>/mykey/key1</code> 、key2=<code>/mykey/key2</code>。</p>
-<p>可以通过前缀-<code>/mykey</code> 查询，返回包含两个 key-value 对的列表。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/分布式/Etcd基本概念/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1360,7 +1359,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-count">61</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

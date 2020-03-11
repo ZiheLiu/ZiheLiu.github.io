@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引用 Netty堆外内存泄漏排查，这一篇全讲清楚了  Java堆外内存之三：堆外内存回收方法   Java.nio 堆外内存申请内存DirectByteBuffer 通过 unsafe.allocateMemory(size) 申请堆外内存。 释放内存手动释放调用 DirectByteBuffer#cleaner.clean() 可以手动释放掉堆外的内存。 实际上通过调用 unsafe.freeM">
+<meta name="keywords" content="netty">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Netty 堆外内存">
+<meta property="og:url" content="http://ziheliu.github.io/2020/netty/netty堆外内存/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="引用 Netty堆外内存泄漏排查，这一篇全讲清楚了  Java堆外内存之三：堆外内存回收方法   Java.nio 堆外内存申请内存DirectByteBuffer 通过 unsafe.allocateMemory(size) 申请堆外内存。 释放内存手动释放调用 DirectByteBuffer#cleaner.clean() 可以手动释放掉堆外的内存。 实际上通过调用 unsafe.freeM">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-03-11T07:04:10.710Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Netty 堆外内存">
+<meta name="twitter:description" content="引用 Netty堆外内存泄漏排查，这一篇全讲清楚了  Java堆外内存之三：堆外内存回收方法   Java.nio 堆外内存申请内存DirectByteBuffer 通过 unsafe.allocateMemory(size) 申请堆外内存。 释放内存手动释放调用 DirectByteBuffer#cleaner.clean() 可以手动释放掉堆外的内存。 实际上通过调用 unsafe.freeM">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/netty/netty堆外内存/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>Netty 堆外内存 | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty堆外内存/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Netty 堆外内存
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-11 13:48:00 / Modified: 15:04:10" itemprop="dateCreated datePublished" datetime="2020-03-11T13:48:00+08:00">2020-03-11</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty堆外内存/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty堆外内存/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><p><a href="https://segmentfault.com/a/1190000021469481">Netty堆外内存泄漏排查，这一篇全讲清楚了</a></p>
+</li>
+<li><p><a href="https://www.cnblogs.com/duanxz/p/6089485.html">Java堆外内存之三：堆外内存回收方法</a></p>
+</li>
+</ul>
+<h1 id="Java-nio-堆外内存"><a href="#Java-nio-堆外内存" class="headerlink" title="Java.nio 堆外内存"></a>Java.nio 堆外内存</h1><h2 id="申请内存"><a href="#申请内存" class="headerlink" title="申请内存"></a>申请内存</h2><p><code>DirectByteBuffer</code> 通过 <code>unsafe.allocateMemory(size)</code> 申请堆外内存。</p>
+<h2 id="释放内存"><a href="#释放内存" class="headerlink" title="释放内存"></a>释放内存</h2><h3 id="手动释放"><a href="#手动释放" class="headerlink" title="手动释放"></a>手动释放</h3><p>调用 <code>DirectByteBuffer#cleaner.clean()</code> 可以手动释放掉堆外的内存。</p>
+<p>实际上通过调用 <code>unsafe.freeMemory(address)</code> 来释放的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (address == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// Paranoia</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    unsafe.freeMemory(address);</span><br><span class="line">    address = <span class="number">0</span>;</span><br><span class="line">    Bits.unreserveMemory(size, capacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自动释放"><a href="#自动释放" class="headerlink" title="自动释放"></a>自动释放</h3><p>由于 <code>DirectByteBuffer</code> 只是申请的堆外内存在堆内的包装对象，在 <code>DirectByteBuffer</code> 被垃圾回收时，内部的堆外内存并不会主动回收。</p>
+<p>为了解决这个问题，而有了 <code>cleaner</code>。<code>DirectByteBuffer#cleaner</code> 继承自 <code>PhantomReference</code>。Cleaner 的 <code>refernence</code> 是 <code>DirectByteBuffer</code>，在 <code>DirectByteBuffer</code> 被垃圾回收时，reference-handler 线程会调用 <code>cleaner.clean()</code> 方法完成堆外内存的释放。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">DirectByteBuffer(<span class="keyword">int</span> cap) &#123;                   <span class="comment">// package-private</span></span><br><span class="line">    <span class="keyword">super</span>(-<span class="number">1</span>, <span class="number">0</span>, cap, cap);</span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line">    cleaner = Cleaner.create(<span class="keyword">this</span>, <span class="keyword">new</span> Deallocator(base, size, cap));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是如果 <code>DirectByteBuffer</code> 进入老年代，一般只有在 Full GC 的时候才会被垃圾回收。这就导致堆外内存很难被自动释放掉。</p>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><p>在使用构造函数 <code>DirectByteBuffer(int cap)</code> 时，如果无法分配内存，会调用 <code>System.gc()</code>触发 Full GC后，再尝试分配内存，还是不能分配才会抛出 OOM。</p>
+<p>注意，如果使用了 JVM 的 <code>-XX:+DisableExplicitGC</code> 则 <code>System.gc()</code> 将没有作用。</p>
+<p>而其他的构造函数，例如 <code>DirectByteBuffer(long addr, int cap)</code> 只会存储地址、容量等信息，不会存储 <code>cleaner</code>、进行 <code>System.gc()</code> 等操作。</p>
+<h1 id="Netty-noCleaner-策略"><a href="#Netty-noCleaner-策略" class="headerlink" title="Netty noCleaner 策略"></a>Netty noCleaner 策略</h1><p>在 Netty 4.1 后，引入了 noCleaner 策略。</p>
+<p>使用 noCleaner 策略分配的 <code>DirectByteBuffer</code> 与不使用 noCleaner 策略的区别：</p>
+<ul>
+<li>构造器不同<ul>
+<li>不使用策略。使用 <code>DirectByteBuffer(int cap)</code> 构造器。</li>
+<li>使用策略。通过反射使用 <code>DirectByteBuffer(long addr, int cap)</code> 构造器。</li>
+</ul>
+</li>
+<li>释放内存不同。<ul>
+<li>不使用策略。使用 <code>DirectByteBuffer#cleaner.clean()</code> 方法。</li>
+<li>使用策略。使用 <code>Unsafe.freeMemory(address)</code>。</li>
+</ul>
+</li>
+</ul>
+<p>Netty在启动时需要判断检查当前环境、环境配置参数是否允许noCleaner策略(具体逻辑位于PlatformDependent的static代码块)。例如运行在Android下时，是没有Unsafe类的，不允许使用noCleaner策略，如果不允许，则使用hasCleaner策略。</p>
+<h2 id="堆外内存的-JVM-参数"><a href="#堆外内存的-JVM-参数" class="headerlink" title="堆外内存的 JVM 参数"></a>堆外内存的 JVM 参数</h2><ul>
+<li><code>-XX:MaxDirectMemorySize</code> 在 <code>DirectByteBuffer(int cap)</code> 构造器中检查是否分配的内存超过了这个值。所以用 <code>Unsafe.allocateMemory(size)</code> 分配的内存不受它的控制。</li>
+<li><code>-Dio.netty.maxDirectMemory</code>。用于限制 <strong>noCleaner 策略下 Netty 的 DirectByteBuffer</strong> 分配的最大堆外内存的大小，如果该值为 0，则使用 hasCleaner 策略</li>
+</ul>
+<h1 id="Netty-释放内存方法"><a href="#Netty-释放内存方法" class="headerlink" title="Netty 释放内存方法"></a>Netty 释放内存方法</h1><p>Netty 使用引用计数来释放内存。</p>
+<ul>
+<li>使用一个 <code>AtomicInteger</code> 来记录引用的次数，在 <code>alloc()</code> 获取到 buffer 时，引用计数为 1。</li>
+<li>调用<code>buffer.release()</code> 方法使引用计数减 1。</li>
+<li>调用 <code>buffer.retain()</code> 方法使引用计数加 1。</li>
+</ul>
+<p>Netty 在有些地方自动调用了 <code>buffer.release()</code> 方法。</p>
+<ul>
+<li>调用 <code>ctx.write(buffer)</code> 在数据成功写入到 socket 之后，会自动调用一次 <code>buffer.release()</code>。</li>
+<li><code>SimpleChannelInboundHandler#channelRead()</code> 最后会自动调用一次 <code>buffer.release()</code>。</li>
+</ul>
+<h2 id="hasCleaner-策略为什么也要引用计数来释放内存"><a href="#hasCleaner-策略为什么也要引用计数来释放内存" class="headerlink" title="hasCleaner 策略为什么也要引用计数来释放内存"></a>hasCleaner 策略为什么也要引用计数来释放内存</h2><ul>
+<li>不使用引用计数，一般要 Full GC 才能释放内存。使用引用计数，再引用计数为 0 时马上可以释放内存。</li>
+<li>在release() 掉 buffer 后，Netty 还有自己的处理逻辑，例如放回对象池。</li>
+</ul>
+<h1 id="Netty-内存泄漏检测"><a href="#Netty-内存泄漏检测" class="headerlink" title="Netty 内存泄漏检测"></a>Netty 内存泄漏检测</h1><p>检测 <code>ByteBuf</code> 对象被释放掉了，但是其对应的堆外内存没有释放的情况。</p>
+<p>不能检测 <code>ByteBuf</code> 对象还没有释放的情况。</p>
+<h2 id="检测原理"><a href="#检测原理" class="headerlink" title="检测原理"></a>检测原理</h2><ul>
+<li>使用 <code>DefaultResourceLeak</code> 来封装 buffer，<ul>
+<li>它是 <code>WeakReference</code> 的子类。要检测的 buffer 是弱引用指向的对象。</li>
+</ul>
+</li>
+<li>使用 <code>ResourceLeakDetector.allLeaks</code> 记录了内存泄漏对象。</li>
+</ul>
+<p>在需要检测内存泄漏时，检查 <code>DefaultResourceLeak</code> 对应的 referenceQueue 中的对象（即被 GC 掉的对象），如果它仍然在 <code>allLeaks</code> 里，说明内存泄漏了。</p>
+<h2 id="添加到-allLeaks-的时机"><a href="#添加到-allLeaks-的时机" class="headerlink" title="添加到 allLeaks 的时机"></a>添加到 allLeaks 的时机</h2><p>在创建一个 buffer 时，会调用 <code>ResourceLeakDetector#track(buffer)</code> 把 buffer 添加到 <code>allLeaks</code> 里。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ResourceLeakDetector#track0</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> DefaultResourceLeak <span class="title">track0</span><span class="params">(T obj)</span> </span>&#123;</span><br><span class="line">    Level level = ResourceLeakDetector.level;</span><br><span class="line">    <span class="keyword">if</span> (level == Level.DISABLED) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (level.ordinal() &lt; Level.PARANOID.ordinal()) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((PlatformDependent.threadLocalRandom().nextInt(samplingInterval)) == <span class="number">0</span>) &#123;</span><br><span class="line">            reportLeak();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> DefaultResourceLeak(obj, refQueue, allLeaks);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    reportLeak();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> DefaultResourceLeak(obj, refQueue, allLeaks);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// class DefaultResourceLeak</span></span><br><span class="line">DefaultResourceLeak(</span><br><span class="line">        Object referent,</span><br><span class="line">        ReferenceQueue&lt;Object&gt; refQueue,</span><br><span class="line">        Set&lt;DefaultResourceLeak&lt;?&gt;&gt; allLeaks) &#123;</span><br><span class="line">    <span class="keyword">super</span>(referent, refQueue);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">assert</span> referent != <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    trackedHash = System.identityHashCode(referent);</span><br><span class="line">    <span class="comment">// 添加到 allLeaks 中。</span></span><br><span class="line">    allLeaks.add(<span class="keyword">this</span>);</span><br><span class="line">    headUpdater.set(<span class="keyword">this</span>, <span class="keyword">new</span> Record(Record.BOTTOM));</span><br><span class="line">    <span class="keyword">this</span>.allLeaks = allLeaks;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="从-allLeaks-删除的时机"><a href="#从-allLeaks-删除的时机" class="headerlink" title="从 allLeaks 删除的时机"></a>从 allLeaks 删除的时机</h2><p>在 <code>buffer.release()</code> 中发现引用计数变为 0 了，则调用 <code>DefaultResourceLeak#close()</code> 从 allLeaks 中移除。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (allLeaks.remove(<span class="keyword">this</span>)) &#123;</span><br><span class="line">        <span class="comment">// Call clear so the reference is not even enqueued.</span></span><br><span class="line">        clear();</span><br><span class="line">        headUpdater.set(<span class="keyword">this</span>, <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="检查的时机"><a href="#检查的时机" class="headerlink" title="检查的时机"></a>检查的时机</h2><p>从 <code>track0(obj)</code> 函数中可以看到，是在创建 buffer 的时候，在 <code>track0(obj)</code> 中顺便检测内存泄漏的。</p>
+<p>并且检测的频率根据设置的级别而不同。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/netty/" rel="tag"># netty</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/netty/netty写数据流程/" rel="prev" title="Netty 写数据流程">
+      <i class="fa fa-chevron-left"></i> Netty 写数据流程
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Java-nio-堆外内存"><span class="nav-number">2.</span> <span class="nav-text">Java.nio 堆外内存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#申请内存"><span class="nav-number">2.1.</span> <span class="nav-text">申请内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#释放内存"><span class="nav-number">2.2.</span> <span class="nav-text">释放内存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#手动释放"><span class="nav-number">2.2.1.</span> <span class="nav-text">手动释放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自动释放"><span class="nav-number">2.2.2.</span> <span class="nav-text">自动释放</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造函数"><span class="nav-number">2.3.</span> <span class="nav-text">构造函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-noCleaner-策略"><span class="nav-number">3.</span> <span class="nav-text">Netty noCleaner 策略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#堆外内存的-JVM-参数"><span class="nav-number">3.1.</span> <span class="nav-text">堆外内存的 JVM 参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-释放内存方法"><span class="nav-number">4.</span> <span class="nav-text">Netty 释放内存方法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#hasCleaner-策略为什么也要引用计数来释放内存"><span class="nav-number">4.1.</span> <span class="nav-text">hasCleaner 策略为什么也要引用计数来释放内存</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Netty-内存泄漏检测"><span class="nav-number">5.</span> <span class="nav-text">Netty 内存泄漏检测</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#检测原理"><span class="nav-number">5.1.</span> <span class="nav-text">检测原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加到-allLeaks-的时机"><span class="nav-number">5.2.</span> <span class="nav-text">添加到 allLeaks 的时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#从-allLeaks-删除的时机"><span class="nav-number">5.3.</span> <span class="nav-text">从 allLeaks 删除的时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#检查的时机"><span class="nav-number">5.4.</span> <span class="nav-text">检查的时机</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/netty/netty堆外内存/";
+    this.page.identifier = "2020/netty/netty堆外内存/";
+    this.page.title = "Netty 堆外内存";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
