@@ -30,7 +30,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ziheliu.github.io/images/netty锁的粒度.png">
 <meta property="og:image" content="http://ziheliu.github.io/images/nettyLongCounter.png">
-<meta property="og:updated_time" content="2020-03-10T08:23:52.121Z">
+<meta property="og:updated_time" content="2020-03-11T11:04:29.688Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netty 记录">
 <meta name="twitter:description" content="为什么不直接用 JDK NIONetty 做的更多 支持常用应用层协议。 解决传输问题：粘包、板报现象。 支持流量整形。 完善的断连、Idle 等异常处理。  Netty 做的更好 规避 JDK NIO bug。 epoll bug：异常唤醒空转导致 CPU 100%。 IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。   API 更友好、更强大。 ByteBuffer 读写">
@@ -220,7 +220,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-10 16:23:52" itemprop="dateModified" datetime="2020-03-10T16:23:52+08:00">2020-03-10</time>
+                <time title="Modified: 2020-03-11 19:04:29" itemprop="dateModified" datetime="2020-03-11T19:04:29+08:00">2020-03-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -363,8 +363,9 @@
 <h3 id="ReaderIdle"><a href="#ReaderIdle" class="headerlink" title="ReaderIdle"></a>ReaderIdle</h3><ol>
 <li>在 <code>channelActive()</code> 中注册延时（<code>readerIdleTimeNanos</code> 纳秒） 任务。</li>
 <li>在 <code>channelRead()</code> 中把 <code>reading</code> 设为 true。</li>
-<li>在 <code>channelReadComplete()</code> 中把 <code>reading</code> 设为 false。</li>
+<li>在 <code>channelReadComplete()</code> 中把 <code>reading</code> 设为 false，记录读完的时间。</li>
 <li>延时时间到了，执行检测任务，如果没有正在发生读事件（<code>reading</code> 为 false）、且距离上次读完成超过了 <code>readerIdleTimeNanos</code> 纳秒，就在pipeline上传递一个 <code>READER_IDLE</code> 事件。</li>
+<li>重写注册延时任务。</li>
 </ol>
 <h3 id="WriterIdle"><a href="#WriterIdle" class="headerlink" title="WriterIdle"></a>WriterIdle</h3><ol>
 <li>在 <code>channelActive()</code> 中注册延时（<code>writerIdleTimeNanos</code> 纳秒） 任务。</li>
@@ -373,6 +374,7 @@
 <li>如果开启了 <code>observeOutput</code>，则只要有写意图（还没有写完），就不会认为是 Idle 状态。</li>
 </ul>
 </li>
+<li>重新注册延时任务。</li>
 </ol>
 <h3 id="使用例子"><a href="#使用例子" class="headerlink" title="使用例子"></a>使用例子</h3><h4 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h4><ul>
 <li><p>客户端隔一段<strong>空闲</strong>时间向服务端发送 HEART_BEAT 消息。</p>
@@ -553,20 +555,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

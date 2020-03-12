@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:description" content="引用 深入理解HashMap: 关键源码逐行分析之hash算法  组成节点123456static class Node&amp;lt;K,V&amp;gt; implements Map.Entry&amp;lt;K,V&amp;gt; &amp;#123;    final int hash;    final K key;    V value;    Node&amp;lt;K,V&amp;gt; next;&amp;#125; 节点 Node 存储：">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-05T13:30:49.122Z">
+<meta property="og:updated_time" content="2020-03-12T09:07:03.844Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="HashMap源码分析">
 <meta name="twitter:description" content="引用 深入理解HashMap: 关键源码逐行分析之hash算法  组成节点123456static class Node&amp;lt;K,V&amp;gt; implements Map.Entry&amp;lt;K,V&amp;gt; &amp;#123;    final int hash;    final K key;    V value;    Node&amp;lt;K,V&amp;gt; next;&amp;#125; 节点 Node 存储：">
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-05 21:30:49" itemprop="dateModified" datetime="2020-03-05T21:30:49+08:00">2020-03-05</time>
+                <time title="Modified: 2020-03-12 17:07:03" itemprop="dateModified" datetime="2020-03-12T17:07:03+08:00">2020-03-12</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -278,6 +278,21 @@
 <li>table.length() 为 2 的 m 次幂，把第一步的 hash 值取低 m 位，来作为数组的下标。</li>
 <li>key 可以是 null，这时 hash 值是 0。</li>
 </ol>
+<h2 id="对-key-的要求"><a href="#对-key-的要求" class="headerlink" title="对 key 的要求"></a>对 key 的要求</h2><ul>
+<li><p>哈希。用 <code>hashCode()</code> 方法加一些处理得到 hash 值。</p>
+</li>
+<li><p>相等。用 <code>equals()</code> 比较 hash 值相同的节点。</p>
+</li>
+<li><p>比较。对于红黑树。</p>
+<ul>
+<li><p>如果 key 继承自 <code>Compatable</code> 则用 <code>compareTo()</code> 比较。</p>
+</li>
+<li><p>否则用 <code>System.identityHashCode()</code> 比较。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">tieBreakOrder</span><span class="params">(Object a, Object b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span> || b == <span class="keyword">null</span> ||</span><br><span class="line">        (d = a.getClass().getName().</span><br><span class="line">         compareTo(b.getClass().getName())) == <span class="number">0</span>)</span><br><span class="line">        d = (System.identityHashCode(a) &lt;= System.identityHashCode(b) ?</span><br><span class="line">             -<span class="number">1</span> : <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
 <h1 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal initial capacity: "</span> + initialCapacity);</span><br><span class="line">  <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">    initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">  <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal load factor: "</span> + loadFactor);</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">  <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR; <span class="comment">// all other fields defaulted</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
 <li><p>构造函数中只指定了 <code>loadFactor</code> 和 初始容量。</p>
@@ -361,12 +376,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/io/内存映射文件/" rel="prev" title="FileChannel与内存映射文件">
-      <i class="fa fa-chevron-left"></i> FileChannel与内存映射文件
+    <a href="/2020/java/Java并发编程的艺术笔记/16Executors工具类/" rel="prev" title="16. Executors 工具类">
+      <i class="fa fa-chevron-left"></i> 16. Executors 工具类
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/java/basic/enum/" rel="next" title="Enum">
-      Enum <i class="fa fa-chevron-right"></i>
+    <a href="/2020/java/io/io流/" rel="next" title="I/O流相关类">
+      I/O流相关类 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -434,7 +449,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组成"><span class="nav-number">2.</span> <span class="nav-text">组成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#节点"><span class="nav-number">2.1.</span> <span class="nav-text">节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table"><span class="nav-number">2.2.</span> <span class="nav-text">table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#节点的-key-如何映射到-table-的下标"><span class="nav-number">2.3.</span> <span class="nav-text">节点的 key 如何映射到 table 的下标</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造函数"><span class="nav-number">3.</span> <span class="nav-text">构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tableSizeFor"><span class="nav-number">3.1.</span> <span class="nav-text">tableSizeFor()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#putMapEntries"><span class="nav-number">3.2.</span> <span class="nav-text">putMapEntries()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#resize"><span class="nav-number">4.</span> <span class="nav-text">resize()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#触发时机"><span class="nav-number">4.1.</span> <span class="nav-text">触发时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码分析"><span class="nav-number">4.2.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一部分-容量和阈值的变化"><span class="nav-number">4.2.1.</span> <span class="nav-text">第一部分 容量和阈值的变化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二部分-红黑树拆分"><span class="nav-number">4.2.2.</span> <span class="nav-text">第二部分 红黑树拆分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三部分-链表拆分"><span class="nav-number">4.2.3.</span> <span class="nav-text">第三部分 链表拆分</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#put"><span class="nav-number">5.</span> <span class="nav-text">put()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#get"><span class="nav-number">6.</span> <span class="nav-text">get()</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#组成"><span class="nav-number">2.</span> <span class="nav-text">组成</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#节点"><span class="nav-number">2.1.</span> <span class="nav-text">节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#table"><span class="nav-number">2.2.</span> <span class="nav-text">table</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#节点的-key-如何映射到-table-的下标"><span class="nav-number">2.3.</span> <span class="nav-text">节点的 key 如何映射到 table 的下标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对-key-的要求"><span class="nav-number">2.4.</span> <span class="nav-text">对 key 的要求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#构造函数"><span class="nav-number">3.</span> <span class="nav-text">构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tableSizeFor"><span class="nav-number">3.1.</span> <span class="nav-text">tableSizeFor()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#putMapEntries"><span class="nav-number">3.2.</span> <span class="nav-text">putMapEntries()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#resize"><span class="nav-number">4.</span> <span class="nav-text">resize()</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#触发时机"><span class="nav-number">4.1.</span> <span class="nav-text">触发时机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码分析"><span class="nav-number">4.2.</span> <span class="nav-text">源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#第一部分-容量和阈值的变化"><span class="nav-number">4.2.1.</span> <span class="nav-text">第一部分 容量和阈值的变化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第二部分-红黑树拆分"><span class="nav-number">4.2.2.</span> <span class="nav-text">第二部分 红黑树拆分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#第三部分-链表拆分"><span class="nav-number">4.2.3.</span> <span class="nav-text">第三部分 链表拆分</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#put"><span class="nav-number">5.</span> <span class="nav-text">put()</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#get"><span class="nav-number">6.</span> <span class="nav-text">get()</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -450,20 +465,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">61</span>
+          <span class="site-state-item-count">63</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-count">13</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
