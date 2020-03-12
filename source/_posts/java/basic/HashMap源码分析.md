@@ -54,6 +54,30 @@ int index = hash(key) & (table.length() - 1);
 2. table.length() 为 2 的 m 次幂，把第一步的 hash 值取低 m 位，来作为数组的下标。
 3. key 可以是 null，这时 hash 值是 0。
 
+## 对 key 的要求
+
+- 哈希。用 `hashCode()` 方法加一些处理得到 hash 值。
+
+- 相等。用 `equals()` 比较 hash 值相同的节点。
+
+- 比较。对于红黑树。
+
+  - 如果 key 继承自 `Compatable` 则用 `compareTo()` 比较。
+
+  - 否则用 `System.identityHashCode()` 比较。
+
+    ```java
+    static int tieBreakOrder(Object a, Object b) {
+        int d;
+        if (a == null || b == null ||
+            (d = a.getClass().getName().
+             compareTo(b.getClass().getName())) == 0)
+            d = (System.identityHashCode(a) <= System.identityHashCode(b) ?
+                 -1 : 1);
+        return d;
+    }
+    ```
+
 # 构造函数
 
 ```java

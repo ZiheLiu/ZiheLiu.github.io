@@ -5,7 +5,6 @@ categories:
 	- netty
 tags:
 	- netty
-	- record
 typora-root-url: ../../
 ---
 

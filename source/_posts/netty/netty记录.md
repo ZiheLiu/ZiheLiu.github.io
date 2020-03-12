@@ -183,8 +183,9 @@ ch.pipeline().addLast("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUni
 
 1. 在 `channelActive()` 中注册延时（`readerIdleTimeNanos` 纳秒） 任务。
 2. 在 `channelRead()` 中把 `reading` 设为 true。
-3. 在 `channelReadComplete()` 中把 `reading` 设为 false。
+3. 在 `channelReadComplete()` 中把 `reading` 设为 false，记录读完的时间。
 4. 延时时间到了，执行检测任务，如果没有正在发生读事件（`reading` 为 false）、且距离上次读完成超过了 `readerIdleTimeNanos ` 纳秒，就在pipeline上传递一个 `READER_IDLE` 事件。
+5. 重写注册延时任务。
 
 ### WriterIdle
 
@@ -192,6 +193,7 @@ ch.pipeline().addLast("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUni
 2. 延时时间到了，执行检测任务。
    - 如果距离上次写完成超过了 `writerIdleTimeNanos` 纳秒，就在pipeline上传递一个 `WRITER_IDLE` 事件。
    - 如果开启了 `observeOutput`，则只要有写意图（还没有写完），就不会认为是 Idle 状态。
+3. 重新注册延时任务。
 
 ### 使用例子
 
