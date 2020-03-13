@@ -10,15 +10,19 @@ categories:
 typora-root-url: ../../../
 ---
 
-# 11. ThreadPoolExecutor 源码分析
-
-## 0. 引用
+# 引用
 
 - [JUC源码分析-线程池篇（一）：ThreadPoolExecutor](https://www.cnblogs.com/binarylei/p/10952055.html)
 
-## 1. 数据结构
+# 类的结构
 
-### 线程池表示
+![ExectuorService类图](/images/ExectuorService类图.svg)
+
+
+
+# 数据结构
+
+## 线程池表示
 
 ```java
 // ctl 高 3 位：线程池状态，低 29 位：工作线程数
@@ -41,11 +45,11 @@ private static int workerCountOf(int c)  { return c & CAPACITY; }
 private static int ctlOf(int rs, int wc) { return rs | wc; }
 ```
 
-## 2. 构造函数
+# 构造函数
 
 
 
-## 3. execute()
+# execute()
 
 ```java
 public void execute(Runnable command) {
@@ -84,7 +88,7 @@ final void reject(Runnable command) {
 
 调用线程池的域 `RejectedExecutionHandler` 实例的回调任务函数。
 
-## 4. addWorker()
+# addWorker()
 
 ```java
 private boolean addWorker(Runnable firstTask, boolean core) {
@@ -197,7 +201,7 @@ private void addWorkerFailed(Worker w) {
 }
 ```
 
-## 5. tryTerminate()
+# tryTerminate()
 
 ```java
 // 在可能会使变为 TERMINATED 状态可能的地方，都会调用这个函数。
@@ -250,7 +254,7 @@ final void tryTerminate() {
 }
 ```
 
-## 6. Worker
+# Worker
 
 ```java
 private final class Worker extends AbstractQueuedSynchronizer implements Runnable {
@@ -313,7 +317,7 @@ private final class Worker extends AbstractQueuedSynchronizer implements Runnabl
 }
 ```
 
-## 7. runWorker()
+# runWorker()
 
 ```java
 final void runWorker(Worker w) {
@@ -370,7 +374,7 @@ final void runWorker(Worker w) {
 }
 ```
 
-## 8.  getTask()
+#  getTask()
 
 ```java
 private Runnable getTask() {
@@ -423,7 +427,7 @@ private Runnable getTask() {
 }
 ```
 
-## 9. processWorkerExit()
+# processWorkerExit()
 
 ```java
 private void processWorkerExit(Worker w, boolean completedAbruptly) {
@@ -478,7 +482,7 @@ private void processWorkerExit(Worker w, boolean completedAbruptly) {
    - 可能 SHUTDOWN 后，多个工作线程 poll 阻塞在任务队列，没有足够的任务，这些线程会永远阻塞在队里上。所以要一个线程退出了，去尝试唤醒一个空闲工作线程。
 6. 如果是因为用户任务抛出异常、或工作线程数目少于核心线程数目个，创建一个工作线程。
 
-## 10. shutdown()
+# shutdown()
 
 ```java
 public void shutdown() {
@@ -532,7 +536,7 @@ public List<Runnable> shutdownNow() {
 }
 ```
 
-## 11. awaitTermination
+# awaitTermination
 
 ```java 
 public boolean awaitTermination(long timeout, TimeUnit unit)
@@ -554,15 +558,15 @@ public boolean awaitTermination(long timeout, TimeUnit unit)
 }
 ```
 
-## 12. 总结
+# 总结
 
-### 执行任务
+## 执行任务
 
 ![线程池execute](/images/线程池execute.png)
 
 在新建线程的时候需要加锁，代价较大。
 
-### 工作线程的生命历程
+## 工作线程的生命历程
 
 1. 工作线程循环从任务队列取任务(Runnable 实例）去执行。
 
@@ -576,9 +580,9 @@ public boolean awaitTermination(long timeout, TimeUnit unit)
 
 通过这种做法，多于核心线程数目的工作线程，只会存活 KeepAlive 的空闲时间。
 
-### 关闭线程池
+## 关闭线程池
 
-#### shutdown()
+### shutdown()
 
 1. 调用 `shutdown()` 后，线程池状态变为 SHUTDOWN。
 
@@ -593,7 +597,7 @@ public boolean awaitTermination(long timeout, TimeUnit unit)
 4. 所有工作线程退出后，进入 TIDYING 状态。
 5. 执行 `onShutdown()` 钩子函数后，进入 TERMINATED 状态。唤醒所有调用 `awaitTermination()` 的线程。
 
-#### shutdownNow()
+### shutdownNow()
 
 1. 调用 `shutdownNow()` 后，线程池状态变为 STOP。
 2. 所有工作线程被中断、唤醒，不再领任务，都进行退出工作。

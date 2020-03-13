@@ -13,7 +13,7 @@ typora-root-url: ../../../
 
 # 引用
 
-- [[JUC线程池服务ExecutorService接口实现源码分析](http://www.throwable.club/2019/07/27/java-concurrency-executor-service/)](http://www.throwable.club/2019/07/27/java-concurrency-executor-service/)
+- [JUC线程池服务ExecutorService接口实现源码分析](http://www.throwable.club/2019/07/27/java-concurrency-executor-service/)
 
 # FutureTask
 
