@@ -12,6 +12,45 @@ typora-root-url: ../../
 
 - [RAFT协议完整笔记](https://www.jianshu.com/p/ddbe4209be0f)
 - [Raft协议详解](https://zhuanlan.zhihu.com/p/27207160)
+- [请不要再称数据库是CP或者AP](https://blog.the-pans.com/cap/)
+- [强一致性与最终一致性与raft](https://lentil1016.cn/consistencies-and-raft/)
+- [DDIA-一致性与共识（一致性保证与可线性化）](https://keys961.github.io/2019/03/11/DDIA-一致性与共识-一致性保证与可线性化/)
+- [etcd raft cap 理解](https://blog.csdn.net/scylhy/article/details/100173494)
+
+# 介绍
+
+分布式共识算法，通过 Raft 协议让各个节点保持状态一致。
+
+# CAP
+
+## 定义
+
+### 一致性 Consistency。
+
+CAP 中指可线性化。如果B操作在成功完成A操作之后，那么整个系统对B操作来说必须表现为A操作已经完成了或者更新的状态。
+
+强一致性与弱一致性。
+
+- 强一致性集群中，对任何一个节点发起请求都会得到相同的回复，但将产生相对高的延迟。
+- 弱一致性具有更低的响应延迟，但可能会回复过期的数据，最终一致性即是经过一段时间后终会到达一致的弱一致性。
+
+ZooKeeper 的读操作默认不是可线性化的、不是强一致性的。单可以开启线性化，在读之前要发一个 SYNC 命令。
+
+Raft 的读操作，使用了 LeaseRead 优化后不是可线性化的，也不是强一致性的。如果只是使用 ReadIndex 是可线性化、强一致性的。
+
+### 可用性 Availability
+
+每一个请求(如果被一个工作中的节点收到，那一定要返回[非错误]的结果。
+
+对于 Raft，在有网络分区时，数量少的那个分区无法完成写操作、读操作。
+
+###分区容错 Partition Tolerance
+
+Raft 满足分区容错。
+
+## Raft 中的 CAP
+
+Raft 满足 P，不满足 A。对于 C 不优化读操作时满足强一致性。
 
 # 节点状态
 
