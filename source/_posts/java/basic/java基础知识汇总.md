@@ -608,14 +608,12 @@ new Object(){}.getClass().getEnclosingClass();
 ## 异常层次结构
 
 - Throwable 类
-  - Error 类：Java 运行时系统的内部错误和资源好紧错误。
+  - Error 类：Java 运行时系统的内部错误和资源耗尽错误。
   - Exception 类
     - RuntimeException 类：程序错误导致的异常。
     - 其他类：程序本身没有问题。
 
 `Error` 和 `RuntimeException`是 uncheckd 异常，其他异常是 checked 异常。
-
-
 
 ## 声明 unchecked 异常
 
@@ -634,8 +632,6 @@ public FileInputStream(String name) throws FileNotFoundException;
 - 子类 `override` 父类的方法，声明的异常不能比父类方法的声明更通用，只能更具体。
 
 - 如果父类方法没有声明异常，子类方法也不可以。
-
-
 
 ## 抛出异常
 
