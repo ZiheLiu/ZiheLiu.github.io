@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:description" content="UDP报文的最大长度根据IP协议的规范，IP包的长度不大于65535 bytes。所以，理论上UDP报文的最大字节数是 - IP头部（20 bytes） - UDP头部（8bytes）。 但是这么长的数据包已经超过了以太网和通信线路传输的上限，需要让IP模块对数据包进行分片后再传输。分片有时候会带来组包的错误，所以UDP的包长度不要超过MTU值（1500字节），一般不建议超过1K。 基于TCP的应">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-14T09:54:59.302Z">
+<meta property="og:updated_time" content="2020-03-19T04:27:46.455Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2. 传输层">
 <meta name="twitter:description" content="UDP报文的最大长度根据IP协议的规范，IP包的长度不大于65535 bytes。所以，理论上UDP报文的最大字节数是 - IP头部（20 bytes） - UDP头部（8bytes）。 但是这么长的数据包已经超过了以太网和通信线路传输的上限，需要让IP模块对数据包进行分片后再传输。分片有时候会带来组包的错误，所以UDP的包长度不要超过MTU值（1500字节），一般不建议超过1K。 基于TCP的应">
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-14 17:54:59" itemprop="dateModified" datetime="2020-03-14T17:54:59+08:00">2020-03-14</time>
+                <time title="Modified: 2020-03-19 12:27:46" itemprop="dateModified" datetime="2020-03-19T12:27:46+08:00">2020-03-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -274,6 +274,7 @@
 <li><a href="http://senlinzhan.github.io/2017/02/10/Linux的TCP-CORK/">Nagle 算法与 TCP socket 选项 TCP_CORK</a></li>
 <li><a href="https://blog.csdn.net/ce123_zhouwei/article/details/9050797">TCP中的Nagle算法</a></li>
 <li><a href="https://juejin.im/post/5dbec8845188252472361a33">TCP/IP 之 滑动窗口和延迟确认</a></li>
+<li><a href="https://blog.csdn.net/wdscq1234/article/details/52430382">TCP-IP详解：Delay ACK</a></li>
 </ul>
 </blockquote>
 <h2 id="半包"><a href="#半包" class="headerlink" title="半包"></a>半包</h2><ol>
@@ -294,19 +295,23 @@
 <ol>
 <li>如果包长度达到 MSS，则允许发送；</li>
 <li>如果该包含有 FIN，则允许发送；</li>
-<li>设置了 TCP_NODELAY 选项，则允许发送；</li>
 <li>未设置 TCP_CORK 选项时，若所有发出去的数据包（包长度小于 MSS）均被确认,则允许发送；<ul>
 <li>用用程序可以实时开启和关闭这个选项，来决定是否进行小数据包的直接发送。</li>
 </ul>
 </li>
 <li>上述条件都未满足，但发生了超时（一般为 200 ms），则立即发送。</li>
 </ol>
+<p>此外，开启 TCP_NODELAY 选项，会禁用 Nagle 算法，每个数据包都会直接发送；</p>
 <h2 id="TCP-delayed-ack"><a href="#TCP-delayed-ack" class="headerlink" title="TCP delayed ack"></a>TCP delayed ack</h2><p>在接收方实现的。</p>
 <p>接收方在收到数据后，并不会立即回复 ACK, 而是延迟一定时间、或达到 <code>2*MSS</code> 为止。</p>
 <ol>
 <li>这样做的目的是 ACK 是可以合并的，也就是指如果连续收到两个 TCP 包，并不一定需要 ACK 两次，只要回复最终的 ACK 就可以了，可以降低网络流量。</li>
 <li>如果接收方有数据要发送，那么就会在发送数据的 TCP 数据包里，<strong>带上 ACK 信息</strong>。这样做，可以避免大量的 ACK 以一个<strong>单独的 TCP 包发送</strong>，减少了网络流量。</li>
 </ol>
+<p>延迟的时间</p>
+<ul>
+<li>内核会启动一个定时器，每隔 200ms 检查一次。200ms 会把之前的 ACK 都发出去。</li>
+</ul>
 <h1 id="TCP-SYN-Flood-DDoS-攻击"><a href="#TCP-SYN-Flood-DDoS-攻击" class="headerlink" title="TCP SYN Flood DDoS 攻击"></a>TCP SYN Flood DDoS 攻击</h1><blockquote>
 <ul>
 <li><a href="https://zhangmin.name/blog/2018/04/22/关于DDoS防护的总结笔记/">关于DDoS防护的总结笔记</a></li>
@@ -446,7 +451,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-count">74</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -459,7 +464,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

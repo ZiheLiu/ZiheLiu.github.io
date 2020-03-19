@@ -273,6 +273,142 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/红黑树/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/algorithm/红黑树/" class="post-title-link" itemprop="url">红黑树</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-05 19:44:00 / Modified: 19:45:02" itemprop="dateCreated datePublished" datetime="2020-03-05T19:44:00+08:00">2020-03-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/algorithm/红黑树/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/红黑树/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
+<li>所有节点都是红色或者黑色。</li>
+<li>根节点为黑色。</li>
+<li>每个叶子节点下挂两个NULL节点，并且NULL节点为黑色。</li>
+<li>如果该节点是红色的，那么该节点的子节点一定都是黑色。</li>
+<li>从根节点到叶子节点的路径，每条路径的黑色节点数目是相同的。</li>
+</ol>
+<h1 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h1><ol>
+<li>插入节点X到对应位置，初始为红色。</li>
+<li>如果X是根节点，则标记为黑色。</li>
+<li>如果X的父节点是根节点，返回。</li>
+<li>否则，X和X的父节点都不是根节点：<ol>
+<li>如果X的父节点是黑色，返回。</li>
+<li>否则，看X的uncle节点是不是红色：<ol>
+<li>如果X的父节点和X的uncle都是红色，变色，<strong>向上检查</strong>X的父亲的父亲节点的颜色。</li>
+<li>否则，如果X在父节点是X的祖先节点的左子节点<ol>
+<li>如果X也是父节点的左子节点（LL），右旋变色。<strong>返回。</strong></li>
+<li>如果X是父节点的右子节点（LR），先左旋、再右旋变色。<strong>返回。</strong></li>
+</ol>
+</li>
+<li>如果X在父节点是X的祖先节点的右子节点<ol>
+<li>如果X也是父节点的右子节点（RR），左旋变色。<strong>返回。</strong></li>
+<li>如果X是父节点的左子节点（RL），先右旋、再左旋变色。<strong>返回。</strong></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="平衡二叉树与红黑树的对比"><a href="#平衡二叉树与红黑树的对比" class="headerlink" title="平衡二叉树与红黑树的对比"></a>平衡二叉树与红黑树的对比</h1><ol>
+<li>搜索长度<ul>
+<li>红黑树搜索路径的最大长度不超过搜索路径的最短长度的2倍。</li>
+<li>平衡二叉树差值不大于1。</li>
+</ul>
+</li>
+<li>插入<ul>
+<li>红黑树在插入的时候，只有X的父节点和Uncle都是红色，才要递归到根节点变色，否则只要旋转1-2次就可以。</li>
+<li>AVL在插入时，要找到最低的不平衡位置，向上递归到根节点旋转。</li>
+</ul>
+</li>
+<li>删除<ul>
+<li>红黑树只有个别情况才会递归平衡父节点，它发生在：兄弟节点是黑色，两个侄儿也是黑色。当兄弟节点是红色的时候，转化为兄弟节点是黑色的情况处理，当两个侄儿有红色节点的时候，则在常数时间内就可以达到平衡。</li>
+<li>AVL和插入类似，找到第一个不平衡位置，向上递归到根节点。</li>
+</ul>
+</li>
+</ol>
+<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ol>
+<li><a href="https://zhuanlan.zhihu.com/p/34840762">一篇搞懂AVL平衡二叉树</a></li>
+<li><a href="[https://pjmike.github.io/2018/08/09/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5%E4%B8%8E%E5%88%A0%E9%99%A4/](https://pjmike.github.io/2018/08/09/平衡二叉树的插入与删除/">平衡二叉树的插入与删除</a>)</li>
+<li><a href="https://acm.sdut.edu.cn/onlinejudge2/index.php/Home/Index/problemdetail/pid/3374.html">sdut-数据结构实验之查找二：平衡二叉树</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/79980618">红黑树，超强动静图详解，简单易懂</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/22800206">数据结构：红黑树的删除</a></li>
+<li><a href="https://www.zhihu.com/question/19856999">红黑树比 AVL 树具体更高效在哪里？</a></li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/平衡二叉树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -758,7 +894,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-14 17:54:59" itemprop="dateModified" datetime="2020-03-14T17:54:59+08:00">2020-03-14</time>
+                <time title="Modified: 2020-03-19 12:27:46" itemprop="dateModified" datetime="2020-03-19T12:27:46+08:00">2020-03-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -944,105 +1080,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/代理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/计算机网络/代理/" class="post-title-link" itemprop="url">正向代理、反向代理、透明代理</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 17:55:00 / Modified: 18:22:33" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/计算机网络/代理/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/代理/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/68560128">彻底理解正向代理、反向代理、透明代理</a></li>
-<li><a href="https://foofish.net/proxy-and-reverse-proxy.html">正向代理与反向代理</a></li>
-<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理">Shadowsocks原理详解</a></li>
-<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html">HTTP协议和SOCKS5协议</a></li>
-</ul>
-<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
-<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
-<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
-<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
-<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/计算机网络/代理/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/http/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1152,7 +1189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/tcp/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/代理/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -1166,7 +1203,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/计算机网络/tcp/" class="post-title-link" itemprop="url">TCP 协议</a>
+            <a href="/2020/计算机网络/代理/" class="post-title-link" itemprop="url">正向代理、反向代理、透明代理</a>
         </h1>
 
         <div class="post-meta">
@@ -1175,16 +1212,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-03-05 17:55:00" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-05 17:55:00 / Modified: 18:22:33" itemprop="dateCreated datePublished" datetime="2020-03-05T17:55:00+08:00">2020-03-05</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 12:21:03" itemprop="dateModified" datetime="2020-03-09T12:21:03+08:00">2020-03-09</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -1204,8 +1235,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/计算机网络/tcp/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/tcp/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/计算机网络/代理/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/代理/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1221,33 +1252,19 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/47074758">TCP短连接和长连接的区别</a></li>
-<li><a href="http://hengyunabc.github.io/why-we-need-heartbeat/">为什么基于TCP的应用需要心跳包（TCP keep-alive原理分析）</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/28894266">聊聊 TCP 中的 KeepAlive 机制</a></li>
-<li><a href="https://blog.csdn.net/bjrxyz/article/details/71076442">TCP新手误区—心跳的意义</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/68560128">彻底理解正向代理、反向代理、透明代理</a></li>
+<li><a href="https://foofish.net/proxy-and-reverse-proxy.html">正向代理与反向代理</a></li>
+<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理">Shadowsocks原理详解</a></li>
+<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html">HTTP协议和SOCKS5协议</a></li>
 </ul>
-<h1 id="长连接、短连接"><a href="#长连接、短连接" class="headerlink" title="长连接、短连接"></a>长连接、短连接</h1><p>在TCP连接建立后，发送 一次数据后，就关闭连接。一般是由client关闭的。</p>
-<p>建立连接后，双方不主动关闭连接。要使用keepalive来保活，活着使用应用层的心跳机制。</p>
-<h2 id="长连接的优点"><a href="#长连接的优点" class="headerlink" title="长连接的优点"></a>长连接的优点</h2><ol>
-<li><p>长连接可以省去较多的TCP建立和关闭的操作，减少网络阻塞的影响，</p>
-</li>
-<li><p>当发生错误时，可以在不关闭连接的情况下进行提示，</p>
-</li>
-<li><p>减少CPU及内存的使用，因为不需要经常的建立及关闭连接。</p>
-</li>
-</ol>
-<h2 id="长连接的缺点"><a href="#长连接的缺点" class="headerlink" title="长连接的缺点"></a>长连接的缺点</h2><ol>
-<li>连接数过多时，影响服务端的性能和并发数量。</li>
-<li>这时候server端需要采取一些策略，<ul>
-<li>关闭一些长时间没有读写事件发生的连接，这样可以避免一些恶意连接导致server端服务受损。</li>
-<li>以客户端机器为颗粒度，限制每个客户端的最大长连接数。</li>
-</ul>
-</li>
-</ol>
-<h1 id="keepalive"><a href="#keepalive" class="headerlink" title="keepalive"></a>keepalive</h1>
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
+<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
+<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
+<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/计算机网络/tcp/#more" rel="contents">
+              <a class="btn" href="/2020/计算机网络/代理/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1339,7 +1356,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-count">74</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -1352,7 +1369,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-count">19</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
