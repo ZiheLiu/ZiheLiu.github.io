@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引用 RAFT协议完整笔记 Raft协议详解  节点状态 跟随者 候选者 领导者  跟随者节点收到心跳/添加日志请求后：  如果当前的term大于请求的term，返回false。 如果当前的term小于请求的term，自己变为跟随者。 如果请求的PrevLogIndex不在自己的log里，返回false。 如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term">
+  <meta name="description" content="引用 RAFT协议完整笔记 Raft协议详解 请不要再称数据库是CP或者AP 强一致性与最终一致性与raft DDIA-一致性与共识（一致性保证与可线性化） etcd raft cap 理解  介绍分布式共识算法，通过 Raft 协议让各个节点保持状态一致。 CAP定义一致性 Consistency。CAP 中指可线性化。如果B操作在成功完成A操作之后，那么整个系统对B操作来说必须表现为A操作已经">
 <meta name="keywords" content="分布式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Raft 协议">
 <meta property="og:url" content="http://ziheliu.github.io/2020/分布式/raft协议/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="引用 RAFT协议完整笔记 Raft协议详解  节点状态 跟随者 候选者 领导者  跟随者节点收到心跳/添加日志请求后：  如果当前的term大于请求的term，返回false。 如果当前的term小于请求的term，自己变为跟随者。 如果请求的PrevLogIndex不在自己的log里，返回false。 如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term">
+<meta property="og:description" content="引用 RAFT协议完整笔记 Raft协议详解 请不要再称数据库是CP或者AP 强一致性与最终一致性与raft DDIA-一致性与共识（一致性保证与可线性化） etcd raft cap 理解  介绍分布式共识算法，通过 Raft 协议让各个节点保持状态一致。 CAP定义一致性 Consistency。CAP 中指可线性化。如果B操作在成功完成A操作之后，那么整个系统对B操作来说必须表现为A操作已经">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-06T11:05:13.697Z">
+<meta property="og:updated_time" content="2020-03-14T03:02:12.724Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Raft 协议">
-<meta name="twitter:description" content="引用 RAFT协议完整笔记 Raft协议详解  节点状态 跟随者 候选者 领导者  跟随者节点收到心跳/添加日志请求后：  如果当前的term大于请求的term，返回false。 如果当前的term小于请求的term，自己变为跟随者。 如果请求的PrevLogIndex不在自己的log里，返回false。 如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term">
+<meta name="twitter:description" content="引用 RAFT协议完整笔记 Raft协议详解 请不要再称数据库是CP或者AP 强一致性与最终一致性与raft DDIA-一致性与共识（一致性保证与可线性化） etcd raft cap 理解  介绍分布式共识算法，通过 Raft 协议让各个节点保持状态一致。 CAP定义一致性 Consistency。CAP 中指可线性化。如果B操作在成功完成A操作之后，那么整个系统对B操作来说必须表现为A操作已经">
 
 <link rel="canonical" href="http://ziheliu.github.io/2020/分布式/raft协议/">
 
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 19:05:13" itemprop="dateModified" datetime="2020-03-06T19:05:13+08:00">2020-03-06</time>
+                <time title="Modified: 2020-03-14 11:02:12" itemprop="dateModified" datetime="2020-03-14T11:02:12+08:00">2020-03-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -257,7 +257,24 @@
         <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
 <li><a href="https://www.jianshu.com/p/ddbe4209be0f">RAFT协议完整笔记</a></li>
 <li><a href="https://zhuanlan.zhihu.com/p/27207160">Raft协议详解</a></li>
+<li><a href="https://blog.the-pans.com/cap/">请不要再称数据库是CP或者AP</a></li>
+<li><a href="https://lentil1016.cn/consistencies-and-raft/">强一致性与最终一致性与raft</a></li>
+<li><a href="https://keys961.github.io/2019/03/11/DDIA-一致性与共识-一致性保证与可线性化/">DDIA-一致性与共识（一致性保证与可线性化）</a></li>
+<li><a href="https://blog.csdn.net/scylhy/article/details/100173494">etcd raft cap 理解</a></li>
 </ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>分布式共识算法，通过 Raft 协议让各个节点保持状态一致。</p>
+<h1 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h1><h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><h3 id="一致性-Consistency。"><a href="#一致性-Consistency。" class="headerlink" title="一致性 Consistency。"></a>一致性 Consistency。</h3><p>CAP 中指可线性化。如果B操作在成功完成A操作之后，那么整个系统对B操作来说必须表现为A操作已经完成了或者更新的状态。</p>
+<p>强一致性与弱一致性。</p>
+<ul>
+<li>强一致性集群中，对任何一个节点发起请求都会得到相同的回复，但将产生相对高的延迟。</li>
+<li>弱一致性具有更低的响应延迟，但可能会回复过期的数据，最终一致性即是经过一段时间后终会到达一致的弱一致性。</li>
+</ul>
+<p>ZooKeeper 的读操作默认不是可线性化的、不是强一致性的。单可以开启线性化，在读之前要发一个 SYNC 命令。</p>
+<p>Raft 的读操作，使用了 LeaseRead 优化后不是可线性化的，也不是强一致性的。如果只是使用 ReadIndex 是可线性化、强一致性的。</p>
+<h3 id="可用性-Availability"><a href="#可用性-Availability" class="headerlink" title="可用性 Availability"></a>可用性 Availability</h3><p>每一个请求(如果被一个工作中的节点收到，那一定要返回[非错误]的结果。</p>
+<p>对于 Raft，在有网络分区时，数量少的那个分区无法完成写操作、读操作。</p>
+<h3 id="分区容错-Partition-Tolerance"><a href="#分区容错-Partition-Tolerance" class="headerlink" title="分区容错 Partition Tolerance"></a>分区容错 Partition Tolerance</h3><p>Raft 满足分区容错。</p>
+<h2 id="Raft-中的-CAP"><a href="#Raft-中的-CAP" class="headerlink" title="Raft 中的 CAP"></a>Raft 中的 CAP</h2><p>Raft 满足 P，不满足 A。对于 C 不优化读操作时满足强一致性。</p>
 <h1 id="节点状态"><a href="#节点状态" class="headerlink" title="节点状态"></a>节点状态</h1><ol>
 <li>跟随者</li>
 <li>候选者</li>
@@ -443,7 +460,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节点状态"><span class="nav-number">2.</span> <span class="nav-text">节点状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跟随者"><span class="nav-number">3.</span> <span class="nav-text">跟随者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#候选者"><span class="nav-number">4.</span> <span class="nav-text">候选者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#领导者"><span class="nav-number">5.</span> <span class="nav-text">领导者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选举约束"><span class="nav-number">6.</span> <span class="nav-text">选举约束</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络分区"><span class="nav-number">7.</span> <span class="nav-text">网络分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#写请求"><span class="nav-number">7.1.</span> <span class="nav-text">写请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读请求"><span class="nav-number">7.2.</span> <span class="nav-text">读请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReadIndex"><span class="nav-number">7.2.1.</span> <span class="nav-text">ReadIndex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LeaseRead"><span class="nav-number">7.2.2.</span> <span class="nav-text">LeaseRead</span></a></li></ol></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CAP"><span class="nav-number">3.</span> <span class="nav-text">CAP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">3.1.</span> <span class="nav-text">定义</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一致性-Consistency。"><span class="nav-number">3.1.1.</span> <span class="nav-text">一致性 Consistency。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可用性-Availability"><span class="nav-number">3.1.2.</span> <span class="nav-text">可用性 Availability</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分区容错-Partition-Tolerance"><span class="nav-number">3.1.3.</span> <span class="nav-text">分区容错 Partition Tolerance</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Raft-中的-CAP"><span class="nav-number">3.2.</span> <span class="nav-text">Raft 中的 CAP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#节点状态"><span class="nav-number">4.</span> <span class="nav-text">节点状态</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#跟随者"><span class="nav-number">5.</span> <span class="nav-text">跟随者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#候选者"><span class="nav-number">6.</span> <span class="nav-text">候选者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#领导者"><span class="nav-number">7.</span> <span class="nav-text">领导者</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#选举约束"><span class="nav-number">8.</span> <span class="nav-text">选举约束</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络分区"><span class="nav-number">9.</span> <span class="nav-text">网络分区</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#写请求"><span class="nav-number">9.1.</span> <span class="nav-text">写请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读请求"><span class="nav-number">9.2.</span> <span class="nav-text">读请求</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ReadIndex"><span class="nav-number">9.2.1.</span> <span class="nav-text">ReadIndex</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LeaseRead"><span class="nav-number">9.2.2.</span> <span class="nav-text">LeaseRead</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -459,20 +476,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

@@ -1,0 +1,505 @@
+<svg id="mermaid-1584084602441" width="513.2421875" xmlns="http://www.w3.org/2000/svg" height="499.1875" viewBox="-10 -10 348.828125 479.1875"><style>
+
+
+
+#mermaid-1584084602441 .label {
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family);
+  color: #333; }
+
+#mermaid-1584084602441 .label text {
+  fill: #333; }
+
+#mermaid-1584084602441 .node rect,
+#mermaid-1584084602441 .node circle,
+#mermaid-1584084602441 .node ellipse,
+#mermaid-1584084602441 .node polygon,
+#mermaid-1584084602441 .node path {
+  fill: #ECECFF;
+  stroke: #9370DB;
+  stroke-width: 1px; }
+
+#mermaid-1584084602441 .node .label {
+  text-align: center; }
+
+#mermaid-1584084602441 .node.clickable {
+  cursor: pointer; }
+
+#mermaid-1584084602441 .arrowheadPath {
+  fill: #333333; }
+
+#mermaid-1584084602441 .edgePath .path {
+  stroke: #333333;
+  stroke-width: 1.5px; }
+
+#mermaid-1584084602441 .edgeLabel {
+  background-color: #e8e8e8;
+  text-align: center; }
+
+#mermaid-1584084602441 .cluster rect {
+  fill: #ffffde;
+  stroke: #aaaa33;
+  stroke-width: 1px; }
+
+#mermaid-1584084602441 .cluster text {
+  fill: #333; }
+
+#mermaid-1584084602441 div.mermaidTooltip {
+  position: absolute;
+  text-align: center;
+  max-width: 200px;
+  padding: 2px;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family);
+  font-size: 12px;
+  background: #ffffde;
+  border: 1px solid #aaaa33;
+  border-radius: 2px;
+  pointer-events: none;
+  z-index: 100; }
+
+#mermaid-1584084602441 .actor {
+  stroke: #CCCCFF;
+  fill: #ECECFF; }
+
+#mermaid-1584084602441 text.actor {
+  fill: black;
+  stroke: none; }
+
+#mermaid-1584084602441 .actor-line {
+  stroke: grey; }
+
+#mermaid-1584084602441 .messageLine0 {
+  stroke-width: 1.5;
+  stroke-dasharray: '2 2';
+  stroke: #333; }
+
+#mermaid-1584084602441 .messageLine1 {
+  stroke-width: 1.5;
+  stroke-dasharray: '2 2';
+  stroke: #333; }
+
+#mermaid-1584084602441 #arrowhead {
+  fill: #333; }
+
+#mermaid-1584084602441 .sequenceNumber {
+  fill: white; }
+
+#mermaid-1584084602441 #sequencenumber {
+  fill: #333; }
+
+#mermaid-1584084602441 #crosshead path {
+  fill: #333 !important;
+  stroke: #333 !important; }
+
+#mermaid-1584084602441 .messageText {
+  fill: #333;
+  stroke: none; }
+
+#mermaid-1584084602441 .labelBox {
+  stroke: #CCCCFF;
+  fill: #ECECFF; }
+
+#mermaid-1584084602441 .labelText {
+  fill: black;
+  stroke: none; }
+
+#mermaid-1584084602441 .loopText {
+  fill: black;
+  stroke: none; }
+
+#mermaid-1584084602441 .loopLine {
+  stroke-width: 2;
+  stroke-dasharray: '2 2';
+  stroke: #CCCCFF; }
+
+#mermaid-1584084602441 .note {
+  stroke: #aaaa33;
+  fill: #fff5ad; }
+
+#mermaid-1584084602441 .noteText {
+  fill: black;
+  stroke: none;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family);
+  font-size: 14px; }
+
+#mermaid-1584084602441 .activation0 {
+  fill: #f4f4f4;
+  stroke: #666; }
+
+#mermaid-1584084602441 .activation1 {
+  fill: #f4f4f4;
+  stroke: #666; }
+
+#mermaid-1584084602441 .activation2 {
+  fill: #f4f4f4;
+  stroke: #666; }
+
+
+#mermaid-1584084602441 .mermaid-main-font {
+  font-family: "trebuchet ms", verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 .section {
+  stroke: none;
+  opacity: 0.2; }
+
+#mermaid-1584084602441 .section0 {
+  fill: rgba(102, 102, 255, 0.49); }
+
+#mermaid-1584084602441 .section2 {
+  fill: #fff400; }
+
+#mermaid-1584084602441 .section1,
+#mermaid-1584084602441 .section3 {
+  fill: white;
+  opacity: 0.2; }
+
+#mermaid-1584084602441 .sectionTitle0 {
+  fill: #333; }
+
+#mermaid-1584084602441 .sectionTitle1 {
+  fill: #333; }
+
+#mermaid-1584084602441 .sectionTitle2 {
+  fill: #333; }
+
+#mermaid-1584084602441 .sectionTitle3 {
+  fill: #333; }
+
+#mermaid-1584084602441 .sectionTitle {
+  text-anchor: start;
+  font-size: 11px;
+  text-height: 14px;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+
+#mermaid-1584084602441 .grid .tick {
+  stroke: lightgrey;
+  opacity: 0.8;
+  shape-rendering: crispEdges; }
+#mermaid-1584084602441   .grid .tick text {
+    font-family: 'trebuchet ms', verdana, arial;
+    font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 .grid path {
+  stroke-width: 0; }
+
+
+#mermaid-1584084602441 .today {
+  fill: none;
+  stroke: red;
+  stroke-width: 2px; }
+
+
+
+#mermaid-1584084602441 .task {
+  stroke-width: 2; }
+
+#mermaid-1584084602441 .taskText {
+  text-anchor: middle;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 .taskText:not([font-size]) {
+  font-size: 11px; }
+
+#mermaid-1584084602441 .taskTextOutsideRight {
+  fill: black;
+  text-anchor: start;
+  font-size: 11px;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 .taskTextOutsideLeft {
+  fill: black;
+  text-anchor: end;
+  font-size: 11px; }
+
+
+#mermaid-1584084602441 .task.clickable {
+  cursor: pointer; }
+
+#mermaid-1584084602441 .taskText.clickable {
+  cursor: pointer;
+  fill: #003163 !important;
+  font-weight: bold; }
+
+#mermaid-1584084602441 .taskTextOutsideLeft.clickable {
+  cursor: pointer;
+  fill: #003163 !important;
+  font-weight: bold; }
+
+#mermaid-1584084602441 .taskTextOutsideRight.clickable {
+  cursor: pointer;
+  fill: #003163 !important;
+  font-weight: bold; }
+
+
+#mermaid-1584084602441 .taskText0,
+#mermaid-1584084602441 .taskText1,
+#mermaid-1584084602441 .taskText2,
+#mermaid-1584084602441 .taskText3 {
+  fill: white; }
+
+#mermaid-1584084602441 .task0,
+#mermaid-1584084602441 .task1,
+#mermaid-1584084602441 .task2,
+#mermaid-1584084602441 .task3 {
+  fill: #8a90dd;
+  stroke: #534fbc; }
+
+#mermaid-1584084602441 .taskTextOutside0,
+#mermaid-1584084602441 .taskTextOutside2 {
+  fill: black; }
+
+#mermaid-1584084602441 .taskTextOutside1,
+#mermaid-1584084602441 .taskTextOutside3 {
+  fill: black; }
+
+
+#mermaid-1584084602441 .active0,
+#mermaid-1584084602441 .active1,
+#mermaid-1584084602441 .active2,
+#mermaid-1584084602441 .active3 {
+  fill: #bfc7ff;
+  stroke: #534fbc; }
+
+#mermaid-1584084602441 .activeText0,
+#mermaid-1584084602441 .activeText1,
+#mermaid-1584084602441 .activeText2,
+#mermaid-1584084602441 .activeText3 {
+  fill: black !important; }
+
+
+#mermaid-1584084602441 .done0,
+#mermaid-1584084602441 .done1,
+#mermaid-1584084602441 .done2,
+#mermaid-1584084602441 .done3 {
+  stroke: grey;
+  fill: lightgrey;
+  stroke-width: 2; }
+
+#mermaid-1584084602441 .doneText0,
+#mermaid-1584084602441 .doneText1,
+#mermaid-1584084602441 .doneText2,
+#mermaid-1584084602441 .doneText3 {
+  fill: black !important; }
+
+
+#mermaid-1584084602441 .crit0,
+#mermaid-1584084602441 .crit1,
+#mermaid-1584084602441 .crit2,
+#mermaid-1584084602441 .crit3 {
+  stroke: #ff8888;
+  fill: red;
+  stroke-width: 2; }
+
+#mermaid-1584084602441 .activeCrit0,
+#mermaid-1584084602441 .activeCrit1,
+#mermaid-1584084602441 .activeCrit2,
+#mermaid-1584084602441 .activeCrit3 {
+  stroke: #ff8888;
+  fill: #bfc7ff;
+  stroke-width: 2; }
+
+#mermaid-1584084602441 .doneCrit0,
+#mermaid-1584084602441 .doneCrit1,
+#mermaid-1584084602441 .doneCrit2,
+#mermaid-1584084602441 .doneCrit3 {
+  stroke: #ff8888;
+  fill: lightgrey;
+  stroke-width: 2;
+  cursor: pointer;
+  shape-rendering: crispEdges; }
+
+#mermaid-1584084602441 .milestone {
+  transform: rotate(45deg) scale(0.8, 0.8); }
+
+#mermaid-1584084602441 .milestoneText {
+  font-style: italic; }
+
+#mermaid-1584084602441 .doneCritText0,
+#mermaid-1584084602441 .doneCritText1,
+#mermaid-1584084602441 .doneCritText2,
+#mermaid-1584084602441 .doneCritText3 {
+  fill: black !important; }
+
+#mermaid-1584084602441 .activeCritText0,
+#mermaid-1584084602441 .activeCritText1,
+#mermaid-1584084602441 .activeCritText2,
+#mermaid-1584084602441 .activeCritText3 {
+  fill: black !important; }
+
+#mermaid-1584084602441 .titleText {
+  text-anchor: middle;
+  font-size: 18px;
+  fill: black;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 g.classGroup text {
+  fill: #9370DB;
+  stroke: none;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family);
+  font-size: 10px; }
+#mermaid-1584084602441   g.classGroup text .title {
+    font-weight: bolder; }
+
+#mermaid-1584084602441 g.clickable {
+  cursor: pointer; }
+
+#mermaid-1584084602441 g.classGroup rect {
+  fill: #ECECFF;
+  stroke: #9370DB; }
+
+#mermaid-1584084602441 g.classGroup line {
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 .classLabel .box {
+  stroke: none;
+  stroke-width: 0;
+  fill: #ECECFF;
+  opacity: 0.5; }
+
+#mermaid-1584084602441 .classLabel .label {
+  fill: #9370DB;
+  font-size: 10px; }
+
+#mermaid-1584084602441 .relation {
+  stroke: #9370DB;
+  stroke-width: 1;
+  fill: none; }
+
+#mermaid-1584084602441 .dashed-line {
+  stroke-dasharray: 3; }
+
+#mermaid-1584084602441 #compositionStart {
+  fill: #9370DB;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #compositionEnd {
+  fill: #9370DB;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #aggregationStart {
+  fill: #ECECFF;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #aggregationEnd {
+  fill: #ECECFF;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #dependencyStart {
+  fill: #9370DB;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #dependencyEnd {
+  fill: #9370DB;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #extensionStart {
+  fill: #9370DB;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 #extensionEnd {
+  fill: #9370DB;
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 .commit-id,
+#mermaid-1584084602441 .commit-msg,
+#mermaid-1584084602441 .branch-label {
+  fill: lightgrey;
+  color: lightgrey;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 .pieTitleText {
+  text-anchor: middle;
+  font-size: 25px;
+  fill: black;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 .slice {
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 g.stateGroup text {
+  fill: #9370DB;
+  stroke: none;
+  font-size: 10px;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+#mermaid-1584084602441 g.stateGroup text {
+  fill: #9370DB;
+  stroke: none;
+  font-size: 10px; }
+
+#mermaid-1584084602441 g.stateGroup .state-title {
+  font-weight: bolder;
+  fill: black; }
+
+#mermaid-1584084602441 g.stateGroup rect {
+  fill: #ECECFF;
+  stroke: #9370DB; }
+
+#mermaid-1584084602441 g.stateGroup line {
+  stroke: #9370DB;
+  stroke-width: 1; }
+
+#mermaid-1584084602441 .transition {
+  stroke: #9370DB;
+  stroke-width: 1;
+  fill: none; }
+
+#mermaid-1584084602441 .stateGroup .composit {
+  fill: white;
+  border-bottom: 1px; }
+
+#mermaid-1584084602441 .stateGroup .alt-composit {
+  fill: #e0e0e0;
+  border-bottom: 1px; }
+
+#mermaid-1584084602441 .state-note {
+  stroke: #aaaa33;
+  fill: #fff5ad; }
+#mermaid-1584084602441   .state-note text {
+    fill: black;
+    stroke: none;
+    font-size: 10px; }
+
+#mermaid-1584084602441 .stateLabel .box {
+  stroke: none;
+  stroke-width: 0;
+  fill: #ECECFF;
+  opacity: 0.5; }
+
+#mermaid-1584084602441 .stateLabel text {
+  fill: black;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: 'trebuchet ms', verdana, arial;
+  font-family: var(--mermaid-font-family); }
+
+:root {
+  --mermaid-font-family: '"trebuchet ms", verdana, arial';
+  --mermaid-font-family: "Comic Sans MS", "Comic Sans", cursive; }
+
+:root { --mermaid-font-family: "trebuchet ms", verdana, arial;}</style><style>#mermaid-1584084602441 {
+    color: rgb(0, 0, 0);
+    font: 16px "trebuchet ms", verdana, arial;
+  }</style><g></g><defs><marker id="extensionStart" class="extension" refX="0" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 1,7 L18,13 V 1 Z"></path></marker></defs><defs><marker id="extensionEnd" refX="19" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 1,1 V 13 L18,7 Z"></path></marker></defs><defs><marker id="compositionStart" class="extension" refX="0" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"></path></marker></defs><defs><marker id="compositionEnd" refX="19" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"></path></marker></defs><defs><marker id="aggregationStart" class="extension" refX="0" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"></path></marker></defs><defs><marker id="aggregationEnd" refX="19" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L1,7 L9,1 Z"></path></marker></defs><defs><marker id="dependencyStart" class="extension" refX="0" refY="7" markerWidth="190" markerHeight="240" orient="auto"><path d="M 5,7 L9,13 L1,7 L9,1 Z"></path></marker></defs><defs><marker id="dependencyEnd" refX="19" refY="7" markerWidth="20" markerHeight="28" orient="auto"><path d="M 18,7 L9,13 L14,7 L9,1 Z"></path></marker></defs><g id="classid-Executor-5" class="classGroup " transform="translate(97.828125,0 )"><rect x="0" y="0" width="133.171875" height="58.09375"></rect><text y="15" x="0"><tspan x="19.90625">«interface»</tspan><tspan class="title" dy="10" x="19.90625">Executor</tspan></text><line x1="0" y1="31.5" y2="31.5" x2="133.171875"></line><text x="5" y="41.5" fill="white" class="classText"></text><line x1="0" y1="36.5" y2="36.5" x2="133.171875"></line><text x="5" y="51.5" fill="white" class="classText"><tspan x="5">+execute(Runnable) : void</tspan></text></g><g id="classid-ExecutorService-6" class="classGroup " transform="translate(0,108.09375 )"><rect x="0" y="0" width="328.828125" height="98.09375"></rect><text y="15" x="0"><tspan x="100.609375">«interface»</tspan><tspan class="title" dy="10" x="100.609375">ExecutorService</tspan></text><line x1="0" y1="31.5" y2="31.5" x2="328.828125"></line><text x="5" y="41.5" fill="white" class="classText"></text><line x1="0" y1="36.5" y2="36.5" x2="328.828125"></line><text x="5" y="51.5" fill="white" class="classText"><tspan x="5">+shutdown() : void</tspan><tspan x="5" dy="10">+shutdownNow() : List&lt;Runnable&gt;</tspan><tspan x="5" dy="10">+awaitTermination(long timeout, TimeUnit unit) : boolean</tspan><tspan x="5" dy="10">+submit(Callable&lt;T&gt; task) : Future&lt;T&gt;</tspan><tspan x="5" dy="10">+invokeAll(Collection&lt;? extends Callable&lt;T&gt;&gt; tasks) : List&lt;Future&lt;T&gt;&gt;</tspan></text></g><g id="classid-AbstractExecutorService-7" class="classGroup " transform="translate(78.1015625,256.1875 )"><rect x="0" y="0" width="172.625" height="41"></rect><text y="15" x="0"><tspan x="5">«abstract»</tspan><tspan class="title" dy="10" x="5">AbstractExecutorService</tspan></text><line x1="0" y1="31.5" y2="31.5" x2="172.625"></line><text x="5" y="41.5" fill="white" class="classText"></text><line x1="0" y1="36.5" y2="36.5" x2="172.625"></line><text x="5" y="51.5" fill="white" class="classText"></text></g><g id="classid-ThreadPoolExecutor-8" class="classGroup " transform="translate(111.8046875,347.1875 )"><rect x="0" y="0" width="105.21875" height="31"></rect><text y="15" x="0"><tspan class="title" x="5">ThreadPoolExecutor</tspan></text><line x1="0" y1="21.5" y2="21.5" x2="105.21875"></line><text x="5" y="31.5" fill="white" class="classText"></text><line x1="0" y1="26.5" y2="26.5" x2="105.21875"></line><text x="5" y="41.5" fill="white" class="classText"></text></g><g id="classid-ScheduledThreadPoolExecutor-9" class="classGroup " transform="translate(87.7421875,428.1875 )"><rect x="0" y="0" width="153.34375" height="31"></rect><text y="15" x="0"><tspan class="title" x="5">ScheduledThreadPoolExecutor</tspan></text><line x1="0" y1="21.5" y2="21.5" x2="153.34375"></line><text x="5" y="31.5" fill="white" class="classText"></text><line x1="0" y1="26.5" y2="26.5" x2="153.34375"></line><text x="5" y="41.5" fill="white" class="classText"></text></g><path d="M164.4140625,58.09375L164.4140625,62.260416666666664C164.4140625,66.42708333333333,164.4140625,74.76041666666667,164.4140625,83.09375C164.4140625,91.42708333333333,164.4140625,99.76041666666667,164.4140625,103.92708333333333L164.4140625,108.09375" id="edge0" class="relation" marker-start="url(#extensionStart)"></path><path d="M164.4140625,206.1875L164.4140625,210.35416666666666C164.4140625,214.52083333333334,164.4140625,222.85416666666666,164.4140625,231.1875C164.4140625,239.52083333333334,164.4140625,247.85416666666666,164.4140625,252.02083333333334L164.4140625,256.1875" id="edge1" class="relation" marker-start="url(#extensionStart)"></path><path d="M164.4140625,297.1875L164.4140625,301.3541666666667C164.4140625,305.5208333333333,164.4140625,313.8541666666667,164.4140625,322.1875C164.4140625,330.5208333333333,164.4140625,338.8541666666667,164.4140625,343.0208333333333L164.4140625,347.1875" id="edge2" class="relation" marker-start="url(#extensionStart)"></path><path d="M164.4140625,378.1875L164.4140625,382.3541666666667C164.4140625,386.5208333333333,164.4140625,394.8541666666667,164.4140625,403.1875C164.4140625,411.5208333333333,164.4140625,419.8541666666667,164.4140625,424.0208333333333L164.4140625,428.1875" id="edge3" class="relation" marker-start="url(#extensionStart)"></path></svg>

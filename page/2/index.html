@@ -182,7 +182,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty服务端启动流程/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty堆外内存/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -196,7 +196,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/netty/netty服务端启动流程/" class="post-title-link" itemprop="url">Netty 服务端启动流程</a>
+            <a href="/2020/netty/netty堆外内存/" class="post-title-link" itemprop="url">Netty 堆外内存</a>
         </h1>
 
         <div class="post-meta">
@@ -205,16 +205,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-03-08 11:18:00" itemprop="dateCreated datePublished" datetime="2020-03-08T11:18:00+08:00">2020-03-08</time>
+              <time title="Created: 2020-03-11 13:48:00 / Modified: 15:04:10" itemprop="dateCreated datePublished" datetime="2020-03-11T13:48:00+08:00">2020-03-11</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 23:28:04" itemprop="dateModified" datetime="2020-03-09T23:28:04+08:00">2020-03-09</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -234,8 +228,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/netty/netty服务端启动流程/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty服务端启动流程/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/netty堆外内存/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty堆外内存/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -251,36 +245,18 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://time.geekbang.org/course/detail/237-158209">源码剖析：启动服务</a></li>
-</ul>
-<h1 id="主线"><a href="#主线" class="headerlink" title="主线"></a>主线</h1><ul>
-<li><p>our thread</p>
-<ul>
-<li>创建 selector。</li>
-<li>创建 server socket channel。</li>
-<li>初始化 server socket channel。</li>
-<li>给 server socket channel 从 boss group 中选择一个 NioEventLoop。</li>
-</ul>
+<li><p><a href="https://segmentfault.com/a/1190000021469481">Netty堆外内存泄漏排查，这一篇全讲清楚了</a></p>
 </li>
-<li><p>boss thread </p>
-<ul>
-<li>将 server socket channel 注册到选择的 NioEventLoop 的 selector。</li>
-<li>绑定地址启动 NioEventLoop 的线程来监听事件。</li>
-<li>注册接受连接事件（OP_ACCEPT）到 selector 上。</li>
-</ul>
+<li><p><a href="https://www.cnblogs.com/duanxz/p/6089485.html">Java堆外内存之三：堆外内存回收方法</a></p>
 </li>
 </ul>
-<h1 id="创建-Selector"><a href="#创建-Selector" class="headerlink" title="创建 Selector"></a>创建 Selector</h1><p>创建 <code>NioEventLoopGroup</code> 会创建 <code>nThreads</code> 个 <code>NioEventLoop</code>。</p>
-<p>每个 <code>NioEventLoop</code> 会</p>
-<ul>
-<li>创建、存储一个 <code>Selector</code>。</li>
-<li>在调用 <code>EventLoop#execute()</code> 时，如果线程没有启动，就启动线程。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Selector selector = sun.nio.SelectorProviderImpl.opSelector();</span><br></pre></td></tr></table></figure>
-<h1 id="创建和初始化-NioServerSocketChannel"><a href="#创建和初始化-NioServerSocketChannel" class="headerlink" title="创建和初始化 NioServerSocketChannel"></a>创建和初始化 NioServerSocketChannel</h1>
+<h1 id="Java-nio-堆外内存"><a href="#Java-nio-堆外内存" class="headerlink" title="Java.nio 堆外内存"></a>Java.nio 堆外内存</h1><h2 id="申请内存"><a href="#申请内存" class="headerlink" title="申请内存"></a>申请内存</h2><p><code>DirectByteBuffer</code> 通过 <code>unsafe.allocateMemory(size)</code> 申请堆外内存。</p>
+<h2 id="释放内存"><a href="#释放内存" class="headerlink" title="释放内存"></a>释放内存</h2><h3 id="手动释放"><a href="#手动释放" class="headerlink" title="手动释放"></a>手动释放</h3><p>调用 <code>DirectByteBuffer#cleaner.clean()</code> 可以手动释放掉堆外的内存。</p>
+<p>实际上通过调用 <code>unsafe.freeMemory(address)</code> 来释放的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (address == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="comment">// Paranoia</span></span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    unsafe.freeMemory(address);</span><br><span class="line">    address = <span class="number">0</span>;</span><br><span class="line">    Bits.unreserveMemory(size, capacity);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/netty/netty服务端启动流程/#more" rel="contents">
+              <a class="btn" href="/2020/netty/netty堆外内存/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -304,7 +280,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Reactor模式/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty写数据流程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -318,7 +294,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/netty/Reactor模式/" class="post-title-link" itemprop="url">Reactor 模式</a>
+            <a href="/2020/netty/netty写数据流程/" class="post-title-link" itemprop="url">Netty 写数据流程</a>
         </h1>
 
         <div class="post-meta">
@@ -327,16 +303,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-03-07 20:19:00" itemprop="dateCreated datePublished" datetime="2020-03-07T20:19:00+08:00">2020-03-07</time>
+              <time title="Created: 2020-03-10 18:32:00 / Modified: 19:50:51" itemprop="dateCreated datePublished" datetime="2020-03-10T18:32:00+08:00">2020-03-10</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-09 09:51:03" itemprop="dateModified" datetime="2020-03-09T09:51:03+08:00">2020-03-09</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -356,8 +326,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/netty/Reactor模式/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/Reactor模式/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/netty写数据流程/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty写数据流程/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -372,223 +342,47 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><p><a href="https://www.cnblogs.com/amei0/p/8117660.html">IO多路复用之Reactor</a></p>
-</li>
-<li><p><a href="https://www.cnblogs.com/duanxz/p/3696849.html">Netty中的三种Reactor</a></p>
-</li>
-</ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>Reactor（反应器）模式常用来实现 I/O 多路复用机制。</p>
-<p>Reactor 管理器调用事件分离器等待事件的发生。事件发生后，Reactor 管理器被唤醒，调度事件处理器链进行事件的处理。</p>
-<p>核心流程：注册感兴趣的事件 -&gt; 扫描是否有感兴趣的事件发生 -&gt; 事件发生后做出相应的处理。</p>
-<h1 id="Reactor模式组成"><a href="#Reactor模式组成" class="headerlink" title="Reactor模式组成"></a>Reactor模式组成</h1><h2 id="描述符-Handles"><a href="#描述符-Handles" class="headerlink" title="描述符 Handles"></a>描述符 Handles</h2><p>由操作系统提供的资源，用于识别每一个事件，如 Socket 描述符、文件描述符、信号的值等。</p>
-<p>在Linux中，它用一个整数来表示。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/Reactor模式/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/Etcd基本概念/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/Etcd基本概念/" class="post-title-link" itemprop="url">Etcd 基本概念</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 21:11:00 / Modified: 21:27:14" itemprop="dateCreated datePublished" datetime="2020-03-06T21:11:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/分布式/Etcd基本概念/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/Etcd基本概念/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://youyou-tech.com/2019/07/01/%E5%88%86%E5%B8%83%E5%BC%8F%E9%94%81%E7%9A%84%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E4%B9%8B%EF%BC%9A%E5%9F%BA%E4%BA%8EEtcd%E7%9A%84%E5%88%86%E5%B8%83/">分布式锁的最佳实践之：基于 Etcd 的分布式锁</a></li>
-<li><a href="https://www.jianshu.com/p/7abfb83cfa08">分布式锁第五篇 基于etcd</a></li>
-<li><a href="https://www.codedump.info/post/20181125-etcd-server/#revision概念">Etcd存储的实现</a></li>
-</ul>
-<h1 id="Lease-机制"><a href="#Lease-机制" class="headerlink" title="Lease 机制"></a>Lease 机制</h1><p>租约机制（TTL，Time To Live）。Etcd 可以为存储的 key-value 对设置租约，当租约到期，key-value 将失效删除。</p>
-<p>支持续约，通过客户端可以在<strong>租约到期之前</strong>续约，以避免 key-value 对过期失效。</p>
-<p>支持解约，一旦解约，与该租约绑定的 key-value 将失效删除。</p>
-<h1 id="Prefix-机制"><a href="#Prefix-机制" class="headerlink" title="Prefix 机制"></a>Prefix 机制</h1><p>前缀机制，也称目录机制。</p>
-<p>如两个 key 命名如下：key1=<code>/mykey/key1</code> 、key2=<code>/mykey/key2</code>。</p>
-<p>可以通过前缀-<code>/mykey</code> 查询，返回包含两个 key-value 对的列表。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/分布式/Etcd基本概念/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/Zookeeper基本概念/" class="post-title-link" itemprop="url">ZooKeeper 基本概念</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 20:38:00 / Modified: 21:10:49" itemprop="dateCreated datePublished" datetime="2020-03-06T20:38:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/分布式/Zookeeper基本概念/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/Zookeeper基本概念/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><p><a href="https://www.cnblogs.com/binarylei/p/8721126.html">Zookeeper 系列（一）基本概念</a></p>
-</li>
-<li><p><a href="http://www.jasongj.com/zookeeper/distributedlock/">深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举</a></p>
-</li>
-</ul>
-<h1 id="属性结构"><a href="#属性结构" class="headerlink" title="属性结构"></a>属性结构</h1><p>ZooKeeper 使用类似文件系统的方式组织数据。</p>
-<p>每个节点用从根节点到它的绝对路径表示 <code>/node1/node12</code>。</p>
-<p>其中 <code>/zookeeper</code> 用以保存管理信息，比如关键配额信息。</p>
-<h1 id="Znode"><a href="#Znode" class="headerlink" title="Znode"></a>Znode</h1><p>每个节点用 Znode 表示，兼具文件和目录两种特点。</p>
-<p>由 3 部分组成:</p>
+          <h1 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h1><ul>
+<li><p>Write操作：写数据到 buffer。</p>
 <ul>
-<li><strong>stat</strong> ：状态信息, 描述该 Znode 的版本、权限等信息</li>
-<li><strong>data</strong> ：关联的数据。最多为 1M。主要做配置、状态管理，不要用来存储大数据。</li>
-<li><strong>children</strong> ：子节点。</li>
+<li>写数据到缓存 <code>ChannelOutboundBuffer#addMessage()</code>。<ul>
+<li>把数据缓存在链表 <code>unflushedEntry</code> 上。</li>
 </ul>
+</li>
+</ul>
+</li>
+<li><p>Flush 操作：发送 buffer 里面的数据。</p>
+<ul>
+<li><code>AbstractChannel.AbstractUnsafe#flush()</code>。</li>
+<li>准备数据 <code>ChannelOutboundBuffer#addFlush()</code> <ul>
+<li>把链表 <code>unflushedEntry</code> 上的数据转移到链表 <code>flushedEntry</code> 上。</li>
+</ul>
+</li>
+<li>发送数据到 socket <code>NioSocketChannel#doWrite()</code>。<ul>
+<li>循环写入到 socket 中。<ul>
+<li>如果没有数据要写了，清除 OP_WRITE 事件。</li>
+<li>每次写入时，把链表缓存的一部分转化为数组。转化的长度会在每次写入后进行调整。</li>
+<li>如果发现写不进去 socket 了，注册一个 OP_WRITE 事件。</li>
+<li>如果写了 16 次还有数据，先结束写操作。清除 OP_WRITE，把继续写的任务放到 <code>EventLoop</code> 里。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/netty写数据流程.png" alt="netty写数据流程"></p>
+<h1 id="写数据到-buffer"><a href="#写数据到-buffer" class="headerlink" title="写数据到 buffer"></a>写数据到 buffer</h1><h2 id="写入方法的调用位置"><a href="#写入方法的调用位置" class="headerlink" title="写入方法的调用位置"></a>写入方法的调用位置</h2><ul>
+<li><code>ChannelHandlerContext#write(msg)</code> 把 <code>msg</code> 写入到前一个 <code>OutboundHandler</code> 中。</li>
+<li><code>ChannelHandlerContext#handler().write(msg)</code> 把 <code>msg</code> 写入到 <code>pipeline.tail</code> 中。</li>
+</ul>
+<p>最后实际写数据到 buffer，都是在 <code>pipeline.head.write(msg)</code> 中 完成。</p>
+<p>最终在 <code>unsafe.write()</code>中调用了 <code>ChannelOutboundBuffer#addMessage(msg, size, promise)</code>。</p>
+<p>这也意味着，每个 Channel 会有一个 <code>outboundBuffer</code> 缓存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pipeline.head.write()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(ChannelHandlerContext ctx, Object msg, ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">    unsafe.write(msg, promise);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// AbstractChannel.AbstractUnsafe#write()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">write</span><span class="params">(Object msg, ChannelPromise promise)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">    outboundBuffer.addMessage(msg, size, promise);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/分布式/Zookeeper基本概念/#more" rel="contents">
+              <a class="btn" href="/2020/netty/netty写数据流程/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -612,7 +406,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/分布式ID生成/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/epoll的et与lt/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -626,7 +420,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/分布式/分布式ID生成/" class="post-title-link" itemprop="url">分布式 ID 生成</a>
+            <a href="/2020/netty/epoll的et与lt/" class="post-title-link" itemprop="url">Epoll 边缘触发与水平触发</a>
         </h1>
 
         <div class="post-meta">
@@ -637,7 +431,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-03-06 20:24:00 / Modified: 20:38:19" itemprop="dateCreated datePublished" datetime="2020-03-06T20:24:00+08:00">2020-03-06</time>
+              <time title="Created: 2020-03-10 16:12:00 / Modified: 16:23:00" itemprop="dateCreated datePublished" datetime="2020-03-10T16:12:00+08:00">2020-03-10</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -645,7 +439,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
                 </span>
             </span>
 
@@ -658,110 +452,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/分布式/分布式ID生成/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/分布式ID生成/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://tech.meituan.com/2017/04/21/mt-leaf.html">Leaf——美团点评分布式ID生成系统</a></li>
-</ul>
-<h1 id="UUID"><a href="#UUID" class="headerlink" title="UUID"></a>UUID</h1><h2 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h2><ul>
-<li>性能非常高：本地生成，没有网络消耗。</li>
-</ul>
-<h2 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h2><ul>
-<li>不易于存储：UUID太长，16字节128位，通常以36长度的字符串表示，很多场景不适用。</li>
-<li>信息不安全：基于MAC地址生成UUID的算法可能会造成MAC地址泄露。</li>
-<li>ID 作为数据库主键时，UUID 会引起位置变化频繁。</li>
-<li>不是递增的。</li>
-</ul>
-<h1 id="类-snowflake-方案"><a href="#类-snowflake-方案" class="headerlink" title="类 snowflake 方案"></a>类 snowflake 方案</h1><p>时间戳 + workerID + 每毫秒的递增序列号。</p>
-<p>需要单独部署服务。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/分布式/分布式ID生成/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/数据库/B树与B+树/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/数据库/B树与B+树/" class="post-title-link" itemprop="url">B 树与 B+ 树</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-06 13:01:00 / Modified: 13:05:02" itemprop="dateCreated datePublished" datetime="2020-03-06T13:01:00+08:00">2020-03-06</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/数据库/B树与B+树/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/数据库/B树与B+树/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/epoll的et与lt/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/epoll的et与lt/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -777,12 +469,28 @@
 
       
           <blockquote>
-<ul>
-<li><a href="https://www.cnblogs.com/nullzx/p/8729425.html">B树和B+树的插入、删除图文详解</a></li>
-<li><a href="https://www.cs.usfca.edu/~galles/visualization/BTree.html">B-Tree Visualization</a></li>
-</ul>
+<p><a href="https://blog.csdn.net/dongfuye/article/details/50880251">epoll LT/ET 深入剖析</a>（主要参考）</p>
+<p><a href="https://www.zhihu.com/question/22524908/answer/69054646">java nio使用的是水平触发还是边缘触发</a></p>
 </blockquote>
-
+<h1 id="水平触发-Level-Triggered-LT"><a href="#水平触发-Level-Triggered-LT" class="headerlink" title="水平触发 Level Triggered (LT)"></a>水平触发 Level Triggered (LT)</h1><ul>
+<li>socket 接收缓冲区不为空，有数据可读， 读事件一直触发。</li>
+<li>socket 发送缓冲区不满，可以继续写入数据， 写事件一直触发。</li>
+</ul>
+<h1 id="边缘触发-Edge-Triggered-ET"><a href="#边缘触发-Edge-Triggered-ET" class="headerlink" title="边缘触发 Edge Triggered (ET)"></a>边缘触发 Edge Triggered (ET)</h1><p>仅在状态变化时触发事件。</p>
+<ul>
+<li>socket 的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时，触发读事件。</li>
+<li>socket 的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时，触发写事件。</li>
+</ul>
+<h1 id="LT-处理过程"><a href="#LT-处理过程" class="headerlink" title="LT 处理过程"></a>LT 处理过程</h1><h2 id="监听"><a href="#监听" class="headerlink" title="监听"></a>监听</h2><p>select 一个一个连接，监听每个连接的 <code>EPOLLIN</code> 事件。</p>
+<h2 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/epoll的et与lt/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -801,7 +509,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/FastThreadLocal/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/others/面试常见问题记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -815,7 +523,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/netty/FastThreadLocal/" class="post-title-link" itemprop="url">FastThreadLocal</a>
+            <a href="/2020/others/面试常见问题记录/" class="post-title-link" itemprop="url">面试常见问题记录</a>
         </h1>
 
         <div class="post-meta">
@@ -825,14 +533,369 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-03-05 23:31:00" itemprop="dateCreated datePublished" datetime="2020-03-05T23:31:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-10 15:45:00" itemprop="dateCreated datePublished" datetime="2020-03-10T15:45:00+08:00">2020-03-10</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 00:34:19" itemprop="dateModified" datetime="2020-03-06T00:34:19+08:00">2020-03-06</time>
+                <time title="Modified: 2020-03-16 15:35:43" itemprop="dateModified" datetime="2020-03-16T15:35:43+08:00">2020-03-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/others/" itemprop="url" rel="index"><span itemprop="name">others</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/others/面试常见问题记录/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/others/面试常见问题记录/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h1><blockquote>
+<ul>
+<li><a href="https://blog.csdn.net/puhaiyang/article/details/72284702">对mysql乐观锁、悲观锁、共享锁、排它锁、行锁、表锁概念的理解</a></li>
+<li><a href="https://cyc2018.github.io/CS-Notes/#/notes/数据库系统原理?id=_2-两段锁协议">CSNote 数据库系统原理</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/53974502">mysql事务和锁 SELECT FOR UPDATE</a></li>
+</ul>
+</blockquote>
+<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><p>认为操作数据时不会发生竞争，不会加锁，而是更新数据时检查数据是否发生了变化。</p>
+<p>有竞争会失败，这时抛出错误，后续如何处理由客户决定。</p>
+<p>一般使用 CAS + 版本号 实现。</p>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>在数据库中要自己添加一个版本号的字段</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> t_goods </span><br><span class="line">	<span class="keyword">set</span> <span class="keyword">status</span>=<span class="number">2</span>,<span class="keyword">version</span>=<span class="keyword">version</span>+<span class="number">1</span></span><br><span class="line">	<span class="keyword">where</span> <span class="keyword">id</span>=#&#123;<span class="keyword">id</span>&#125; <span class="keyword">and</span> <span class="keyword">version</span>=#&#123;<span class="keyword">version</span>&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/others/面试常见问题记录/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/others/面经整理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/others/面经整理/" class="post-title-link" itemprop="url">面经整理</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-10 15:45:00" itemprop="dateCreated datePublished" datetime="2020-03-10T15:45:00+08:00">2020-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-14 17:58:04" itemprop="dateModified" datetime="2020-03-14T17:58:04+08:00">2020-03-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/others/" itemprop="url" rel="index"><span itemprop="name">others</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/others/面经整理/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/others/面经整理/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="蚂蚁金服-中间件"><a href="#蚂蚁金服-中间件" class="headerlink" title="蚂蚁金服 中间件"></a>蚂蚁金服 中间件</h1><blockquote>
+<p><a href="https://www.nowcoder.com/discuss/87736?type=2&amp;order=1&amp;pos=25&amp;page=1">https://www.nowcoder.com/discuss/87736?type=2&amp;order=1&amp;pos=25&amp;page=1</a></p>
+</blockquote>
+<h2 id="一面"><a href="#一面" class="headerlink" title="一面"></a>一面</h2><ol>
+<li>个人介绍加项目介绍20分钟</li>
+<li>缺点？</li>
+<li>ACID CAP BASE理论</li>
+<li>分布式一致性协议，二段、三段、TCC，优缺点</li>
+<li>RPC过程</li>
+<li>服务注册中心宕机了怎么办？</li>
+<li>微服务还有其他什么组件</li>
+<li>分布式架构与微服务的关系</li>
+<li>你有什么问题要问我的。</li>
+</ol>
+<h2 id="二面"><a href="#二面" class="headerlink" title="二面"></a>二面</h2><ol>
+<li>各种排序算法、未排序常规数据查找第K大的数，时间复杂度。</li>
+<li>二叉树的深度</li>
+<li>虚拟内存分页了解不？</li>
+<li>进程和线程区别</li>
+<li>第一二三范式是什么？</li>
+<li>一个表一千个列值为true和false，写sql 查询 有300个列值为true的行。</li>
+<li>脏读和幻读是什么？</li>
+<li>什么对象会从新生代晋升到老年代</li>
+<li>一个任务分成十个任务，最后汇总计算，不能用fork/join</li>
+<li>实习+项目问题，基本是在联想研究院做的东西，还问我为什么不留那。。。</li>
+<li>开源框架源码了解不？</li>
+<li>数据建模两道、个人题开放性题</li>
+<li>对安全方面了解多少？</li>
+<li>安全协议有哪些 、https是啥？</li>
+</ol>
+<h1 id="蚂蚁金服中间件"><a href="#蚂蚁金服中间件" class="headerlink" title="蚂蚁金服中间件"></a>蚂蚁金服中间件</h1><blockquote>
+<p><a href="https://www.nowcoder.com/discuss/85619?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2">https://www.nowcoder.com/discuss/85619?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2</a></p>
+</blockquote>
+<h2 id="一面-1"><a href="#一面-1" class="headerlink" title="一面"></a>一面</h2><ol>
+<li>项目balabala，项目问的很细很细</li>
+<li>redis的持久化方式，redis3.0原生集群和redis读写分离+哨兵机制区别</li>
+<li>工厂模式和抽象工厂模式区别</li>
+<li>hashmap底层</li>
+<li>分布式架构简单介绍</li>
+<li>分布式架构会带来哪些问题</li>
+<li>快排，归并排序原理</li>
+<li>jvm垃圾回收算法和原理</li>
+<li>对象进入老年代的几种方式</li>
+<li>代表个人最高水平的一个技术点（好像是这个意思，应该是针对某个项目而言吧）</li>
+<li>redis持久化方式</li>
+</ol>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/others/面经整理/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/EventLoop介绍/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/EventLoop介绍/" class="post-title-link" itemprop="url">EventLoop 主流程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-10 15:11:00 / Modified: 15:31:50" itemprop="dateCreated datePublished" datetime="2020-03-10T15:11:00+08:00">2020-03-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/EventLoop介绍/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/EventLoop介绍/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.jianshu.com/p/3ebd4e997242">Netty NioEventLoop源码解读</a></li>
+<li><a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">Java NIO epoll bug 以及 Netty 的解决之道</a></li>
+</ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>作为 Worker 的 <code>EventLoop</code>，负责多路复用 <code>select/epoll</code> 来监听多个 socket 连接的读写事件，并在有读写事件时 进行逻辑的处理、从 socket 读取数据、向socket 写入数据。</p>
+<p>而 <code>EventLoop</code> 是单线程的，如何同时阻塞监听读写事件、并处理业务逻辑？</p>
+<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
+<li>每次循环，先检测是否有任务要处理。<ul>
+<li>如果没有任务，就进行 <code>select(timeout)</code>。<ul>
+<li><code>timeout</code> 的时间是“下一次要执行任务的时间 + 0.5 ms”，没有要执行的任务，就是 “1s + 0.5 ms”</li>
+</ul>
+</li>
+<li>如果有任务，就不进行 <code>select()</code>。</li>
+</ul>
+</li>
+<li>然后，处理到达的读写事件。</li>
+<li>最后，执行所有待执行的任务。</li>
+<li>随后，重复步骤1。</li>
+</ol>
+<h1 id="解决-JDK-NIO-空轮询-Bug"><a href="#解决-JDK-NIO-空轮询-Bug" class="headerlink" title="解决 JDK NIO 空轮询 Bug"></a>解决 JDK NIO 空轮询 Bug</h1><h2 id="Bug-简介"><a href="#Bug-简介" class="headerlink" title="Bug 简介"></a>Bug 简介</h2><p><code>selector.select()</code> 应该 <strong>一直阻塞</strong>，直到有就绪事件到达。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/EventLoop介绍/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty接收数据流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty接收数据流程/" class="post-title-link" itemprop="url">Netty 接收数据流程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-09 23:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T23:21:00+08:00">2020-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-10 18:31:28" itemprop="dateModified" datetime="2020-03-10T18:31:28+08:00">2020-03-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -853,8 +916,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/netty/FastThreadLocal/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/FastThreadLocal/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/netty接收数据流程/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty接收数据流程/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -870,19 +933,21 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.jianshu.com/p/3fc2fbac4bb7">Netty 高性能之道 FastThreadLocal 源码分析（快且安全）</a></li>
+<li><a href="https://time.geekbang.org/course/detail/237-158157">源码剖析：接收数据</a></li>
 </ul>
-<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="threadLocalMap"><a href="#threadLocalMap" class="headerlink" title="threadLocalMap"></a>threadLocalMap</h2><p>每个线程内部有一个 <code>threadLocalMap</code> 。</p>
-<p>其内部使用 <code>Object[] indexedVariables</code> 存储了每一个本地线程变量。</p>
+<h1 id="触发读操作"><a href="#触发读操作" class="headerlink" title="触发读操作"></a>触发读操作</h1><p>当读事件发生时，WorkerEventLoop 调用 <code>unsafe.read()</code>，这里是  <code>NioSocketChannel. NioByteUnsafe#read()</code>。</p>
+<h1 id="循环读取"><a href="#循环读取" class="headerlink" title="循环读取"></a>循环读取</h1><p>循环读取，根据 <code>continueReading</code> 判断是否还要继续读取。</p>
 <ul>
-<li>如果这个线程时 Netty 的 <code>FastThreadLocalThread</code> 线程，它的内部存有 <code>threadLocalMap</code> 域。</li>
-<li>如果是原生的线程，使用 原生的 <code>ThreadLocal</code> 存储每个原生线程的 <code>threadLocalMap</code>。</li>
+<li>每次读取后，调用 <code>pipeline.fireChannelRead(byteBuf)</code> 把读到的数据传播到链中。</li>
+<li>读取结束后，调用 <code>pipeline.fireChannelReadComplete()</code> 传播读取完成事件。</li>
 </ul>
-<h2 id="自增-index"><a href="#自增-index" class="headerlink" title="自增 index"></a>自增 index</h2><p>每创建一个 <code>FastThreadLocal</code>，会使用一个全局的 <code>AtomicInteger</code> 自增作为 <code>index</code>。</p>
-<p>稍后 value 会存储在 <code>threadLocalMap.indexedVariables[index]</code> 处。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NioByteUnsafe#read()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      byteBuf = allocHandle.allocate(allocator);</span><br><span class="line">      allocHandle.lastBytesRead(doReadBytes(byteBuf));</span><br><span class="line">      <span class="comment">// 省略 ...</span></span><br><span class="line">      pipeline.fireChannelRead(byteBuf);</span><br><span class="line">    &#125; <span class="keyword">while</span> (allocHandle.continueReading());</span><br><span class="line">  	</span><br><span class="line">    allocHandle.readComplete();</span><br><span class="line">    pipeline.fireChannelReadComplete();</span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="分配-ByteBuf"><a href="#分配-ByteBuf" class="headerlink" title="分配 ByteBuf"></a>分配 ByteBuf</h2><blockquote>
+<p><a href="https://www.jianshu.com/p/e12c7f3861e1">Netty 源码解析 ——— AdaptiveRecvByteBufAllocator</a></p>
+</blockquote>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/netty/FastThreadLocal/#more" rel="contents">
+              <a class="btn" href="/2020/netty/netty接收数据流程/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -906,7 +971,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/golang/golang记录/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty构建连接流程/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -920,96 +985,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/golang/golang记录/" class="post-title-link" itemprop="url">Golang 记录</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 20:36:00 / Modified: 20:38:24" itemprop="dateCreated datePublished" datetime="2020-03-05T20:36:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/golang/" itemprop="url" rel="index"><span itemprop="name">golang</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/golang/golang记录/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/golang/golang记录/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Channel-原理"><a href="#Channel-原理" class="headerlink" title="Channel 原理"></a>Channel 原理</h1><blockquote>
-<p><a href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/">Go 语言设计与实现 Channel</a></p>
-</blockquote>
-<p>阻塞队列</p>
-<h1 id="Goroutine"><a href="#Goroutine" class="headerlink" title="Goroutine"></a>Goroutine</h1><blockquote>
-<p><a href="https://www.zhihu.com/question/20862617">Golang 的 goroutine 是如何实现的？</a></p>
-</blockquote>
-<p>用户级线程</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/raft协议/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/分布式/raft协议/" class="post-title-link" itemprop="url">Raft 协议</a>
+            <a href="/2020/netty/netty构建连接流程/" class="post-title-link" itemprop="url">Netty 构建连接流程</a>
         </h1>
 
         <div class="post-meta">
@@ -1019,14 +995,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-03-05 20:24:00" itemprop="dateCreated datePublished" datetime="2020-03-05T20:24:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-09 20:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T20:21:00+08:00">2020-03-09</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 19:05:13" itemprop="dateModified" datetime="2020-03-06T19:05:13+08:00">2020-03-06</time>
+                <time title="Modified: 2020-03-10 18:29:07" itemprop="dateModified" datetime="2020-03-10T18:29:07+08:00">2020-03-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1034,7 +1010,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
                 </span>
             </span>
 
@@ -1047,8 +1023,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/分布式/raft协议/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/raft协议/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/netty构建连接流程/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty构建连接流程/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1064,31 +1040,37 @@
 
       
           <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.jianshu.com/p/ddbe4209be0f">RAFT协议完整笔记</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/27207160">Raft协议详解</a></li>
+<li><a href="https://time.geekbang.org/course/detail/237-158156">源码剖析：构建连接</a></li>
 </ul>
-<h1 id="节点状态"><a href="#节点状态" class="headerlink" title="节点状态"></a>节点状态</h1><ol>
-<li>跟随者</li>
-<li>候选者</li>
-<li>领导者</li>
-</ol>
-<h1 id="跟随者"><a href="#跟随者" class="headerlink" title="跟随者"></a>跟随者</h1><p>节点收到心跳/添加日志请求后：</p>
-<ol>
-<li>如果当前的term大于请求的term，返回false。</li>
-<li>如果当前的term小于请求的term，自己变为跟随者。</li>
-<li>如果请求的PrevLogIndex不在自己的log里，返回false。</li>
-<li>如果请求的PrevLogTerm不是自己的这个index的term，略过自己所有这个term的log，返回最右边不是这个term的log的index，返回false。</li>
-<li>否则可以添加请求中的log entries。</li>
-<li>更新commitIndex为请求中的commitIndex（如果更大的话）。</li>
-<li>返回true。</li>
-</ol>
-<h1 id="候选者"><a href="#候选者" class="headerlink" title="候选者"></a>候选者</h1><p>跟随者转变为候选者的时机：</p>
+<h1 id="主线"><a href="#主线" class="headerlink" title="主线"></a>主线</h1><ul>
+<li><p>boss thread</p>
 <ul>
-<li>如果跟随者 一定时间内 没有收到领导者的心跳消息，则转变为候选者。</li>
+<li>NioEventLoop 中的 selector 轮询监听连接事件 <code>OP_ACCEPT</code>。</li>
+<li>创建 socket channel。</li>
+<li>初始化 socket channel、并从 <code>workerEventLoopGroup</code> 中选择一个 <code>EventLoop</code>。</li>
 </ul>
+</li>
+<li><p>worker thread</p>
+<ul>
+<li>将 socket channel 注册到选择的 NioEventLoop 的 selector。</li>
+<li>注册读事件 <code>OP_READ</code> 到 selector 上。</li>
+</ul>
+</li>
+</ul>
+<h1 id="创建-SocketChannel"><a href="#创建-SocketChannel" class="headerlink" title="创建 SocketChannel"></a>创建 SocketChannel</h1><p>NioEventLoop 的 <code>select(timeout)</code> 调用中，接收到 <code>OP_ACCEPT</code> 事件被唤醒。</p>
+<p>调用 <code>unsafe.read()</code>，也就是 <code>NioServerSocketChannel.NioMessageUnsafe#read()</code>，来处理连接事件。</p>
+<p>最终调用 <code>serverSocketChannel.accept()</code> 得到 <code>socketChannel</code>。</p>
+<ul>
+<li><code>unsafe.read()</code> 有两种<ul>
+<li><code>NioMessageUnsafe#read()</code> 处理 OP_ACCEPT 事件。这里是调用这个。</li>
+<li><code>NioByteUnsafe#read()</code> 处理 OP_READ 事件。</li>
+</ul>
+</li>
+</ul>
+<h1 id="注册-SocketChannel"><a href="#注册-SocketChannel" class="headerlink" title="注册 SocketChannel"></a>注册 SocketChannel</h1>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/分布式/raft协议/#more" rel="contents">
+              <a class="btn" href="/2020/netty/netty构建连接流程/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -1112,7 +1094,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/红黑树/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Recycler对象池/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -1126,7 +1108,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/algorithm/红黑树/" class="post-title-link" itemprop="url">红黑树</a>
+            <a href="/2020/netty/Recycler对象池/" class="post-title-link" itemprop="url">Recycler 对象池</a>
         </h1>
 
         <div class="post-meta">
@@ -1135,17 +1117,23 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-05 19:44:00 / Modified: 19:45:02" itemprop="dateCreated datePublished" datetime="2020-03-05T19:44:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-09 15:34:00" itemprop="dateCreated datePublished" datetime="2020-03-09T15:34:00+08:00">2020-03-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-12 13:41:51" itemprop="dateModified" datetime="2020-03-12T13:41:51+08:00">2020-03-12</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
                 </span>
             </span>
 
@@ -1158,8 +1146,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/algorithm/红黑树/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/红黑树/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/netty/Recycler对象池/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/Recycler对象池/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -1174,62 +1162,143 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
-<li>所有节点都是红色或者黑色。</li>
-<li>根节点为黑色。</li>
-<li>每个叶子节点下挂两个NULL节点，并且NULL节点为黑色。</li>
-<li>如果该节点是红色的，那么该节点的子节点一定都是黑色。</li>
-<li>从根节点到叶子节点的路径，每条路径的黑色节点数目是相同的。</li>
-</ol>
-<h1 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h1><ol>
-<li>插入节点X到对应位置，初始为红色。</li>
-<li>如果X是根节点，则标记为黑色。</li>
-<li>如果X的父节点是根节点，返回。</li>
-<li>否则，X和X的父节点都不是根节点：<ol>
-<li>如果X的父节点是黑色，返回。</li>
-<li>否则，看X的uncle节点是不是红色：<ol>
-<li>如果X的父节点和X的uncle都是红色，变色，<strong>向上检查</strong>X的父亲的父亲节点的颜色。</li>
-<li>否则，如果X在父节点是X的祖先节点的左子节点<ol>
-<li>如果X也是父节点的左子节点（LL），右旋变色。<strong>返回。</strong></li>
-<li>如果X是父节点的右子节点（LR），先左旋、再右旋变色。<strong>返回。</strong></li>
-</ol>
-</li>
-<li>如果X在父节点是X的祖先节点的右子节点<ol>
-<li>如果X也是父节点的右子节点（RR），左旋变色。<strong>返回。</strong></li>
-<li>如果X是父节点的左子节点（RL），先右旋、再左旋变色。<strong>返回。</strong></li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="平衡二叉树与红黑树的对比"><a href="#平衡二叉树与红黑树的对比" class="headerlink" title="平衡二叉树与红黑树的对比"></a>平衡二叉树与红黑树的对比</h1><ol>
-<li>搜索长度<ul>
-<li>红黑树搜索路径的最大长度不超过搜索路径的最短长度的2倍。</li>
-<li>平衡二叉树差值不大于1。</li>
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://stackoverflow.com/questions/1468007/atomicinteger-lazyset-vs-set">AtomicInteger lazySet vs. set</a></li>
+<li><a href="https://github.com/netty/netty/issues/8215">why use lazySet instead set in WeakOrderQueue#add</a></li>
+<li><a href="https://blog.csdn.net/alex_xfboy/article/details/90384332">冷知识：netty的Recycler对象池</a></li>
 </ul>
-</li>
-<li>插入<ul>
-<li>红黑树在插入的时候，只有X的父节点和Uncle都是红色，才要递归到根节点变色，否则只要旋转1-2次就可以。</li>
-<li>AVL在插入时，要找到最低的不平衡位置，向上递归到根节点旋转。</li>
-</ul>
-</li>
-<li>删除<ul>
-<li>红黑树只有个别情况才会递归平衡父节点，它发生在：兄弟节点是黑色，两个侄儿也是黑色。当兄弟节点是红色的时候，转化为兄弟节点是黑色的情况处理，当两个侄儿有红色节点的时候，则在常数时间内就可以达到平衡。</li>
-<li>AVL和插入类似，找到第一个不平衡位置，向上递归到根节点。</li>
-</ul>
-</li>
-</ol>
-<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ol>
-<li><a href="https://zhuanlan.zhihu.com/p/34840762">一篇搞懂AVL平衡二叉树</a></li>
-<li><a href="[https://pjmike.github.io/2018/08/09/%E5%B9%B3%E8%A1%A1%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E6%8F%92%E5%85%A5%E4%B8%8E%E5%88%A0%E9%99%A4/](https://pjmike.github.io/2018/08/09/平衡二叉树的插入与删除/">平衡二叉树的插入与删除</a>)</li>
-<li><a href="https://acm.sdut.edu.cn/onlinejudge2/index.php/Home/Index/problemdetail/pid/3374.html">sdut-数据结构实验之查找二：平衡二叉树</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/79980618">红黑树，超强动静图详解，简单易懂</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/22800206">数据结构：红黑树的删除</a></li>
-<li><a href="https://www.zhihu.com/question/19856999">红黑树比 AVL 树具体更高效在哪里？</a></li>
-</ol>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Netty 场景下的轻量级对象池 Recycler。</p>
+<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="stack"><a href="#stack" class="headerlink" title="stack"></a>stack</h2><p>每个线程使用一个 <code>stack</code> 存储对象池。避免线程同步的问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> FastThreadLocal&lt;Stack&lt;T&gt;&gt; threadLocal</span><br></pre></td></tr></table></figure>
+<h2 id="WeakOrderQueue"><a href="#WeakOrderQueue" class="headerlink" title="WeakOrderQueue"></a>WeakOrderQueue</h2><p>在回收对象时，要释放对象的线程可能不是对象的 <code>stack</code> 线程。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/Recycler对象池/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
 
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty记录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty记录/" class="post-title-link" itemprop="url">Netty 记录</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-08 23:56:00" itemprop="dateCreated datePublished" datetime="2020-03-08T23:56:00+08:00">2020-03-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-11 19:04:29" itemprop="dateModified" datetime="2020-03-11T19:04:29+08:00">2020-03-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty记录/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty记录/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="为什么不直接用-JDK-NIO"><a href="#为什么不直接用-JDK-NIO" class="headerlink" title="为什么不直接用 JDK NIO"></a>为什么不直接用 JDK NIO</h1><h2 id="Netty-做的更多"><a href="#Netty-做的更多" class="headerlink" title="Netty 做的更多"></a>Netty 做的更多</h2><ul>
+<li>支持常用应用层协议。</li>
+<li>解决传输问题：粘包、板报现象。</li>
+<li>支持流量整形。</li>
+<li>完善的断连、Idle 等异常处理。</li>
+</ul>
+<h2 id="Netty-做的更好"><a href="#Netty-做的更好" class="headerlink" title="Netty 做的更好"></a>Netty 做的更好</h2><ul>
+<li>规避 JDK NIO bug。<ul>
+<li>epoll bug：异常唤醒空转导致 CPU 100%。</li>
+<li>IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。</li>
+</ul>
+</li>
+<li>API 更友好、更强大。<ul>
+<li>ByteBuffer 读写切换、无法扩容 -&gt; ByteBuf。</li>
+<li>ThreadLocal -&gt; FastThreadLocal。</li>
+</ul>
+</li>
+<li>隔离变化、屏蔽细节。</li>
+</ul>
+<h1 id="为什么只支持-NIO"><a href="#为什么只支持-NIO" class="headerlink" title="为什么只支持 NIO"></a>为什么只支持 NIO</h1><h2 id="为什么不建议阻塞-I-O"><a href="#为什么不建议阻塞-I-O" class="headerlink" title="为什么不建议阻塞 I/O"></a>为什么不建议阻塞 I/O</h2><ul>
+<li><p>连接数少时，并发度低，BIO 性能不差于 NIO。</p>
+</li>
+<li><p>连接数高时，阻塞-&gt;耗资源、效率低。</p>
+</li>
+</ul>
+<h2 id="为什么不再支持-AIO"><a href="#为什么不再支持-AIO" class="headerlink" title="为什么不再支持 AIO"></a>为什么不再支持 AIO</h2><p>Linux 中 AIO 实现不成熟。相比较 NIO 性能提升不明显。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/netty记录/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1248,7 +1317,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1316,20 +1385,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">63</span>
+          <span class="site-state-item-count">73</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">15</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-count">18</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="蚂蚁金服 中间件 https://www.nowcoder.com/discuss/87736?type=2&amp;amp;order=1&amp;amp;pos=25&amp;amp;page=1  一面 个人介绍加项目介绍20分钟 缺点？ ACID CAP BASE理论 分布式一致性协议，二段、三段、TCC，优缺点 RPC过程 服务注册中心宕机了怎么办？ 微服务还有其他什么组件 分布式架构与微服务的关系 你有什么问">
+<meta name="keywords" content="record,interview">
+<meta property="og:type" content="article">
+<meta property="og:title" content="面经整理">
+<meta property="og:url" content="http://ziheliu.github.io/2020/others/面经整理/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="蚂蚁金服 中间件 https://www.nowcoder.com/discuss/87736?type=2&amp;amp;order=1&amp;amp;pos=25&amp;amp;page=1  一面 个人介绍加项目介绍20分钟 缺点？ ACID CAP BASE理论 分布式一致性协议，二段、三段、TCC，优缺点 RPC过程 服务注册中心宕机了怎么办？ 微服务还有其他什么组件 分布式架构与微服务的关系 你有什么问">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-03-14T09:58:04.904Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="面经整理">
+<meta name="twitter:description" content="蚂蚁金服 中间件 https://www.nowcoder.com/discuss/87736?type=2&amp;amp;order=1&amp;amp;pos=25&amp;amp;page=1  一面 个人介绍加项目介绍20分钟 缺点？ ACID CAP BASE理论 分布式一致性协议，二段、三段、TCC，优缺点 RPC过程 服务注册中心宕机了怎么办？ 微服务还有其他什么组件 分布式架构与微服务的关系 你有什么问">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/others/面经整理/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>面经整理 | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/others/面经整理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          面经整理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-10 15:45:00" itemprop="dateCreated datePublished" datetime="2020-03-10T15:45:00+08:00">2020-03-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-14 17:58:04" itemprop="dateModified" datetime="2020-03-14T17:58:04+08:00">2020-03-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/others/" itemprop="url" rel="index"><span itemprop="name">others</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/others/面经整理/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/others/面经整理/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="蚂蚁金服-中间件"><a href="#蚂蚁金服-中间件" class="headerlink" title="蚂蚁金服 中间件"></a>蚂蚁金服 中间件</h1><blockquote>
+<p><a href="https://www.nowcoder.com/discuss/87736?type=2&amp;order=1&amp;pos=25&amp;page=1">https://www.nowcoder.com/discuss/87736?type=2&amp;order=1&amp;pos=25&amp;page=1</a></p>
+</blockquote>
+<h2 id="一面"><a href="#一面" class="headerlink" title="一面"></a>一面</h2><ol>
+<li>个人介绍加项目介绍20分钟</li>
+<li>缺点？</li>
+<li>ACID CAP BASE理论</li>
+<li>分布式一致性协议，二段、三段、TCC，优缺点</li>
+<li>RPC过程</li>
+<li>服务注册中心宕机了怎么办？</li>
+<li>微服务还有其他什么组件</li>
+<li>分布式架构与微服务的关系</li>
+<li>你有什么问题要问我的。</li>
+</ol>
+<h2 id="二面"><a href="#二面" class="headerlink" title="二面"></a>二面</h2><ol>
+<li>各种排序算法、未排序常规数据查找第K大的数，时间复杂度。</li>
+<li>二叉树的深度</li>
+<li>虚拟内存分页了解不？</li>
+<li>进程和线程区别</li>
+<li>第一二三范式是什么？</li>
+<li>一个表一千个列值为true和false，写sql 查询 有300个列值为true的行。</li>
+<li>脏读和幻读是什么？</li>
+<li>什么对象会从新生代晋升到老年代</li>
+<li>一个任务分成十个任务，最后汇总计算，不能用fork/join</li>
+<li>实习+项目问题，基本是在联想研究院做的东西，还问我为什么不留那。。。</li>
+<li>开源框架源码了解不？</li>
+<li>数据建模两道、个人题开放性题</li>
+<li>对安全方面了解多少？</li>
+<li>安全协议有哪些 、https是啥？</li>
+</ol>
+<h1 id="蚂蚁金服中间件"><a href="#蚂蚁金服中间件" class="headerlink" title="蚂蚁金服中间件"></a>蚂蚁金服中间件</h1><blockquote>
+<p><a href="https://www.nowcoder.com/discuss/85619?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2">https://www.nowcoder.com/discuss/85619?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2</a></p>
+</blockquote>
+<h2 id="一面-1"><a href="#一面-1" class="headerlink" title="一面"></a>一面</h2><ol>
+<li>项目balabala，项目问的很细很细</li>
+<li>redis的持久化方式，redis3.0原生集群和redis读写分离+哨兵机制区别</li>
+<li>工厂模式和抽象工厂模式区别</li>
+<li>hashmap底层</li>
+<li>分布式架构简单介绍</li>
+<li>分布式架构会带来哪些问题</li>
+<li>快排，归并排序原理</li>
+<li>jvm垃圾回收算法和原理</li>
+<li>对象进入老年代的几种方式</li>
+<li>代表个人最高水平的一个技术点（好像是这个意思，应该是针对某个项目而言吧）</li>
+<li>redis持久化方式</li>
+</ol>
+<h2 id="二面-1"><a href="#二面-1" class="headerlink" title="二面"></a>二面</h2><ol>
+<li>项目balabala（20分钟） </li>
+<li>redis rdb和aof（redis必问环节） </li>
+<li>redis事务 </li>
+<li>hashmap底层 </li>
+<li>threadpoolexecutor关键参数解释 </li>
+<li>blockqueue实现消费者和生产者通过put和take方法，介绍put和take底层实现 </li>
+<li>场景设计：多个线程结束后再运行主线程 </li>
+<li>原子包的实现 </li>
+<li>fail-fast原理 </li>
+<li>lock和synchronized，涉及可重入锁，锁的优化（偏向锁，轻量级锁，自旋锁的实现细节） </li>
+<li>设计一个缓存系统（基于LRU的过期策略）（15分钟）</li>
+</ol>
+<h2 id="三面"><a href="#三面" class="headerlink" title="三面"></a>三面</h2><ol>
+<li>幻读以及MVCC </li>
+<li>1000个列，列的值非0即1，求每一行值加起来大于300的数据行，全部select出来 </li>
+<li>进程中断 </li>
+<li>进程饥饿 </li>
+<li>动态规划原理以及和分治法区别 </li>
+<li>二叉树深度求解 </li>
+<li>spring MVC，spring AOP源码 </li>
+<li>spring循环引用 </li>
+<li>spring事务传播机制 </li>
+<li>可重入锁 </li>
+<li>double check介绍  </li>
+<li>java nio，bio，aio，操作系统底层nio实现原理  </li>
+<li>一个任务分成多个任务，最后汇总计算，不能用fork/join  </li>
+<li>感兴趣的方向</li>
+</ol>
+<h1 id="蚂蚁金服-中间件-1"><a href="#蚂蚁金服-中间件-1" class="headerlink" title="蚂蚁金服 中间件"></a>蚂蚁金服 中间件</h1><blockquote>
+<p><a href="https://www.nowcoder.com/discuss/91738?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2">https://www.nowcoder.com/discuss/91738?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2</a></p>
+</blockquote>
+<h2 id="一面-一"><a href="#一面-一" class="headerlink" title="一面 一"></a>一面 一</h2><ol>
+<li><p>Java中的多线程了解么，线程池的增长策略和拒绝策略了解么，说一下。</p>
+</li>
+<li><p>讲一下线程增加的过程和拒绝策略的执行。</p>
+</li>
+<li><p>讲了一下fixthreadpool的增长策略，然后几种拒绝策略。  </p>
+</li>
+<li><p>高并发情况下，如何使用线程池，用哪个，问了一下线程结束要多久，是否在下一个线程结束前完成。  </p>
+</li>
+<li><p>表示并发量比较大，所以我说可以考虑并发量是否大于队列长度加上最大线程数量和，如果不超过的话可以是用fixthreadpool。  </p>
+</li>
+<li><p>并发juc了解么，有哪些线程安全的list。说了个copyonwritelist，想了半天说不出第二个了。尴尬，那就vector把，不是juc里的。  </p>
+</li>
+<li><p>还问了concurrenthashmap1.8的改动。  </p>
+</li>
+<li><p>HTTP协议了解么，和tcp有什么区别。  </p>
+</li>
+<li><p>http1.0和2.0的区别。  </p>
+<p>答了TCP连接复用，加入ssl，以及压缩请求头。  </p>
+<p>其中哪个更新比较有意义，为什么。我说的是压缩请求头，这样可以优化HTTP服务的性能。  </p>
+</li>
+<li><p>Java的网络编程，比如NIO和Socket了解么。  </p>
+</li>
+<li><p>说下BIO和NIO的区别把。<br>我说了BIO的阻塞用法，以及NIO的IO多路复用用法，说了selector，seletedkey，channel等类的使用流程，以及单线程处理连接，多线程处理IO请求的好处。  </p>
+</li>
+<li><p>说一下NIO的类库或框架<br>讲了netty，写过服务端和客户端的demo，没有在生产中实践。  </p>
+</li>
+<li><p>channelhandler负责请求就绪时的io响应。   </p>
+</li>
+<li><p>bytebuf支持零拷贝，通过逻辑buff合并实际buff。   </p>
+</li>
+<li><p>eventloop线程组负责实现线程池，任务队列里就是io请求任务，类似线程池调度执行。   </p>
+</li>
+<li><p>acceptor接收线程负责接收tcp请求，并且注册任务到队列里。   </p>
+</li>
+<li><p>倒排索引了解么，我说不了解。  </p>
+</li>
+<li><p>然后面试官说讲一下数据库把，说下sql优化的方式  </p>
+</li>
+<li><p>我说的是MySQL，先讲了一下sql使用索引的优化，然后基于索引说了几条优化方案。  </p>
+</li>
+<li><p>索引什么时候会失效变成全表扫描<br>说了联合索引的前缀匹配，跳跃索引，聚合函数，判空和&lt;&gt;这些情况。  </p>
+</li>
+<li><p>分布式的paxos和raft算法了解么  </p>
+</li>
+<li><p>中间件知道哪些，阿里的dubbo，rocketmq的事务消息，问了TCC回答说这个之前没看明白。  </p>
+</li>
+<li><p>平时看什么书，怎么学习的。还跟我说他们部门3个华科的，校友多多。  </p>
+</li>
+<li><p>Spring和Springmvc讲一下。讲了Spring的ioc和aop，Springmvc的基本架构，请求流程。</p>
+</li>
+</ol>
+<h2 id="一面-二"><a href="#一面-二" class="headerlink" title="一面 二"></a>一面 二</h2><ol>
+<li>自我介绍  </li>
+<li>讲一下ArrayList和linkedlist的区别，ArrayList的扩容方式，扩容时机。<br>添加元素时，检查是否满了，满了扩容。变为 1.5 倍。<br>初始默认是 10。</li>
+<li>hashmap的实现。  </li>
+<li>NIO了解么，讲一下和BIO的区别，AIO呢。阻塞，非阻塞，异步。具体。  </li>
+<li>你说了解分布式服务，那么你怎么理解分布式服务。  </li>
+<li>你说了解Tomcat的基本原理，了解的是哪一部分，基本架构，connector和container  </li>
+<li>你在项目中怎么用到并发的  </li>
+<li>docker和虚拟机讲一下。  </li>
+<li>有啥想问的</li>
+</ol>
+<h2 id="二面-2"><a href="#二面-2" class="headerlink" title="二面"></a>二面</h2><ol>
+<li>项目  </li>
+<li>说一下Spring源码把，它的架构，流程。  </li>
+<li>Spring的bean如果要在实例化过程中修改其某一个成员变量，应该怎么做呢。不通过构造方法，并且AOP也并不能实现。  </li>
+<li>Tomcat的类加载器了解么，回答不了解只了解Java的类加载器。  </li>
+<li>自定义类加载器怎么实现，其中哪个方法走双亲委派模型，哪个不走，不走的话怎么加载类（实现findclass方法，一般用defineclass加载外部类），如何才能不走双亲委派。（重写loadclass方法）  </li>
+<li>布隆过滤器了解么，讲了ip地址过滤的布隆过滤器实现。  </li>
+<li>听说你项目用过docker，讲一下docker的实现原理，说了虚拟机一般要对内核进行虚拟化，docker则用cgroup和namespace分别进行硬件和命名空间的隔离。  </li>
+<li>项目中遇到的最大挑战。  </li>
+<li>项目中学到最多的东西  </li>
+<li>有什么想问</li>
+</ol>
+<h1 id="蚂蚁金服-中间件-C"><a href="#蚂蚁金服-中间件-C" class="headerlink" title="蚂蚁金服 中间件 C++"></a>蚂蚁金服 中间件 C++</h1><blockquote>
+<p><a href="https://www.nowcoder.com/discuss/87810?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2">https://www.nowcoder.com/discuss/87810?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2</a></p>
+</blockquote>
+<h2 id="一面-2"><a href="#一面-2" class="headerlink" title="一面"></a>一面</h2><ol>
+<li>项目 </li>
+<li>C++模板     </li>
+<li>TCP和UDP</li>
+<li>分布式算法 </li>
+<li>C++中的流处理 </li>
+<li>在腾讯的实习日常     </li>
+<li>TCP中的握手与ddos等相关问题     </li>
+<li>金字塔存储模型与各层作用于各层之间关系     </li>
+<li>AVL的特性     </li>
+<li>八大排序内容     </li>
+<li>有啥想问的</li>
+</ol>
+<h2 id="二面-3"><a href="#二面-3" class="headerlink" title="二面"></a>二面</h2><p>二面面试官问的问题不多，但是一个问题抛出来以后会根据我的回答继续追问我回答的细节，其实就是相当于我说会啥问啥然后是往深了问</p>
+<ol>
+<li>自我介绍     </li>
+<li>数据库的事务实现原理、操作过程、如何做到事物之间的独立性等问题     </li>
+<li>数据库的脏读，幻读，不可重复读出现的原因原理，解决办法     </li>
+<li>数据库的隔离级别、MVCC     </li>
+<li>乐观锁、悲观锁、互斥锁、读写锁的原理实现与区别 </li>
+<li>线程的生命周期     </li>
+<li>一致性hash算法原理与应用 </li>
+<li>CAP原则     </li>
+<li>CAS操作     </li>
+<li>分布式raft算法     </li>
+<li>zookeeper原理     </li>
+<li>堆的构造(n)、插入(NlogN)、删除(logN)等过程原理和时间复杂度     </li>
+<li>在一个平面直角坐标系中，有一只蚂蚁从原点开始走，只可以向右边（与X正半轴平行）和上边（与Y轴正半轴平行）爬行，要到达（x,y）坐标，请问有几种走法，推导出一个公式。（开始 时候还没明白面试官的意图，然后我就一直在想，后面我想到是斐波那契数列，然后面试官说我的方向是对的，后面经过无数次提示终于推导出了公式）     </li>
+<li>有啥想问的没（我问对我面试的评价与建议还有面试官的工作日常）</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/record/" rel="tag"># record</a>
+              <a href="/tags/interview/" rel="tag"># interview</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/netty/EventLoop介绍/" rel="prev" title="EventLoop 主流程">
+      <i class="fa fa-chevron-left"></i> EventLoop 主流程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/others/面试常见问题记录/" rel="next" title="面试常见问题记录">
+      面试常见问题记录 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#蚂蚁金服-中间件"><span class="nav-number">1.</span> <span class="nav-text">蚂蚁金服 中间件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一面"><span class="nav-number">1.1.</span> <span class="nav-text">一面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二面"><span class="nav-number">1.2.</span> <span class="nav-text">二面</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#蚂蚁金服中间件"><span class="nav-number">2.</span> <span class="nav-text">蚂蚁金服中间件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一面-1"><span class="nav-number">2.1.</span> <span class="nav-text">一面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二面-1"><span class="nav-number">2.2.</span> <span class="nav-text">二面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三面"><span class="nav-number">2.3.</span> <span class="nav-text">三面</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#蚂蚁金服-中间件-1"><span class="nav-number">3.</span> <span class="nav-text">蚂蚁金服 中间件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一面-一"><span class="nav-number">3.1.</span> <span class="nav-text">一面 一</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一面-二"><span class="nav-number">3.2.</span> <span class="nav-text">一面 二</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二面-2"><span class="nav-number">3.3.</span> <span class="nav-text">二面</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#蚂蚁金服-中间件-C"><span class="nav-number">4.</span> <span class="nav-text">蚂蚁金服 中间件 C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一面-2"><span class="nav-number">4.1.</span> <span class="nav-text">一面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二面-3"><span class="nav-number">4.2.</span> <span class="nav-text">二面</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">73</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">18</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/others/面经整理/";
+    this.page.identifier = "2020/others/面经整理/";
+    this.page.title = "面经整理";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
