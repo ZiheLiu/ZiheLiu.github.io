@@ -181,7 +181,7 @@ ch.pipeline().addLast("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUni
 
   ### ReaderIdle
 
-1. 在 `channelActive()` 中注册延时（`readerIdleTimeNanos` 纳秒） 任务。
+1. 在 `channelActive()` 中注册延时（`readerIdleTimeNanos` 纳秒） 任务，是在 `ctx.executor()` 即当前 EventLoop 中注册的。。
 2. 在 `channelRead()` 中把 `reading` 设为 true。
 3. 在 `channelReadComplete()` 中把 `reading` 设为 false，记录读完的时间。
 4. 延时时间到了，执行检测任务，如果没有正在发生读事件（`reading` 为 false）、且距离上次读完成超过了 `readerIdleTimeNanos ` 纳秒，就在pipeline上传递一个 `READER_IDLE` 事件。
@@ -189,7 +189,7 @@ ch.pipeline().addLast("idleCheckHandler", new IdleStateHandler(0, 20, 0, TimeUni
 
 ### WriterIdle
 
-1. 在 `channelActive()` 中注册延时（`writerIdleTimeNanos` 纳秒） 任务。
+1. 在 `channelActive()` 中注册延时（`writerIdleTimeNanos` 纳秒） 任务，也是在当前 EventLoop 中注册的。。
 2. 延时时间到了，执行检测任务。
    - 如果距离上次写完成超过了 `writerIdleTimeNanos` 纳秒，就在pipeline上传递一个 `WRITER_IDLE` 事件。
    - 如果开启了 `observeOutput`，则只要有写意图（还没有写完），就不会认为是 Idle 状态。
