@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64 使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction set architecutre 指令集架构。 Microarchite">
+<meta name="keywords" content="操作系统,CMU213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics">
+<meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec5/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64 使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction set architecutre 指令集架构。 Microarchite">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/x86-64-registers.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/movq.png">
+<meta property="og:updated_time" content="2020-04-10T07:07:53.626Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics">
+<meta name="twitter:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64 使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction set architecutre 指令集架构。 Microarchite">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/x86-64-registers.png">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-09 16:16:00" itemprop="dateCreated datePublished" datetime="2020-04-09T16:16:00+08:00">2020-04-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-10 15:07:53" itemprop="dateModified" datetime="2020-04-10T15:07:53+08:00">2020-04-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec5/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec5/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.bilibili.com/video/BV1iW411d7hd?t=2580&amp;p=5">【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频</a></li>
+</ul>
+<h1 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h1><p>Intel </p>
+<ul>
+<li>常用处理器：x86 x86-64</li>
+<li>使用 MISC（复杂指令集）。</li>
+</ul>
+<p>ARM</p>
+<ul>
+<li>Acorn RISC Machine</li>
+<li>使用 RISC （简单指令集）。</li>
+</ul>
+<h1 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h1><p>Architecutre: instruction set architecutre 指令集架构。</p>
+<p>Microarchitecture: architecutre的实现。</p>
+<p>Machine Code: 处理器去执行的二进制程序。</p>
+<p>Assembly Code：Machine Code的text表示。</p>
+<h1 id="汇编代码的相关结构"><a href="#汇编代码的相关结构" class="headerlink" title="汇编代码的相关结构"></a>汇编代码的相关结构</h1><h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><ul>
+<li>下一条要执行的指令地址。</li>
+</ul>
+<h2 id="寄存器"><a href="#寄存器" class="headerlink" title="寄存器"></a>寄存器</h2><p>汇编中使用名字来指定它们。由 <code>%名称</code> 给出。</p>
+<p>x86-64 共有 16 个寄存器。如下图：</p>
+<p><img src="/images/x86-64-registers.png" alt="x86-64-registers"></p>
+<ul>
+<li>使用 <code>%r</code> 得到寄存器的 64 bits，使用 <code>%e</code> 得到寄存器的低 32 bits。</li>
+<li>前 8 个寄存器的名字从 IA32 继承来，命名方式是为了标识每个寄存器的用途。但在 x86-64 中一般不区分它们的用途。<ul>
+<li><code>%esp</code> stack pointer，栈指针。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Condition-codes"><a href="#Condition-codes" class="headerlink" title="Condition codes"></a>Condition codes</h2><ul>
+<li>状态寄存器。</li>
+<li>存储最近指令的运行结果。</li>
+<li>用于实现条件分支。</li>
+</ul>
+<h1 id="将-C-代码转变为可执行程序"><a href="#将-C-代码转变为可执行程序" class="headerlink" title="将 C 代码转变为可执行程序"></a>将 C 代码转变为可执行程序</h1><ol>
+<li>C 代码<strong>编译</strong>到 Assembly Code。</li>
+<li>Assembly Code <strong>Assembler</strong> 到字节形式 Machine Code。</li>
+<li>把项目的 Machine Code 与静态库的 Machine Code <strong>Linker</strong> 得到最终的可执行程序。</li>
+</ol>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="C-代码"><a href="#C-代码" class="headerlink" title="C 代码"></a>C 代码</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">plus</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x + y;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sumstore</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span> *dest)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> t = plus(x, y);</span><br><span class="line">  *dest = t;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> x = atoi(argv[<span class="number">1</span>]);</span><br><span class="line">  <span class="keyword">long</span> y = atoi(argv[<span class="number">2</span>]);</span><br><span class="line">  <span class="keyword">long</span> z;</span><br><span class="line">  sumstore(x, y, &amp;z);</span><br><span class="line">  <span class="built_in">printf</span>(<span class="string">"%ld + %ld --&gt; %ld\n"</span>, x, y, z);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Assembly-Code"><a href="#Assembly-Code" class="headerlink" title="Assembly Code"></a>Assembly Code</h3><p>使用如下命令把 C 代码编译为 Assembly Code：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// -O：优化级别。</span><br><span class="line">// -Og：优化级别为调试，便于阅读。</span><br><span class="line">// -S：Only run preprocess and compilation steps。</span><br><span class="line"><span class="meta">$</span> gcc -Og -S main.c</span><br></pre></td></tr></table></figure>
+<p>结果 Assembly Code 如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">_sumstore:</span><br><span class="line">LFB5:</span><br><span class="line">	pushq	%rbx</span><br><span class="line">LCFI0:</span><br><span class="line">	movq	%rdx, %rbx</span><br><span class="line">	call	_plus</span><br><span class="line">	movq	%rax, (%rbx) # *dest = t</span><br><span class="line">	popq	%rbx</span><br><span class="line">LCFI1:</span><br><span class="line">	ret</span><br></pre></td></tr></table></figure>
+<h3 id="Machine-Code"><a href="#Machine-Code" class="headerlink" title="Machine Code"></a>Machine Code</h3><p>使用如下命令把 C 代码（经过编译、汇编两步骤）转化为 Machine Code：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> gcc -Og main.c -o main</span><br></pre></td></tr></table></figure>
+<h4 id="反汇编"><a href="#反汇编" class="headerlink" title="反汇编"></a>反汇编</h4><p>使用 <code>objdump</code> 可以对 Machine Code 反汇编为 Assembly Code：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> objdump -d main</span><br><span class="line">_sumstore:</span><br><span class="line">100000ea5:      53      pushq   %rbx</span><br><span class="line">100000ea6:      48 89 d3        movq    %rdx, %rbx</span><br><span class="line">100000ea9:      e8 f2 ff ff ff  callq   -14 &lt;_plus&gt;</span><br><span class="line">100000eae:      48 89 03        movq    %rax, (%rbx)</span><br><span class="line">100000eb1:      5b      popq    %rbx</span><br><span class="line">100000eb2:      c3      retq</span><br></pre></td></tr></table></figure>
+<p>使用 <code>gdb</code> 也可以进行反汇编：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> gdb main</span><br><span class="line"><span class="meta">(gdb)$</span> disassemble sumstore</span><br><span class="line">Dump of assembler code for function sumstore:</span><br><span class="line">   0x0000000100000ea5 &lt;+0&gt;:     push   %rbx</span><br><span class="line">   0x0000000100000ea6 &lt;+1&gt;:     mov    %rdx,%rbx</span><br><span class="line">   0x0000000100000ea9 &lt;+4&gt;:     callq  0x100000ea0 &lt;plus&gt;</span><br><span class="line">   0x0000000100000eae &lt;+9&gt;:     mov    %rax,(%rbx)</span><br><span class="line">   0x0000000100000eb1 &lt;+12&gt;:    pop    %rbx</span><br><span class="line">   0x0000000100000eb2 &lt;+13&gt;:    retq   </span><br><span class="line">End of assembler dump.</span><br></pre></td></tr></table></figure>
+<h1 id="汇编的数据类型"><a href="#汇编的数据类型" class="headerlink" title="汇编的数据类型"></a>汇编的数据类型</h1><p>Integer</p>
+<ul>
+<li>1、2、4、8 bytes。</li>
+<li>不区分无符号和有符号数字。</li>
+<li>地址也是用它表示的。</li>
+</ul>
+<p>Float</p>
+<ul>
+<li>4、8、10 bytes。</li>
+</ul>
+<p>Code</p>
+<ul>
+<li>二进制序列表示一系列的指令。</li>
+</ul>
+<h1 id="汇编的操作"><a href="#汇编的操作" class="headerlink" title="汇编的操作"></a>汇编的操作</h1><h2 id="代数运算"><a href="#代数运算" class="headerlink" title="代数运算"></a>代数运算</h2><p>在寄存器/内存上进行代数运算。</p>
+<h3 id="leaq"><a href="#leaq" class="headerlink" title="leaq"></a>leaq</h3><p>load effective address。</p>
+<p>将一个内存地址直接存储在目的寄存器中。</p>
+<h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">m12</span><span class="params">(<span class="keyword">long</span> x)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x*<span class="number">12</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应的 Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 与move类似，但是只是把计算后的地址存进寄存器，而不是地址对应的内存中的内容。</span><br><span class="line">leaq (%rdi,%rdi,2), %rax # t &lt;- x+x*2。</span><br><span class="line">salq $2, %rax            # return t&lt;&lt;2</span><br></pre></td></tr></table></figure>
+<h3 id="二元指令"><a href="#二元指令" class="headerlink" title="二元指令"></a>二元指令</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Computation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>addq Src, Dest</code></td>
+<td>Dest = Dest + Src</td>
+</tr>
+<tr>
+<td><code>subq Src, Dest</code></td>
+<td>Dest = Dest - Src</td>
+</tr>
+<tr>
+<td><code>imulq Src, Dest</code></td>
+<td>Dest = Dest * Src</td>
+</tr>
+<tr>
+<td><code>salq Src, Dest</code></td>
+<td>Dest = Dest &lt;&lt; Src</td>
+</tr>
+<tr>
+<td><code>sarq Src, Dest</code></td>
+<td>Dest = Dest &gt;&gt; Src 算数右移</td>
+</tr>
+<tr>
+<td><code>shrq Src, Dest</code></td>
+<td>Dest = Dest &gt;&gt; Src 逻辑右移</td>
+</tr>
+<tr>
+<td><code>xorq Src, Dest</code></td>
+<td>Dest = Dest ^ Src</td>
+</tr>
+<tr>
+<td><code>andq Src, Dest</code></td>
+<td>Dest = Dest &amp; Src</td>
+</tr>
+<tr>
+<td><code>orq Src, Dest</code></td>
+<td>Dest = Dest</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p> 注意，<code>Dest</code> 是第一个操作数。</p>
+<h3 id="一元指令"><a href="#一元指令" class="headerlink" title="一元指令"></a>一元指令</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Format</th>
+<th>Computation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>incq Dest</code></td>
+<td>Dest = Dest + 1</td>
+</tr>
+<tr>
+<td><code>decq Dest</code></td>
+<td>Dest = Dest - 1</td>
+</tr>
+<tr>
+<td><code>negq Dest</code></td>
+<td>Dest = -Dest</td>
+</tr>
+<tr>
+<td><code>notq Dest</code></td>
+<td>Dest = ~Dest</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">arith</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span> z)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> t1 = x+y;</span><br><span class="line">  <span class="keyword">long</span> t2 = z+t1;</span><br><span class="line">  <span class="keyword">long</span> t3 = x+<span class="number">4</span>;</span><br><span class="line">  <span class="keyword">long</span> t4 = y * <span class="number">48</span>;</span><br><span class="line">  <span class="keyword">long</span> t5 = t3 + t4;</span><br><span class="line">  <span class="keyword">long</span> rval = t2 * t5;</span><br><span class="line">  <span class="keyword">return</span> rval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应的 Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">arith:</span><br><span class="line">  leaq    (%rdi,%rsi), %rax   # t1. rax = rdi + rsi.</span><br><span class="line">  addq    %rdx, %rax          # t2. rax = rax + rdx.</span><br><span class="line">  leaq    (%rsi,%rsi,2), %rdx #     rdx = rsi + rsi * 2 = 3 * rsi.</span><br><span class="line">  salq    $4, %rdx            # t4. rdx = rdx &lt;&lt; 4 = (3 * rsi) * 16 = rsi * 48.</span><br><span class="line">  leaq    4(%rdi,%rdx), %rcx  # t5. rcx = (rdi + 4) + rdx.</span><br><span class="line">  imulq   %rcx, %rax          # rval. rax = rcx * rax.</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
+<h2 id="传递数据"><a href="#传递数据" class="headerlink" title="传递数据"></a>传递数据</h2><p>在寄存器/内存间传递数据。</p>
+<h3 id="movq"><a href="#movq" class="headerlink" title="movq"></a>movq</h3><p>用于在 寄存器与寄存器、寄存器与内存、寄存器与常数、常数与内存之间的数据传输。</p>
+<p>注意，内存与内存不能直接进行数据传输。</p>
+<p><img src="/images/movq.png" alt="movq"></p>
+<h3 id="如何使用某一位置的内存"><a href="#如何使用某一位置的内存" class="headerlink" title="如何使用某一位置的内存"></a>如何使用某一位置的内存</h3><ul>
+<li><code>(rb)</code>：<code>Mem[Reg[rb]]</code>。</li>
+<li><code>D(rb)</code>：<code>Mem[Reg[rb] + D]</code>。</li>
+<li><code>D(rb,ri,s)</code>：<code>Mem[Reg[rb] + s * Reg[ri] + D]</code>。<ul>
+<li>可以用来实现取数组元素的内存。</li>
+</ul>
+</li>
+</ul>
+<h3 id="例子-3"><a href="#例子-3" class="headerlink" title="例子"></a>例子</h3><p>交换两个数字的 C 代码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">swap</span><span class="params">(<span class="keyword">long</span> *xp, <span class="keyword">long</span> *yp)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> t0 = *xp;</span><br><span class="line">  <span class="keyword">long</span> t1 = *yp;</span><br><span class="line">  *xp = t1;</span><br><span class="line">  *yp = t0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">swap:</span><br><span class="line">   movq    (%rdi), %rax</span><br><span class="line">   movq    (%rsi), %rdx</span><br><span class="line">   movq    %rdx, (%rdi)</span><br><span class="line">   movq    %rax, (%rsi)</span><br><span class="line">   ret</span><br></pre></td></tr></table></figure>
+<p>寄存器 <code>%rdx</code>、<code>%rax</code> 用于存储临时变量 <code>t0</code>、<code>t1</code>，而没有存在内存里。</p>
+<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器。</p>
+<h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><ul>
+<li>Unconditional jumps to/from procedures</li>
+<li>Conditional branches</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+              <a href="/tags/CMU213/" rel="tag"># CMU213</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/mq/rocketmq的Namesrv/" rel="prev" title="RocketMQ 的 Namesrv">
+      <i class="fa fa-chevron-left"></i> RocketMQ 的 Namesrv
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理器"><span class="nav-number">2.</span> <span class="nav-text">处理器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#术语"><span class="nav-number">3.</span> <span class="nav-text">术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编代码的相关结构"><span class="nav-number">4.</span> <span class="nav-text">汇编代码的相关结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序计数器"><span class="nav-number">4.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寄存器"><span class="nav-number">4.2.</span> <span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Condition-codes"><span class="nav-number">4.3.</span> <span class="nav-text">Condition codes</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#将-C-代码转变为可执行程序"><span class="nav-number">5.</span> <span class="nav-text">将 C 代码转变为可执行程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">5.1.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#C-代码"><span class="nav-number">5.1.1.</span> <span class="nav-text">C 代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Assembly-Code"><span class="nav-number">5.1.2.</span> <span class="nav-text">Assembly Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Machine-Code"><span class="nav-number">5.1.3.</span> <span class="nav-text">Machine Code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#反汇编"><span class="nav-number">5.1.3.1.</span> <span class="nav-text">反汇编</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编的数据类型"><span class="nav-number">6.</span> <span class="nav-text">汇编的数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编的操作"><span class="nav-number">7.</span> <span class="nav-text">汇编的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代数运算"><span class="nav-number">7.1.</span> <span class="nav-text">代数运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#leaq"><span class="nav-number">7.1.1.</span> <span class="nav-text">leaq</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#例子-1"><span class="nav-number">7.1.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二元指令"><span class="nav-number">7.1.2.</span> <span class="nav-text">二元指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一元指令"><span class="nav-number">7.1.3.</span> <span class="nav-text">一元指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-2"><span class="nav-number">7.1.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传递数据"><span class="nav-number">7.2.</span> <span class="nav-text">传递数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#movq"><span class="nav-number">7.2.1.</span> <span class="nav-text">movq</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用某一位置的内存"><span class="nav-number">7.2.2.</span> <span class="nav-text">如何使用某一位置的内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-3"><span class="nav-number">7.2.3.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程控制"><span class="nav-number">7.3.</span> <span class="nav-text">流程控制</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/操作系统/cmu213/lec5/";
+    this.page.identifier = "2020/操作系统/cmu213/lec5/";
+    this.page.title = "CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="介绍 RocketMQ 不同节点之间的交流都是使用 RemotingService 相关类实现的。 NettyRemotingServer 为使用 Netty 实现的 TCP 服务端。 NettyRemotingClient 为使用 Netty 实现的 TCP 客户端。 NettyRemotingAbstract信号量控制并发写入使用信号量，在 ASYNC 和 ONEWAY 写入时，控制调用 ch">
+<meta name="keywords" content="mq,rocketmq">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RocketMQ 的 RemotingService">
+<meta property="og:url" content="http://ziheliu.github.io/2020/mq/rocketmq的RemotingService/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="介绍 RocketMQ 不同节点之间的交流都是使用 RemotingService 相关类实现的。 NettyRemotingServer 为使用 Netty 实现的 TCP 服务端。 NettyRemotingClient 为使用 Netty 实现的 TCP 客户端。 NettyRemotingAbstract信号量控制并发写入使用信号量，在 ASYNC 和 ONEWAY 写入时，控制调用 ch">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/RemotingService类图.svg">
+<meta property="og:updated_time" content="2020-03-23T09:22:33.676Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RocketMQ 的 RemotingService">
+<meta name="twitter:description" content="介绍 RocketMQ 不同节点之间的交流都是使用 RemotingService 相关类实现的。 NettyRemotingServer 为使用 Netty 实现的 TCP 服务端。 NettyRemotingClient 为使用 Netty 实现的 TCP 客户端。 NettyRemotingAbstract信号量控制并发写入使用信号量，在 ASYNC 和 ONEWAY 写入时，控制调用 ch">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/RemotingService类图.svg">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/mq/rocketmq的RemotingService/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>RocketMQ 的 RemotingService | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/mq/rocketmq的RemotingService/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RocketMQ 的 RemotingService
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-23 15:37:00 / Modified: 17:22:33" itemprop="dateCreated datePublished" datetime="2020-03-23T15:37:00+08:00">2020-03-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/mq/rocketmq的RemotingService/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/mq/rocketmq的RemotingService/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><img src="/images/RemotingService类图.svg" alt="RemotingService类图"></p>
+<p>RocketMQ 不同节点之间的交流都是使用 <code>RemotingService</code> 相关类实现的。</p>
+<p><code>NettyRemotingServer</code> 为使用 Netty 实现的 TCP 服务端。</p>
+<p><code>NettyRemotingClient</code> 为使用 Netty 实现的 TCP 客户端。</p>
+<h1 id="NettyRemotingAbstract"><a href="#NettyRemotingAbstract" class="headerlink" title="NettyRemotingAbstract"></a>NettyRemotingAbstract</h1><h2 id="信号量控制并发写入"><a href="#信号量控制并发写入" class="headerlink" title="信号量控制并发写入"></a>信号量控制并发写入</h2><p>使用信号量，在 ASYNC 和 ONEWAY 写入时，控制调用 <code>channel.writeAndFlush()</code> 的并发量。</p>
+<ul>
+<li>在写入前获取信号量。</li>
+<li>写入完成后，在 <code>writeAndFlush.addListener()</code> 的回调函数中释放信号量。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认 256</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Semaphore semaphoreOneway;</span><br><span class="line"><span class="comment">// 默认 64</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Semaphore semaphoreAsync;</span><br></pre></td></tr></table></figure>
+<h2 id="invokeOnewayImpl"><a href="#invokeOnewayImpl" class="headerlink" title="invokeOnewayImpl()"></a>invokeOnewayImpl()</h2><ol>
+<li>获取信号量。</li>
+<li>如果获取成功，进行写入。<ol>
+<li>调用 <code>channel.writeAndFlush()</code> 进行写入。</li>
+<li>在写入监听器的回调函数中释放信号量。</li>
+</ol>
+</li>
+<li>获取失败，抛出异常。</li>
+</ol>
+<h2 id="invokeSyncImpl"><a href="#invokeSyncImpl" class="headerlink" title="invokeSyncImpl()"></a>invokeSyncImpl()</h2><ol>
+<li>实例化 <code>responseFuture</code> ，并缓存 <code>request.opaque</code> —&gt; <code>responseFuture</code> 的映射到 <code>responseTable</code>。</li>
+<li>写入到 <code>channel</code>。</li>
+<li>调用 <code>responseFuture.waitResponse(timeoutMillis)</code> 阻塞等待回复。</li>
+<li>收到对方的回复则返回结果、或者超时了/写入失败了则抛出异常。</li>
+</ol>
+<h2 id="invokeAsyncImpl"><a href="#invokeAsyncImpl" class="headerlink" title="invokeAsyncImpl()"></a>invokeAsyncImpl()</h2><ol>
+<li>获取信号量。</li>
+<li>如果获取成功，进行写入。<ol>
+<li>实例化 <code>responseFuture</code> ，并缓存 <code>request.opaque</code> —&gt; <code>responseFuture</code> 的映射到 <code>responseTable</code>。</li>
+<li><code>responseFuture</code> 存储了信号量。</li>
+<li><code>responseFuture</code> 设置了 <code>invokeCallback</code>，在收到回复时会先调用这个回调函数、再释放信号量。</li>
+<li>写入到 <code>channel</code>。</li>
+</ol>
+</li>
+<li>获取失败，抛出异常。</li>
+</ol>
+<h2 id="处理读请求"><a href="#处理读请求" class="headerlink" title="处理读请求"></a>处理读请求</h2><p>读请求到来后，经过解码后，最终调用 <code>processMessageReceived(ctx, msg)</code>。</p>
+<ul>
+<li><p>到来的数据是 Request。</p>
+<ol>
+<li><p>根据 Request 的类型 <code>code</code>，从 <code>processorTable</code> 中找到处理方法和executor进行执行。</p>
+</li>
+<li><p>如果没有找到处理方法，使用默认的处理方法处理。</p>
+<ul>
+<li><p>Server 需要使用者主动提供默认的处理方法。</p>
+</li>
+<li><p>Client 没有默认的处理方法。这里会抛出异常，说没有找到对应的处理方法。</p>
+</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>到来的数据是 Response。</p>
+<ol>
+<li>从 responseTable 根据 <code>respone.opaque</code> 找到 <code>responseFuture</code>。</li>
+<li>把回复结果放入 <code>responseFuture</code>。</li>
+<li>如果有 <code>InvokeCallback</code>，则执行回调函数、释放限号量。</li>
+<li>否则，唤醒调用 <code>responseFuture.await()</code> 的线程、释放信号量。</li>
+</ol>
+</li>
+</ul>
+<h1 id="NettyRemotingServer"><a href="#NettyRemotingServer" class="headerlink" title="NettyRemotingServer"></a>NettyRemotingServer</h1><h2 id="主要功能"><a href="#主要功能" class="headerlink" title="主要功能"></a>主要功能</h2><h3 id="注册请求处理器"><a href="#注册请求处理器" class="headerlink" title="注册请求处理器"></a>注册请求处理器</h3><p>使用 <code>registerProcessor</code> 来注册请求类别 <code>requestCode</code> 对应的处理方法和执行处理方法的线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">registerProcessor</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> requestCode, <span class="keyword">final</span> NettyRequestProcessor processor,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">final</span> ExecutorService executor)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="三种写数据方法"><a href="#三种写数据方法" class="headerlink" title="三种写数据方法"></a>三种写数据方法</h3><p>都是调用 <code>NettyRemotingAbstract#invokeXXXX</code> 实现的。</p>
+<ul>
+<li><code>invokeOneway()</code></li>
+<li><code>invokeSync()</code></li>
+<li><code>invokeAsync()</code></li>
+</ul>
+<h2 id="使用的线程池"><a href="#使用的线程池" class="headerlink" title="使用的线程池"></a>使用的线程池</h2><ol>
+<li><p><code>publicExecutor</code>。默认为 4。</p>
+<p>在注册请求的处理方法时，如果没有传入线程池，分配这个线程池给这个处理方法。</p>
+</li>
+<li><p><code>eventLoopGroupBoss</code>。大小为 1。</p>
+<p>监听连接事件。</p>
+</li>
+<li><p><code>eventLoopGroupSelector</code>。默认为 3。</p>
+<p>监听读写事件。</p>
+</li>
+<li><p><code>defaultEventExecutorGroup</code>。默认为 8。</p>
+<p>读写事件到来后，进行逻辑处理的 handler 在这个线程池执行。</p>
+</li>
+<li><p><code>nettyEventExecutor</code>。单线程，队列长度 10000。</p>
+<p>在有Netty事件发生时，执行相应的 Netty 事件监听器。</p>
+</li>
+<li><p><code>Timer</code> 定时任务。</p>
+<p>每3秒扫描一次等待Response列表，删除超时的。</p>
+</li>
+</ol>
+<h1 id="NettyRemotingClient"><a href="#NettyRemotingClient" class="headerlink" title="NettyRemotingClient"></a>NettyRemotingClient</h1><p>功能和 <code>NettyRemotingServer</code> 都是类似的，只不过它是 Netty 的客户端，向 Netty 的服务端主动发起 TCP 连接。</p>
+<h2 id="主要功能-1"><a href="#主要功能-1" class="headerlink" title="主要功能"></a>主要功能</h2><h3 id="注册请求处理器-1"><a href="#注册请求处理器-1" class="headerlink" title="注册请求处理器"></a>注册请求处理器</h3><p>使用 <code>registerProcessor</code> 来注册请求类别 <code>requestCode</code> 对应的处理方法和执行处理方法的线程池。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">registerProcessor</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> requestCode, <span class="keyword">final</span> NettyRequestProcessor processor,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">final</span> ExecutorService executor)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="三种写数据方法-1"><a href="#三种写数据方法-1" class="headerlink" title="三种写数据方法"></a>三种写数据方法</h3><p>都是调用 <code>NettyRemotingAbstract#invokeXXXX</code> 实现的。</p>
+<ul>
+<li><code>invokeOneway()</code></li>
+<li><code>invokeSync()</code></li>
+<li><code>invokeAsync()</code></li>
+</ul>
+<h2 id="使用的线程池。"><a href="#使用的线程池。" class="headerlink" title="使用的线程池。"></a>使用的线程池。</h2><ol>
+<li><p><code>publicExecutor</code>。默认为 4。</p>
+<p>在注册请求的处理方法时，如果没有传入线程池，分配这个线程池给这个处理方法。</p>
+</li>
+<li><p><code>eventLoopGroupWorker</code>。大小为 1。</p>
+<p>监听读写事件。</p>
+</li>
+<li><p><code>defaultEventExecutorGroup</code>。默认为 4。</p>
+<p>读写事件到来后，进行逻辑处理。</p>
+</li>
+<li><p><code>nettyEventExecutor</code>。单线程，队列长度 10000。</p>
+<p>在有Netty事件发生时，执行相应的 Netty 事件监听器。</p>
+</li>
+<li><p><code>Timer</code> 定时任务。</p>
+<p>每3秒扫描一次等待Response列表，删除超时的。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mq/" rel="tag"># mq</a>
+              <a href="/tags/rocketmq/" rel="tag"># rocketmq</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/java/basic/java记录/" rel="prev" title="Java 记录">
+      <i class="fa fa-chevron-left"></i> Java 记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/mq/rocketmq的Namesrv/" rel="next" title="RocketMQ 的 Namesrv">
+      RocketMQ 的 Namesrv <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">1.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NettyRemotingAbstract"><span class="nav-number">2.</span> <span class="nav-text">NettyRemotingAbstract</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#信号量控制并发写入"><span class="nav-number">2.1.</span> <span class="nav-text">信号量控制并发写入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#invokeOnewayImpl"><span class="nav-number">2.2.</span> <span class="nav-text">invokeOnewayImpl()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#invokeSyncImpl"><span class="nav-number">2.3.</span> <span class="nav-text">invokeSyncImpl()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#invokeAsyncImpl"><span class="nav-number">2.4.</span> <span class="nav-text">invokeAsyncImpl()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#处理读请求"><span class="nav-number">2.5.</span> <span class="nav-text">处理读请求</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NettyRemotingServer"><span class="nav-number">3.</span> <span class="nav-text">NettyRemotingServer</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要功能"><span class="nav-number">3.1.</span> <span class="nav-text">主要功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注册请求处理器"><span class="nav-number">3.1.1.</span> <span class="nav-text">注册请求处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三种写数据方法"><span class="nav-number">3.1.2.</span> <span class="nav-text">三种写数据方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用的线程池"><span class="nav-number">3.2.</span> <span class="nav-text">使用的线程池</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NettyRemotingClient"><span class="nav-number">4.</span> <span class="nav-text">NettyRemotingClient</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要功能-1"><span class="nav-number">4.1.</span> <span class="nav-text">主要功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注册请求处理器-1"><span class="nav-number">4.1.1.</span> <span class="nav-text">注册请求处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三种写数据方法-1"><span class="nav-number">4.1.2.</span> <span class="nav-text">三种写数据方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用的线程池。"><span class="nav-number">4.2.</span> <span class="nav-text">使用的线程池。</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/mq/rocketmq的RemotingService/";
+    this.page.identifier = "2020/mq/rocketmq的RemotingService/";
+    this.page.title = "RocketMQ 的 RemotingService";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

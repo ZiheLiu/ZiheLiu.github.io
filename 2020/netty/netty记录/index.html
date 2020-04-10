@@ -30,7 +30,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ziheliu.github.io/images/netty锁的粒度.png">
 <meta property="og:image" content="http://ziheliu.github.io/images/nettyLongCounter.png">
-<meta property="og:updated_time" content="2020-03-11T11:04:29.688Z">
+<meta property="og:updated_time" content="2020-03-20T14:20:23.328Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Netty 记录">
 <meta name="twitter:description" content="为什么不直接用 JDK NIONetty 做的更多 支持常用应用层协议。 解决传输问题：粘包、板报现象。 支持流量整形。 完善的断连、Idle 等异常处理。  Netty 做的更好 规避 JDK NIO bug。 epoll bug：异常唤醒空转导致 CPU 100%。 IO_TOS 参数（IP 包的优先级和 QoS 选项）使用时抛出异常。   API 更友好、更强大。 ByteBuffer 读写">
@@ -220,7 +220,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-11 19:04:29" itemprop="dateModified" datetime="2020-03-11T19:04:29+08:00">2020-03-11</time>
+                <time title="Modified: 2020-03-20 22:20:23" itemprop="dateModified" datetime="2020-03-20T22:20:23+08:00">2020-03-20</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -361,14 +361,14 @@
 <p>快速释放损坏的、恶意的、很久不用的连接。</p>
 <h2 id="Idle-检测"><a href="#Idle-检测" class="headerlink" title="Idle 检测"></a>Idle 检测</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ch.pipeline().addLast(<span class="string">"idleCheckHandler"</span>, <span class="keyword">new</span> IdleStateHandler(<span class="number">0</span>, <span class="number">20</span>, <span class="number">0</span>, TimeUnit.SECONDS));</span><br></pre></td></tr></table></figure>
 <h3 id="ReaderIdle"><a href="#ReaderIdle" class="headerlink" title="ReaderIdle"></a>ReaderIdle</h3><ol>
-<li>在 <code>channelActive()</code> 中注册延时（<code>readerIdleTimeNanos</code> 纳秒） 任务。</li>
+<li>在 <code>channelActive()</code> 中注册延时（<code>readerIdleTimeNanos</code> 纳秒） 任务，是在 <code>ctx.executor()</code> 即当前 EventLoop 中注册的。。</li>
 <li>在 <code>channelRead()</code> 中把 <code>reading</code> 设为 true。</li>
 <li>在 <code>channelReadComplete()</code> 中把 <code>reading</code> 设为 false，记录读完的时间。</li>
 <li>延时时间到了，执行检测任务，如果没有正在发生读事件（<code>reading</code> 为 false）、且距离上次读完成超过了 <code>readerIdleTimeNanos</code> 纳秒，就在pipeline上传递一个 <code>READER_IDLE</code> 事件。</li>
 <li>重写注册延时任务。</li>
 </ol>
 <h3 id="WriterIdle"><a href="#WriterIdle" class="headerlink" title="WriterIdle"></a>WriterIdle</h3><ol>
-<li>在 <code>channelActive()</code> 中注册延时（<code>writerIdleTimeNanos</code> 纳秒） 任务。</li>
+<li>在 <code>channelActive()</code> 中注册延时（<code>writerIdleTimeNanos</code> 纳秒） 任务，也是在当前 EventLoop 中注册的。。</li>
 <li>延时时间到了，执行检测任务。<ul>
 <li>如果距离上次写完成超过了 <code>writerIdleTimeNanos</code> 纳秒，就在pipeline上传递一个 <code>WRITER_IDLE</code> 事件。</li>
 <li>如果开启了 <code>observeOutput</code>，则只要有写意图（还没有写完），就不会认为是 Idle 状态。</li>
@@ -555,20 +555,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>

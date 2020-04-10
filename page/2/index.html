@@ -182,6 +182,558 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/系统设计/高并发限流/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/系统设计/高并发限流/" class="post-title-link" itemprop="url">高并发限流方案</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-16 13:42:00 / Modified: 15:04:44" itemprop="dateCreated datePublished" datetime="2020-03-16T13:42:00+08:00">2020-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/系统设计/高并发限流/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/系统设计/高并发限流/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="http://www.iocoder.cn/Eureka/rate-limiter/">Eureka 源码解析 —— 基于令牌桶算法的 RateLimiter</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Leaky_bucket#As_a_meter">维基百科 Leaky bucket</a></li>
+<li><a href="https://juejin.im/entry/5bc937c36fb9a05cd53b337a">高并发场景下的限流策略</a></li>
+<li><a href="https://github.com/TFdream/blog/wiki/高并发系统设计---限流">高并发系统设计 限流</a></li>
+<li><a href="https://www.cnblogs.com/starluke/p/11845207.html">Redis令牌桶限流</a></li>
+<li><a href="https://blog.csdn.net/bigtree_3721/article/details/79633662">推荐 redis的高级事务CAS(乐观锁)</a></li>
+</ul>
+<h1 id="限流算法"><a href="#限流算法" class="headerlink" title="限流算法"></a>限流算法</h1><h2 id="计数器"><a href="#计数器" class="headerlink" title="计数器"></a>计数器</h2><h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>每段时间 <code>duration</code> 统计处理请求的次数，超过阈值则拒绝。</p>
+<ol>
+<li>判断当前时间距离上次开始计数的时间 <code>lastTime</code> 是否超过了 <code>duration</code>，<ul>
+<li>如果超过了，把计数器 <code>count</code> 清零，把 <code>lastTime</code> 设为当前时间。</li>
+</ul>
+</li>
+<li><code>count</code> 加 1。</li>
+<li>判断 <code>count</code> 是否大于了阈值。</li>
+</ol>
+<h3 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h3><ol>
+<li>无法匀速限流。例如限流每秒 100 个请求，可能前 0.1 秒来了 100 个请求，而后面 0.9 秒都没有请求。</li>
+<li>临界问题。例如限流每秒 100 个请求，可能后0.1秒来了 100 个请求，第二个 1 秒的前 0.1 秒来了 100 个请求，这样 0.2 秒 处理了 200 个请求。</li>
+</ol>
+<h2 id="漏桶"><a href="#漏桶" class="headerlink" title="漏桶"></a>漏桶</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/系统设计/高并发限流/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/StringBuilder与StringBuffer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/StringBuilder与StringBuffer/" class="post-title-link" itemprop="url">StringBuilder 与 StringBuffer</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-15 19:21:00 / Modified: 19:37:10" itemprop="dateCreated datePublished" datetime="2020-03-15T19:21:00+08:00">2020-03-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/StringBuilder与StringBuffer/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/StringBuilder与StringBuffer/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p><code>StringBuffer</code> 与 <code>StringBuffer</code> 都是 <code>AbstractStringBuilder</code> 的子类。</p>
+<p>核心的功能都是在 <code>AbstractStringBuilder</code> 中实现的。</p>
+<ul>
+<li><p><code>StringBuilder</code> 直接使用父类的方法，线程不安全。</p>
+</li>
+<li><p><code>StringBuffer</code> 中每个操作加了 <code>synchronized</code> 锁。</p>
+</li>
+</ul>
+<p>由于使用时，极少有需要保证字符串拼接线程安全的场景，所以在 JDK 1.5 中加入了 <code>StringBuilder</code>。</p>
+<pre class="mermaid">classDiagram
+AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stringbuilder="" class="" {="" <<abstract="">>
+    +append(String) AbstractStringBuilder;
+    +toString() String;
+}</|--></pre>
+
+<h1 id="append"><a href="#append" class="headerlink" title="append()"></a>append()</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> AbstractStringBuilder <span class="title">append</span><span class="params">(String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (str == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> appendNull();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> len = str.length();</span><br><span class="line">  	<span class="comment">// 确保容量放得下加入的 str。</span></span><br><span class="line">    ensureCapacityInternal(count + len);</span><br><span class="line">    putStringAt(count, str);</span><br><span class="line">    count += len;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureCapacityInternal</span><span class="params">(<span class="keyword">int</span> minimumCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// overflow-conscious code</span></span><br><span class="line">    <span class="keyword">int</span> oldCapacity = value.length &gt;&gt; coder;</span><br><span class="line">  	<span class="comment">// 如果字节数组长度不能放得下新加入的 str，扩容到可以放得下的容量。</span></span><br><span class="line">    <span class="keyword">if</span> (minimumCapacity - oldCapacity &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        value = Arrays.copyOf(value,</span><br><span class="line">                newCapacity(minimumCapacity) &lt;&lt; coder);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putStringAt</span><span class="params">(<span class="keyword">int</span> index, String str)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (getCoder() != str.coder()) &#123;</span><br><span class="line">        inflate();</span><br><span class="line">    &#125;</span><br><span class="line">    str.getBytes(value, index, coder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用字节数组缓存字符串。默认容量是 16。</li>
+<li>扩容，知道字节数组可以存的下新加入的 <code>str</code>。</li>
+<li>把新加入的 <code>str</code> 拷贝到字节数组的对应的位置。</li>
+</ol>
+<h1 id="toString-NaN"><a href="#toString-NaN" class="headerlink" title="toString()"></a>toString()</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/StringBuilder与StringBuffer/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/Proxy与CGLib/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/Proxy与CGLib/" class="post-title-link" itemprop="url">Proxy 与 CGLib</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-13 20:10:00 / Modified: 20:49:52" itemprop="dateCreated datePublished" datetime="2020-03-13T20:10:00+08:00">2020-03-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/Proxy与CGLib/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/Proxy与CGLib/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.cnkirito.moe/rpc-dynamic-proxy/">深入理解 RPC 之动态代理篇</a></li>
+<li><a href="https://www.cnblogs.com/CarpenterLee/p/8241042.html">Java Proxy和CGLIB动态代理原理</a></li>
+</ul>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p><code>java.lang.reflect.Proxy</code> 与 <code>CGLib</code> 都是</p>
+<ol>
+<li>通过运行时动态生成字节码（<code>bytes</code> 数组形式）。</li>
+<li>用 <code>ClassLoader</code> 加载生成的字节码进而得到代理类。</li>
+<li>通过反射创建代理对象。</li>
+</ol>
+<h1 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h1><p>为了方便，这里写下需要代理的接口和实现类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(String str1, String str2)</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloServiceImpl</span> <span class="keyword">implements</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">sayHello</span><span class="params">(String str1, String str2)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">"HelloImpl: "</span> + str1 + str2);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="JDK-Proxy"><a href="#JDK-Proxy" class="headerlink" title="JDK Proxy"></a>JDK Proxy</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JdkProxy</span> <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line">  <span class="keyword">final</span> HelloService delegate;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">JdkProxy</span><span class="params">(HelloService delegate)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.delegate = delegate;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="string">"sayHello"</span>.equals(method.getName())) &#123;</span><br><span class="line">      System.out.println(<span class="string">"JdkProxy"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> method.invoke(delegate, args);</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> HelloService <span class="title">createProxy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span>  (HelloService) Proxy.newProxyInstance(</span><br><span class="line">      JdkProxy.class.getClassLoader(), <span class="comment">// 1. 类加载器</span></span><br><span class="line">      <span class="keyword">new</span> Class&lt;?&gt;[] &#123;HelloService.class&#125;, <span class="comment">// 2. 代理需要实现的**接口**，可以有多个</span></span><br><span class="line">      <span class="keyword">new</span> JdkProxy(<span class="keyword">new</span> HelloServiceImpl()));<span class="comment">// 3. 方法调用的实际处理者</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">HelloService cgLibService = CgLibProxy.createProxy();</span><br><span class="line">cgLibService.sayHello(<span class="string">"a"</span>, <span class="string">"b"</span>);</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/Proxy与CGLib/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/Java中用到的设计模式/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/java/basic/Java中用到的设计模式/" class="post-title-link" itemprop="url">Java 中用到的设计模式</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-13 15:33:00 / Modified: 22:46:43" itemprop="dateCreated datePublished" datetime="2020-03-13T15:33:00+08:00">2020-03-13</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/java/basic/Java中用到的设计模式/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/Java中用到的设计模式/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://design-patterns.readthedocs.io/zh_CN/latest/index.html">图说设计模式</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/64062500">在Java的JDK中，我们能学到哪些设计模式？</a></li>
+<li><a href="https://juejin.im/post/5bd275dc51882529290fe2c5">设计模式 | 中介者模式及典型应用</a></li>
+<li><a href="https://www.unclewang.info/learn/java/771/">细看JDBC——分工和桥接模式</a></li>
+<li><a href="https://segmentfault.com/a/1190000011931181">一起学设计模式 - 桥接模式</a></li>
+<li><a href="https://www.jianshu.com/p/6f227102858c">设计模式之外观模式（八）</a></li>
+<li><a href="https://segmentfault.com/a/1190000009888357">String：字符串常量池</a></li>
+<li><a href="https://blog.csdn.net/briblue/article/details/73928350">轻松学，Java 中的代理模式及动态代理</a></li>
+<li><a href="http://www.jasongj.com/design_pattern/proxy_decorator/">Java设计模式（六） 代理模式 vs. 装饰模式</a></li>
+</ul>
+<h1 id="结构性模式"><a href="#结构性模式" class="headerlink" title="结构性模式"></a>结构性模式</h1><h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><p>将一个接口适配到另外一个接口上。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">java.io.InputStreamReader(InputStream);</span><br><span class="line">java.io.OutputStreamReader(OutputStream);</span><br></pre></td></tr></table></figure>
+<h2 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h2><p>将抽象部分与它的实现部分分离，使它们都可以独立地变化。</p>
+<p>某个类存在两个独立变化的维度，通过该模式可以将这两个维度分离出来，使<strong>两者可以独立扩展</strong>，让系统更加符合“单一职责原则”。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">JDBC 提供两套接口，</span><br><span class="line"></span><br><span class="line">- 面向数据库厂商的 Driver 接口。</span><br><span class="line">- 面向 JDBC 使用者的 Connection 接口。</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/java/basic/Java中用到的设计模式/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty参数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty参数/" class="post-title-link" itemprop="url">Netty 参数</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-12 13:41:00" itemprop="dateCreated datePublished" datetime="2020-03-12T13:41:00+08:00">2020-03-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-13 10:59:04" itemprop="dateModified" datetime="2020-03-13T10:59:04+08:00">2020-03-13</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty参数/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty参数/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="SO-REUSEADDR"><a href="#SO-REUSEADDR" class="headerlink" title="SO_REUSEADDR"></a>SO_REUSEADDR</h1><ol>
+<li>SO_REUSEADDR 允许启动一个监听服务器并捆绑一个端口，即使以前建立的将此端口用做他们的本地端口的连接仍存在（TIME_WAIT）。这通常是<strong>重启监听服务器</strong>时出现，若不设置此选项，则 bind 时将出错。</li>
+<li>SO_REUSEADDR 允许在同一端口上启动同一服务器的<strong>多个实例</strong>，只要每个实例捆绑一个<strong>不同的本地 IP 地址</strong>即可。</li>
+<li>SO_REUSEADDR 允许<strong>单个进程</strong>捆绑同一端口到多个套接口上，只要每个捆绑指定<strong>不同的本地 IP 地址</strong>即可。这一般不用于TCP服务器。</li>
+<li>SO_REUSEADDR 允许完全重复的捆绑：当一个IP地址和端口绑定到某个套接口上时，还允许此IP地址和端口捆绑到另一个套接口上。一般来说，这个特性仅在支持多播的系统上才有，而且只对UDP套接口而言（TCP不支持多播）。</li>
+</ol>
+<h1 id="SO-REUSEPORT"><a href="#SO-REUSEPORT" class="headerlink" title="SO_REUSEPORT"></a>SO_REUSEPORT</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>使用 <code>select</code>、<code>epoll</code> 多路复用技术，也只能在一个线程监听连接的到来，无法利用多核 CPU。</p>
+<p>在 Linux 3.9 以后增加了 OP_REUSEPORT 参数，可以多次绑定同一个端口。</p>
+<blockquote>
+<p>The new socket option allows multiple sockets on the same host to bind to the same port, and is intended to improve the performance of multithreaded network server applications running on top of multicore systems.</p>
+</blockquote>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li>允许多个套接字 bind()/listen() 同一个 TCP/UDP 端口。<ul>
+<li>每一个线程拥有自己的服务器套接字。</li>
+<li>在服务器套接字上没有了锁的竞争。</li>
+</ul>
+</li>
+<li>内核层面实现负载均衡。</li>
+<li>安全层面，监听同一个端口的套接字只能位于同一个用户下面。</li>
+</ul>
+<h2 id="Netty-中使用"><a href="#Netty-中使用" class="headerlink" title="Netty 中使用"></a>Netty 中使用</h2>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/netty参数/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/mq/消息队列记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -613,146 +1165,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/others/面经整理/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/others/面经整理/" class="post-title-link" itemprop="url">面经整理</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-10 15:45:00" itemprop="dateCreated datePublished" datetime="2020-03-10T15:45:00+08:00">2020-03-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-14 17:58:04" itemprop="dateModified" datetime="2020-03-14T17:58:04+08:00">2020-03-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/others/" itemprop="url" rel="index"><span itemprop="name">others</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/others/面经整理/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/others/面经整理/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="蚂蚁金服-中间件"><a href="#蚂蚁金服-中间件" class="headerlink" title="蚂蚁金服 中间件"></a>蚂蚁金服 中间件</h1><blockquote>
-<p><a href="https://www.nowcoder.com/discuss/87736?type=2&amp;order=1&amp;pos=25&amp;page=1">https://www.nowcoder.com/discuss/87736?type=2&amp;order=1&amp;pos=25&amp;page=1</a></p>
-</blockquote>
-<h2 id="一面"><a href="#一面" class="headerlink" title="一面"></a>一面</h2><ol>
-<li>个人介绍加项目介绍20分钟</li>
-<li>缺点？</li>
-<li>ACID CAP BASE理论</li>
-<li>分布式一致性协议，二段、三段、TCC，优缺点</li>
-<li>RPC过程</li>
-<li>服务注册中心宕机了怎么办？</li>
-<li>微服务还有其他什么组件</li>
-<li>分布式架构与微服务的关系</li>
-<li>你有什么问题要问我的。</li>
-</ol>
-<h2 id="二面"><a href="#二面" class="headerlink" title="二面"></a>二面</h2><ol>
-<li>各种排序算法、未排序常规数据查找第K大的数，时间复杂度。</li>
-<li>二叉树的深度</li>
-<li>虚拟内存分页了解不？</li>
-<li>进程和线程区别</li>
-<li>第一二三范式是什么？</li>
-<li>一个表一千个列值为true和false，写sql 查询 有300个列值为true的行。</li>
-<li>脏读和幻读是什么？</li>
-<li>什么对象会从新生代晋升到老年代</li>
-<li>一个任务分成十个任务，最后汇总计算，不能用fork/join</li>
-<li>实习+项目问题，基本是在联想研究院做的东西，还问我为什么不留那。。。</li>
-<li>开源框架源码了解不？</li>
-<li>数据建模两道、个人题开放性题</li>
-<li>对安全方面了解多少？</li>
-<li>安全协议有哪些 、https是啥？</li>
-</ol>
-<h1 id="蚂蚁金服中间件"><a href="#蚂蚁金服中间件" class="headerlink" title="蚂蚁金服中间件"></a>蚂蚁金服中间件</h1><blockquote>
-<p><a href="https://www.nowcoder.com/discuss/85619?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2">https://www.nowcoder.com/discuss/85619?type=post&amp;order=time&amp;pos=&amp;page=1&amp;subType=2</a></p>
-</blockquote>
-<h2 id="一面-1"><a href="#一面-1" class="headerlink" title="一面"></a>一面</h2><ol>
-<li>项目balabala，项目问的很细很细</li>
-<li>redis的持久化方式，redis3.0原生集群和redis读写分离+哨兵机制区别</li>
-<li>工厂模式和抽象工厂模式区别</li>
-<li>hashmap底层</li>
-<li>分布式架构简单介绍</li>
-<li>分布式架构会带来哪些问题</li>
-<li>快排，归并排序原理</li>
-<li>jvm垃圾回收算法和原理</li>
-<li>对象进入老年代的几种方式</li>
-<li>代表个人最高水平的一个技术点（好像是这个意思，应该是针对某个项目而言吧）</li>
-<li>redis持久化方式</li>
-</ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/others/面经整理/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/others/面试常见问题记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -856,447 +1268,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/EventLoop介绍/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/netty/EventLoop介绍/" class="post-title-link" itemprop="url">EventLoop 主流程</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-10 15:11:00 / Modified: 15:31:50" itemprop="dateCreated datePublished" datetime="2020-03-10T15:11:00+08:00">2020-03-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/netty/EventLoop介绍/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/EventLoop介绍/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.jianshu.com/p/3ebd4e997242">Netty NioEventLoop源码解读</a></li>
-<li><a href="http://songkun.me/2019/07/26/2019-07-26-java-nio-epoll-bug-and-netty-solution/">Java NIO epoll bug 以及 Netty 的解决之道</a></li>
-</ul>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>作为 Worker 的 <code>EventLoop</code>，负责多路复用 <code>select/epoll</code> 来监听多个 socket 连接的读写事件，并在有读写事件时 进行逻辑的处理、从 socket 读取数据、向socket 写入数据。</p>
-<p>而 <code>EventLoop</code> 是单线程的，如何同时阻塞监听读写事件、并处理业务逻辑？</p>
-<h1 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h1><ol>
-<li>每次循环，先检测是否有任务要处理。<ul>
-<li>如果没有任务，就进行 <code>select(timeout)</code>。<ul>
-<li><code>timeout</code> 的时间是“下一次要执行任务的时间 + 0.5 ms”，没有要执行的任务，就是 “1s + 0.5 ms”</li>
-</ul>
-</li>
-<li>如果有任务，就不进行 <code>select()</code>。</li>
-</ul>
-</li>
-<li>然后，处理到达的读写事件。</li>
-<li>最后，执行所有待执行的任务。</li>
-<li>随后，重复步骤1。</li>
-</ol>
-<h1 id="解决-JDK-NIO-空轮询-Bug"><a href="#解决-JDK-NIO-空轮询-Bug" class="headerlink" title="解决 JDK NIO 空轮询 Bug"></a>解决 JDK NIO 空轮询 Bug</h1><h2 id="Bug-简介"><a href="#Bug-简介" class="headerlink" title="Bug 简介"></a>Bug 简介</h2><p><code>selector.select()</code> 应该 <strong>一直阻塞</strong>，直到有就绪事件到达。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/EventLoop介绍/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty接收数据流程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/netty/netty接收数据流程/" class="post-title-link" itemprop="url">Netty 接收数据流程</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-09 23:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T23:21:00+08:00">2020-03-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-10 18:31:28" itemprop="dateModified" datetime="2020-03-10T18:31:28+08:00">2020-03-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/netty/netty接收数据流程/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty接收数据流程/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://time.geekbang.org/course/detail/237-158157">源码剖析：接收数据</a></li>
-</ul>
-<h1 id="触发读操作"><a href="#触发读操作" class="headerlink" title="触发读操作"></a>触发读操作</h1><p>当读事件发生时，WorkerEventLoop 调用 <code>unsafe.read()</code>，这里是  <code>NioSocketChannel. NioByteUnsafe#read()</code>。</p>
-<h1 id="循环读取"><a href="#循环读取" class="headerlink" title="循环读取"></a>循环读取</h1><p>循环读取，根据 <code>continueReading</code> 判断是否还要继续读取。</p>
-<ul>
-<li>每次读取后，调用 <code>pipeline.fireChannelRead(byteBuf)</code> 把读到的数据传播到链中。</li>
-<li>读取结束后，调用 <code>pipeline.fireChannelReadComplete()</code> 传播读取完成事件。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NioByteUnsafe#read()</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">read</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      byteBuf = allocHandle.allocate(allocator);</span><br><span class="line">      allocHandle.lastBytesRead(doReadBytes(byteBuf));</span><br><span class="line">      <span class="comment">// 省略 ...</span></span><br><span class="line">      pipeline.fireChannelRead(byteBuf);</span><br><span class="line">    &#125; <span class="keyword">while</span> (allocHandle.continueReading());</span><br><span class="line">  	</span><br><span class="line">    allocHandle.readComplete();</span><br><span class="line">    pipeline.fireChannelReadComplete();</span><br><span class="line">    <span class="comment">// 省略 ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="分配-ByteBuf"><a href="#分配-ByteBuf" class="headerlink" title="分配 ByteBuf"></a>分配 ByteBuf</h2><blockquote>
-<p><a href="https://www.jianshu.com/p/e12c7f3861e1">Netty 源码解析 ——— AdaptiveRecvByteBufAllocator</a></p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/netty接收数据流程/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty构建连接流程/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/netty/netty构建连接流程/" class="post-title-link" itemprop="url">Netty 构建连接流程</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-09 20:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T20:21:00+08:00">2020-03-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-10 18:29:07" itemprop="dateModified" datetime="2020-03-10T18:29:07+08:00">2020-03-10</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/netty/netty构建连接流程/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty构建连接流程/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://time.geekbang.org/course/detail/237-158156">源码剖析：构建连接</a></li>
-</ul>
-<h1 id="主线"><a href="#主线" class="headerlink" title="主线"></a>主线</h1><ul>
-<li><p>boss thread</p>
-<ul>
-<li>NioEventLoop 中的 selector 轮询监听连接事件 <code>OP_ACCEPT</code>。</li>
-<li>创建 socket channel。</li>
-<li>初始化 socket channel、并从 <code>workerEventLoopGroup</code> 中选择一个 <code>EventLoop</code>。</li>
-</ul>
-</li>
-<li><p>worker thread</p>
-<ul>
-<li>将 socket channel 注册到选择的 NioEventLoop 的 selector。</li>
-<li>注册读事件 <code>OP_READ</code> 到 selector 上。</li>
-</ul>
-</li>
-</ul>
-<h1 id="创建-SocketChannel"><a href="#创建-SocketChannel" class="headerlink" title="创建 SocketChannel"></a>创建 SocketChannel</h1><p>NioEventLoop 的 <code>select(timeout)</code> 调用中，接收到 <code>OP_ACCEPT</code> 事件被唤醒。</p>
-<p>调用 <code>unsafe.read()</code>，也就是 <code>NioServerSocketChannel.NioMessageUnsafe#read()</code>，来处理连接事件。</p>
-<p>最终调用 <code>serverSocketChannel.accept()</code> 得到 <code>socketChannel</code>。</p>
-<ul>
-<li><code>unsafe.read()</code> 有两种<ul>
-<li><code>NioMessageUnsafe#read()</code> 处理 OP_ACCEPT 事件。这里是调用这个。</li>
-<li><code>NioByteUnsafe#read()</code> 处理 OP_READ 事件。</li>
-</ul>
-</li>
-</ul>
-<h1 id="注册-SocketChannel"><a href="#注册-SocketChannel" class="headerlink" title="注册 SocketChannel"></a>注册 SocketChannel</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/netty构建连接流程/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Recycler对象池/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/netty/Recycler对象池/" class="post-title-link" itemprop="url">Recycler 对象池</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-09 15:34:00" itemprop="dateCreated datePublished" datetime="2020-03-09T15:34:00+08:00">2020-03-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-12 13:41:51" itemprop="dateModified" datetime="2020-03-12T13:41:51+08:00">2020-03-12</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/netty/Recycler对象池/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/Recycler对象池/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://stackoverflow.com/questions/1468007/atomicinteger-lazyset-vs-set">AtomicInteger lazySet vs. set</a></li>
-<li><a href="https://github.com/netty/netty/issues/8215">why use lazySet instead set in WeakOrderQueue#add</a></li>
-<li><a href="https://blog.csdn.net/alex_xfboy/article/details/90384332">冷知识：netty的Recycler对象池</a></li>
-</ul>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Netty 场景下的轻量级对象池 Recycler。</p>
-<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="stack"><a href="#stack" class="headerlink" title="stack"></a>stack</h2><p>每个线程使用一个 <code>stack</code> 存储对象池。避免线程同步的问题。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> FastThreadLocal&lt;Stack&lt;T&gt;&gt; threadLocal</span><br></pre></td></tr></table></figure>
-<h2 id="WeakOrderQueue"><a href="#WeakOrderQueue" class="headerlink" title="WeakOrderQueue"></a>WeakOrderQueue</h2><p>在回收对象时，要释放对象的线程可能不是对象的 <code>stack</code> 线程。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/Recycler对象池/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1369,20 +1340,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">74</span>
+          <span class="site-state-item-count">79</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">16</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-count">21</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
