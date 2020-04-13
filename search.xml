@@ -1,6 +1,279 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CMU213 学习笔记-Lec6-Machine-Level Programming II：Control</title>
+    <url>/2020/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/cmu213/lec6/</url>
+    <content><![CDATA[<h1 id="Processor-State"><a href="#Processor-State" class="headerlink" title="Processor State"></a>Processor State</h1><p>寄存器包含了当前正在执行程序的信息。</p>
+<ul>
+<li>暂存数据。<ul>
+<li><code>%rax</code>，…</li>
+</ul>
+</li>
+<li>正在运行的栈顶。<ul>
+<li><code>%rsp</code>。</li>
+</ul>
+</li>
+<li><p>当前正在执行指令的地址。</p>
+<ul>
+<li><code>%rip</code>。</li>
+<li>instruction pointer。</li>
+<li>不能以正常方式访问到它。</li>
+<li>有些技巧可以访问到它的值。</li>
+</ul>
+</li>
+<li><p>Codition Codes。</p>
+<ul>
+<li>CF、ZF、SF、OF。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Codition-Codes"><a href="#Codition-Codes" class="headerlink" title="Codition Codes"></a>Codition Codes</h2><h3 id="四种-Codition-Codes"><a href="#四种-Codition-Codes" class="headerlink" title="四种 Codition Codes"></a>四种 Codition Codes</h3><p>被算数/<code>cmp</code>/<code>test</code>、<code>setX</code> 指令隐式设置的 bit 寄存器。（注意，<code>leaq</code> 不会设置这四个标志。）</p>
+<ul>
+<li>CF (无符号溢出 Carry Flag for unsigned)。两个无符号数相加且溢出时，被置为 1。</li>
+<li>ZF (零值 Zero Flag)。如果刚刚计算的值为 0，被置为 1。</li>
+<li>SF (负数 Sign Flag for signed)。有符号数最高位为 1（负值），被置为 1。</li>
+<li>OF (有符号溢出 Overflow Flag for signed)。两个有符号数相加且溢出时，被置为 1。<ul>
+<li>对于 t = a + b。在 <code>(a &gt; 0 &amp;&amp; b &gt; 0 &amp;&amp; t &lt; 0) || (a &lt; 0 &amp;&amp; b &lt; 0 &amp;&amp; t &gt;= 0)</code> 时溢出。</li>
+<li>a 和 b 一正一负，不会溢出。</li>
+</ul>
+</li>
+</ul>
+<h3 id="相关指令"><a href="#相关指令" class="headerlink" title="相关指令"></a>相关指令</h3><h4 id="cmp"><a href="#cmp" class="headerlink" title="cmp"></a>cmp</h4><p><code>cmpq Src2, Src1</code> 指令。</p>
+<ul>
+<li>类似于 <code>subq Src2, Src1</code>；但是只是单纯的计算 <code>Src1 - Src2</code>，不存储结果，而是设置 Condition Codes。</li>
+</ul>
+<h4 id="test"><a href="#test" class="headerlink" title="test"></a>test</h4><p><code>testq Src2, Src1</code> 指令。</p>
+<ul>
+<li>计算 <code>Src1 &amp; Src2</code>，设置 Codition Codes（ZF 和 SF）。<ul>
+<li>ZF 为 1，如果 <code>Src1 &amp; Src2 == 0</code>。</li>
+<li>SF 为 1，如果 <code>Src1 &amp; Src2 &lt; 0</code>。</li>
+</ul>
+</li>
+</ul>
+<h4 id="setX-系列指令"><a href="#setX-系列指令" class="headerlink" title="setX 系列指令"></a>setX 系列指令</h4><ul>
+<li>根据 Condition Codes，设置目标位置的做低 byte 为 0 / 1。</li>
+<li>不会设置其他的 bytes。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>SetX</th>
+<th>Condition</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>sete</td>
+<td>ZF</td>
+<td>Equal  / Zero</td>
+</tr>
+<tr>
+<td>setne</td>
+<td>~ZF</td>
+<td>Not  Equal / Not Zero</td>
+</tr>
+<tr>
+<td>sets</td>
+<td>SF</td>
+<td>Negative</td>
+</tr>
+<tr>
+<td>setns</td>
+<td>~SF</td>
+<td>Nonnegative</td>
+</tr>
+<tr>
+<td>setg</td>
+<td>~(SF^OF)&amp;~ZF</td>
+<td>Greater  (Signed)</td>
+</tr>
+<tr>
+<td>setge</td>
+<td>~(SF^OF)</td>
+<td>Greater  or Equal (Signed)</td>
+</tr>
+<tr>
+<td>setl</td>
+<td>(SF^OF)</td>
+<td>Less  (Signed)</td>
+</tr>
+<tr>
+<td>setle</td>
+<td>(SF^OF)\</td>
+<td>ZF</td>
+<td>Less  or Equal (Signed)</td>
+</tr>
+<tr>
+<td>seta</td>
+<td>~CF&amp;~ZF</td>
+<td>Above  (unsigned)</td>
+</tr>
+<tr>
+<td>setb</td>
+<td>CF</td>
+<td>Below  (unsigned)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>对于 <code>setge</code>，如下情况会为 1，即 Src1 &gt;= Src2。</p>
+<ul>
+<li>SF == 1，OF == 1。即，溢出了、且 Src1、-Src2 为正数，所以 Src1 &gt; Src2。</li>
+<li>SF == 0，OF == 0。即，没有溢出、且 Src1 - Src2 &gt;= 0，所以 Src1 &gt;= Src2。</li>
+</ul>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">gt</span> <span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x &gt; y;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>转化为 Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	cmpq   %rsi, %rdi   # Compare x:y。注意 %rsi 是 y，%rdi 是 x。</span><br><span class="line">setg   %al          # Set when &gt;</span><br><span class="line">movzbl %al, %eax    # Zero rest of %rax</span><br><span class="line">ret</span><br></pre></td></tr></table></figure>
+<p>注意，<code>%eax</code> 是 <code>%rax</code> 低 32bit。对于运算的记过，如果是 32 位的，会把高 32  位 置为 0。</p>
+<h1 id="Conditional-Branches"><a href="#Conditional-Branches" class="headerlink" title="Conditional Branches"></a>Conditional Branches</h1><p>三种方式实现流程跳转。</p>
+<ul>
+<li>jX 系列指令。</li>
+<li>Conditional Move 指令。</li>
+<li>jump table（<code>switch case</code> 对应的汇编指令序列中实现的）。</li>
+</ul>
+<h2 id="jX-系列指令"><a href="#jX-系列指令" class="headerlink" title="jX 系列指令"></a>jX 系列指令</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>jX</th>
+<th>Condition</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jmp</td>
+<td>1</td>
+<td>Unconditional</td>
+</tr>
+<tr>
+<td>je</td>
+<td>ZF</td>
+<td>Equal  / Zero</td>
+</tr>
+<tr>
+<td>jne</td>
+<td>~ZF</td>
+<td>Not  Equal / Not Zero</td>
+</tr>
+<tr>
+<td>js</td>
+<td>SF</td>
+<td>Negative</td>
+</tr>
+<tr>
+<td>jns</td>
+<td>~SF</td>
+<td>Nonnegative</td>
+</tr>
+<tr>
+<td>jg</td>
+<td>~(SF^OF)&amp;~ZF</td>
+<td>Greater  (Signed)</td>
+</tr>
+<tr>
+<td>jge</td>
+<td>~(SF^OF)</td>
+<td>Greater  or Equal (Signed)</td>
+</tr>
+<tr>
+<td>jl</td>
+<td>(SF^OF)</td>
+<td>Less  (Signed)</td>
+</tr>
+<tr>
+<td>jle</td>
+<td>(SF^OF)\</td>
+<td>ZF</td>
+<td>Less  or Equal (Signed)</td>
+</tr>
+<tr>
+<td>ja</td>
+<td>~CF&amp;~ZF</td>
+<td>Above  (unsigned)</td>
+</tr>
+<tr>
+<td>jb</td>
+<td>CF</td>
+<td>Below  (unsigned)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">absdiff</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> result;</span><br><span class="line">  <span class="keyword">if</span> (x &gt; y)</span><br><span class="line">    result = x-y;</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    result = y-x;</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应的 Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">absdiff:</span><br><span class="line">   cmpq    %rsi, %rdi  # x - y</span><br><span class="line">   jle     .L4				 # 如果 x &lt;= y，跳到 .L4</span><br><span class="line">   movq    %rdi, %rax  </span><br><span class="line">   subq    %rsi, %rax  # x - y</span><br><span class="line">   ret</span><br><span class="line">.L4:       # x &lt;= y</span><br><span class="line">   movq    %rsi, %rax</span><br><span class="line">   subq    %rdi, %rax	# y - x</span><br><span class="line">   ret</span><br></pre></td></tr></table></figure>
+<h2 id="Conditional-Move"><a href="#Conditional-Move" class="headerlink" title="Conditional Move"></a>Conditional Move</h2><h3 id="流水线技术"><a href="#流水线技术" class="headerlink" title="流水线技术"></a>流水线技术</h3><p>流水线技术，在一个指令结束之前执行下一条指令。</p>
+<p>选择分支进行执行，会打断流水线过程，较差情况下，可能需要40个指令（时钟周期）。</p>
+<h4 id="分支预测技术"><a href="#分支预测技术" class="headerlink" title="分支预测技术"></a>分支预测技术</h4><p>猜测分支结果，分支预测技术。</p>
+<p>一般 98% 的情况会猜对。</p>
+<h3 id="Conditional-Move-1"><a href="#Conditional-Move-1" class="headerlink" title="Conditional Move"></a>Conditional Move</h3><p>有时候很难进行猜测，先执行两个分支来提高效率，最后取其中一个分支的结果，不用暂停处理器的执行，重新选择分支执行。</p>
+<h4 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h4><p>上述 <code>absdiff()</code> 转化为 Assembly Code 的优化版本：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">absdiff:</span><br><span class="line">   movq    %rdi, %rax  # x</span><br><span class="line">   subq    %rsi, %rax  # result = x-y</span><br><span class="line">   movq    %rsi, %rdx</span><br><span class="line">   subq    %rdi, %rdx  # eval = y-x</span><br><span class="line">   cmpq    %rsi, %rdi  # x : y</span><br><span class="line">   cmovle  %rdx, %rax  # if x &lt;= y, result = eval</span><br><span class="line">   ret</span><br></pre></td></tr></table></figure>
+<h3 id="可以使用-Conditional-Move-场景"><a href="#可以使用-Conditional-Move-场景" class="headerlink" title="可以使用 Conditional Move 场景"></a>可以使用 Conditional Move 场景</h3><ul>
+<li>如果两个分支都是简单的计算，会使用 conditional move。</li>
+</ul>
+<h3 id="不能使用-Conditional-Move-的场景"><a href="#不能使用-Conditional-Move-的场景" class="headerlink" title="不能使用 Conditional Move 的场景"></a>不能使用 Conditional Move 的场景</h3><ul>
+<li><p>无法同时计算两个分支时。例如先判断是否空指针，再进行解引用。</p>
+</li>
+<li><p>每个分支可能会改变程序其他部分的状态。</p>
+</li>
+</ul>
+<h1 id="Loops"><a href="#Loops" class="headerlink" title="Loops"></a>Loops</h1><h2 id="Do-While-循环"><a href="#Do-While-循环" class="headerlink" title="Do-While 循环"></a>Do-While 循环</h2><h3 id="转化为-Assembly-Code"><a href="#转化为-Assembly-Code" class="headerlink" title="转化为 Assembly Code"></a>转化为 Assembly Code</h3><p>C Code：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">do</span> </span><br><span class="line">  <span class="comment">// Body</span></span><br><span class="line">  <span class="keyword">while</span> (Test);</span><br></pre></td></tr></table></figure>
+<p>Goto Version（可以直接翻译成汇编的版本）：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">loop:</span><br><span class="line">  <span class="comment">// Body</span></span><br><span class="line">  <span class="keyword">if</span> (Test)</span><br><span class="line">    <span class="keyword">goto</span> loop</span><br></pre></td></tr></table></figure>
+<h3 id="例子-3"><a href="#例子-3" class="headerlink" title="例子"></a>例子</h3><p>C Code：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">pcount_do</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> x)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> result = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">do</span> &#123;</span><br><span class="line">    result += x &amp; <span class="number">0x1</span>;</span><br><span class="line">    x &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">  &#125; <span class="keyword">while</span> (x);</span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Goto Version：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">pcount_goto</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> x)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> result = <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line"> loop:</span><br><span class="line">  result += x &amp; <span class="number">0x1</span>;</span><br><span class="line">  x &gt;&gt;= <span class="number">1</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">if</span>(x) <span class="keyword">goto</span> loop;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对应的 Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">	 movl    $0, %eax		#  result = 0</span><br><span class="line">.L2:			# loop:</span><br><span class="line">   movq    %rdi, %rdx	</span><br><span class="line">   andl    $1, %edx		#  t = x &amp; 0x1</span><br><span class="line">   addq    %rdx, %rax	#  result += t</span><br><span class="line">   shrq    %rdi		#  x &gt;&gt;= 1</span><br><span class="line">   jne     .L2		#  if (x) goto loop</span><br><span class="line">   rep; ret</span><br></pre></td></tr></table></figure>
+<h2 id="While-循环"><a href="#While-循环" class="headerlink" title="While 循环"></a>While 循环</h2><h3 id="转化为-Assembly-Code-1"><a href="#转化为-Assembly-Code-1" class="headerlink" title="转化为 Assembly Code"></a>转化为 Assembly Code</h3><p>C Code：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">while</span> (Test)</span><br><span class="line">  <span class="comment">// Body</span></span><br></pre></td></tr></table></figure>
+<p>对于不同的优化级别，会翻译为不同的 Assembly Code。</p>
+<h4 id="Og"><a href="#Og" class="headerlink" title="-Og"></a>-Og</h4><p>Goto Version：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line">  <span class="keyword">goto</span> test;</span><br><span class="line">loop:</span><br><span class="line">  <span class="comment">// Body</span></span><br><span class="line">test:</span><br><span class="line">  <span class="keyword">if</span> (Test)</span><br><span class="line">    <span class="keyword">goto</span> loop;</span><br><span class="line">done:</span><br></pre></td></tr></table></figure>
+<p>代码分为<code>loop</code> 的主体、<code>test</code> 条件判断。</p>
+<p>循环开始前，先跳到 <code>test</code> 代码处进行测试。</p>
+<h4 id="O1"><a href="#O1" class="headerlink" title="-O1"></a>-O1</h4><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">  <span class="keyword">if</span> (!Test)</span><br><span class="line">    <span class="keyword">goto</span> done;</span><br><span class="line">loop:</span><br><span class="line">  <span class="comment">// Body</span></span><br><span class="line">  <span class="keyword">if</span> (Test)</span><br><span class="line">    <span class="keyword">goto</span> loop;</span><br><span class="line">done:</span><br></pre></td></tr></table></figure>
+<p>转化为 <code>Do-While</code> 循环的形式。</p>
+<p>在 <code>Do-While</code> 循环前，先进行一次条件测试。</p>
+<h2 id="For-循环"><a href="#For-循环" class="headerlink" title="For 循环"></a>For 循环</h2><p>C Code：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> (Init; Test; Update )</span><br><span class="line">    <span class="comment">// Body</span></span><br></pre></td></tr></table></figure>
+<p>对于不同的优化级别，会翻译为不同的 Assembly Code。</p>
+<h3 id="Og-1"><a href="#Og-1" class="headerlink" title="-Og"></a>-Og</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Init;</span></span><br><span class="line"><span class="keyword">while</span> (Test ) &#123;</span><br><span class="line">    <span class="comment">// Body</span></span><br><span class="line">    <span class="comment">// Update;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>把 <code>For</code> 循环翻译为 <code>While</code> 循环。</p>
+<h3 id="O1-1"><a href="#O1-1" class="headerlink" title="-O1"></a>-O1</h3><p>开启 <code>-O1</code> 优化后，<code>While</code> 循环会转化为 <code>Do-While</code> 循环 + 开始的一次测试。</p>
+<p>由于 <code>For</code> 循环的初始值是确定的，因此可以将“开始的一次测试”优化删除掉。</p>
+<p>因此，<code>For</code> 循环会转化为 <code>Do-While</code> 循环。</p>
+<h1 id="Switch-Statements"><a href="#Switch-Statements" class="headerlink" title="Switch Statements"></a>Switch Statements</h1><p>对于 <code>Switch</code> 表达式，编译器会找到 <code>case</code> 中中最小和最大的值，得到 <code>case</code> 的范围。</p>
+<ul>
+<li>对于不在范围内的数值，跳转到默认代码块。</li>
+<li>对于范围内的值，建立索引表。由于用了 array indexing，要求范围值要为非负数。</li>
+</ul>
+<p>需要注意的地方：</p>
+<ul>
+<li>如果范围的数值有负数，进行偏置处理（加上某个数），使得范围的值都是非负数。</li>
+<li>如果 <code>case</code> 的范围过大，会变为 <code>if else</code> 语句。通过二分的形式，形成 <code>if else</code> 树，使得时间复杂度为 O(logn)、而不是 O(n)。</li>
+</ul>
+<h2 id="例子-4"><a href="#例子-4" class="headerlink" title="例子"></a>例子</h2><p>C Code：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">switch_eg</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span> z)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> w = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">switch</span>(x) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">        w = y*z;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">        w = y/z;</span><br><span class="line">        <span class="comment">/* Fall Through */</span></span><br><span class="line">    <span class="keyword">case</span> <span class="number">3</span>:</span><br><span class="line">        w += z;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">5</span>:</span><br><span class="line">    <span class="keyword">case</span> <span class="number">6</span>:</span><br><span class="line">        w -= z;</span><br><span class="line">        <span class="keyword">break</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">        w = <span class="number">2</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> w;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">switch_eg:</span><br><span class="line">    movq    %rdx, %rcx</span><br><span class="line">    cmpq    $6, %rdi      # x:6</span><br><span class="line">    ja      .L8           # Use default</span><br><span class="line">    jmp     *.L4(,%rdi,8) # goto *JTab[x]. *(.L4 + %rdi * 8)</span><br><span class="line">.section	.rodata</span><br><span class="line">	.align 8</span><br><span class="line">.L4:</span><br><span class="line">	.quad	.L8	# x = 0</span><br><span class="line">	.quad	.L3	# x = 1</span><br><span class="line">	.quad	.L5	# x = 2</span><br><span class="line">	.quad	.L9	# x = 3</span><br><span class="line">	.quad	.L8	# x = 4</span><br><span class="line">	.quad	.L7	# x = 5</span><br><span class="line">	.quad	.L7	# x = 6</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>CMU213</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
+        <tag>CMU213</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics</title>
     <url>/2020/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/cmu213/lec5/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -8,7 +281,10 @@
 </ul>
 <h1 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h1><p>Intel </p>
 <ul>
-<li>常用处理器：x86 x86-64</li>
+<li>常用处理器：x86 x86-64。<ul>
+<li>注意该系列学习笔记除非特别说明，否则处理器默认是x86-64。</li>
+</ul>
+</li>
 <li>使用 MISC（复杂指令集）。</li>
 </ul>
 <p>ARM</p>
@@ -20,6 +296,9 @@
 <p>Microarchitecture: architecutre的实现。</p>
 <p>Machine Code: 处理器去执行的二进制程序。</p>
 <p>Assembly Code：Machine Code的text表示。</p>
+<ul>
+<li>注意，该系列学习笔记中的汇编，是 Linux 上的汇编，与 Intel 和 Microsoft 上的有些不同。</li>
+</ul>
 <h1 id="汇编代码的相关结构"><a href="#汇编代码的相关结构" class="headerlink" title="汇编代码的相关结构"></a>汇编代码的相关结构</h1><h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><ul>
 <li>下一条要执行的指令地址。</li>
 </ul>
@@ -28,8 +307,25 @@
 <p><img src="/images/x86-64-registers.png" alt="x86-64-registers"></p>
 <ul>
 <li>使用 <code>%r</code> 得到寄存器的 64 bits，使用 <code>%e</code> 得到寄存器的低 32 bits。</li>
-<li>前 8 个寄存器的名字从 IA32 继承来，命名方式是为了标识每个寄存器的用途。但在 x86-64 中一般不区分它们的用途。<ul>
+<li><p>前 8 个寄存器的名字从 IA32 继承来，命名方式是为了标识每个寄存器的用途。但在 x86-64 中一般不区分它们的用途。</p>
+<ul>
 <li><code>%esp</code> stack pointer，栈指针。</li>
+</ul>
+</li>
+<li><p>对于前 8 个寄存器。</p>
+<ul>
+<li><p><code>%rax</code> 访问 64 bit 位、<code>%eax</code> 低 32 位、<code>%ax</code> 低 16 位、<code>%ah</code> 倒数第二个 byte、<code>%al</code> 低 8 位。</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0x1122334455667788</span><br><span class="line">  ================ rax (64 bits)</span><br><span class="line">          ======== eax (32 bits)</span><br><span class="line">              ====  ax (16 bits)</span><br><span class="line">              ==    ah (8 bits)</span><br><span class="line">                ==  al (8 bits)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>对于后 8 个寄存器。</p>
+<ul>
+<li><p><code>%r8</code> 64位、<code>%r8d</code> 低 32 位、<code>%r8w</code> 低16位、<code>%r8b</code> 低 8 位。</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0x1122334455667788</span><br><span class="line">  ================ r8 (64 bits)</span><br><span class="line">          ======== r8d (32 bits)</span><br><span class="line">              ==== r8w (16 bits)</span><br><span class="line">                == r8b (8 bits)</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -68,7 +364,8 @@
 <ul>
 <li>二进制序列表示一系列的指令。</li>
 </ul>
-<h1 id="汇编的操作"><a href="#汇编的操作" class="headerlink" title="汇编的操作"></a>汇编的操作</h1><h2 id="代数运算"><a href="#代数运算" class="headerlink" title="代数运算"></a>代数运算</h2><p>在寄存器/内存上进行代数运算。</p>
+<h1 id="汇编的操作"><a href="#汇编的操作" class="headerlink" title="汇编的操作"></a>汇编的操作</h1><p>以 <code>q</code> 结尾的指令表示对 64 位数据进行操作，表示 quadword（四字）。</p>
+<h2 id="代数运算"><a href="#代数运算" class="headerlink" title="代数运算"></a>代数运算</h2><p>在寄存器/内存上进行代数运算。</p>
 <h3 id="leaq"><a href="#leaq" class="headerlink" title="leaq"></a>leaq</h3><p>load effective address。</p>
 <p>将一个内存地址直接存储在目的寄存器中。</p>
 <h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">m12</span><span class="params">(<span class="keyword">long</span> x)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x*<span class="number">12</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -154,10 +451,94 @@
 <h3 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">arith</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span> z)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> t1 = x+y;</span><br><span class="line">  <span class="keyword">long</span> t2 = z+t1;</span><br><span class="line">  <span class="keyword">long</span> t3 = x+<span class="number">4</span>;</span><br><span class="line">  <span class="keyword">long</span> t4 = y * <span class="number">48</span>;</span><br><span class="line">  <span class="keyword">long</span> t5 = t3 + t4;</span><br><span class="line">  <span class="keyword">long</span> rval = t2 * t5;</span><br><span class="line">  <span class="keyword">return</span> rval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>对应的 Assembly Code：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">arith:</span><br><span class="line">  leaq    (%rdi,%rsi), %rax   # t1. rax = rdi + rsi.</span><br><span class="line">  addq    %rdx, %rax          # t2. rax = rax + rdx.</span><br><span class="line">  leaq    (%rsi,%rsi,2), %rdx #     rdx = rsi + rsi * 2 = 3 * rsi.</span><br><span class="line">  salq    $4, %rdx            # t4. rdx = rdx &lt;&lt; 4 = (3 * rsi) * 16 = rsi * 48.</span><br><span class="line">  leaq    4(%rdi,%rdx), %rcx  # t5. rcx = (rdi + 4) + rdx.</span><br><span class="line">  imulq   %rcx, %rax          # rval. rax = rcx * rax.</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
-<h2 id="传递数据"><a href="#传递数据" class="headerlink" title="传递数据"></a>传递数据</h2><p>在寄存器/内存间传递数据。</p>
+<h2 id="传送数据"><a href="#传送数据" class="headerlink" title="传送数据"></a>传送数据</h2><p>在寄存器/内存间传送数据。</p>
 <h3 id="movq"><a href="#movq" class="headerlink" title="movq"></a>movq</h3><p>用于在 寄存器与寄存器、寄存器与内存、寄存器与常数、常数与内存之间的数据传输。</p>
 <p>注意，内存与内存不能直接进行数据传输。</p>
 <p><img src="/images/movq.png" alt="movq"></p>
+<h4 id="mov-系列命令"><a href="#mov-系列命令" class="headerlink" title="mov 系列命令"></a>mov 系列命令</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>movb</td>
+<td>传送字节</td>
+</tr>
+<tr>
+<td>movw</td>
+<td>传送字</td>
+</tr>
+<tr>
+<td>movl</td>
+<td>传送双字</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>符号扩展，用 <code>Source</code> 的符号位填充多余的位。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>movsbw</td>
+<td>传送做了符号扩展的字节到字</td>
+</tr>
+<tr>
+<td>movsbl</td>
+<td>传送做了符号扩展的字节到双字</td>
+</tr>
+<tr>
+<td>movswl</td>
+<td>传送做了符号扩展的字到双字</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>零扩展，用 0 填充多余的位。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>movzbw</td>
+<td>传送做了零扩展的字节到字</td>
+</tr>
+<tr>
+<td>movzbl</td>
+<td>传送做了零扩展的字节到字</td>
+</tr>
+<tr>
+<td>movzwl</td>
+<td>传送做了零扩展的字节到字</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="四字、双字、字、字节"><a href="#四字、双字、字、字节" class="headerlink" title="四字、双字、字、字节"></a>四字、双字、字、字节</h4><ul>
+<li>字节 byte，1 byte。</li>
+<li>字 Word，2 bytes。</li>
+<li>双字 DWord (Double Word)，4 bytes。</li>
+<li>四字 QWord (Quad Word)，8 bytes。</li>
+</ul>
+<p>MOVZ S，D         D&lt;-S(零扩展)              传送扩展字节</p>
+<p>Movzbw           传送做了符号扩展字节到字</p>
+<p>Movzbl            传送做了符号扩展字节到双字</p>
+<p>Movzwl            传送做了符号扩展字到双字</p>
 <h3 id="如何使用某一位置的内存"><a href="#如何使用某一位置的内存" class="headerlink" title="如何使用某一位置的内存"></a>如何使用某一位置的内存</h3><ul>
 <li><code>(rb)</code>：<code>Mem[Reg[rb]]</code>。</li>
 <li><code>D(rb)</code>：<code>Mem[Reg[rb] + D]</code>。</li>
@@ -171,7 +552,7 @@
 <p>Assembly Code：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">swap:</span><br><span class="line">   movq    (%rdi), %rax</span><br><span class="line">   movq    (%rsi), %rdx</span><br><span class="line">   movq    %rdx, (%rdi)</span><br><span class="line">   movq    %rax, (%rsi)</span><br><span class="line">   ret</span><br></pre></td></tr></table></figure>
 <p>寄存器 <code>%rdx</code>、<code>%rax</code> 用于存储临时变量 <code>t0</code>、<code>t1</code>，而没有存在内存里。</p>
-<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器。</p>
+<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器，<code>ret</code> 指令返回 <code>%rax</code> 的值。</p>
 <h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><ul>
 <li>Unconditional jumps to/from procedures</li>
 <li>Conditional branches</li>
@@ -1385,129 +1766,6 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
-    <title>面试常见问题记录</title>
-    <url>/2020/others/%E9%9D%A2%E8%AF%95%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/</url>
-    <content><![CDATA[<h1 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h1><blockquote>
-<ul>
-<li><a href="https://blog.csdn.net/puhaiyang/article/details/72284702">对mysql乐观锁、悲观锁、共享锁、排它锁、行锁、表锁概念的理解</a></li>
-<li><a href="https://cyc2018.github.io/CS-Notes/#/notes/数据库系统原理?id=_2-两段锁协议">CSNote 数据库系统原理</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/53974502">mysql事务和锁 SELECT FOR UPDATE</a></li>
-</ul>
-</blockquote>
-<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><p>认为操作数据时不会发生竞争，不会加锁，而是更新数据时检查数据是否发生了变化。</p>
-<p>有竞争会失败，这时抛出错误，后续如何处理由客户决定。</p>
-<p>一般使用 CAS + 版本号 实现。</p>
-<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>在数据库中要自己添加一个版本号的字段</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">update</span> t_goods </span><br><span class="line">	<span class="keyword">set</span> <span class="keyword">status</span>=<span class="number">2</span>,<span class="keyword">version</span>=<span class="keyword">version</span>+<span class="number">1</span></span><br><span class="line">	<span class="keyword">where</span> <span class="keyword">id</span>=#&#123;<span class="keyword">id</span>&#125; <span class="keyword">and</span> <span class="keyword">version</span>=#&#123;<span class="keyword">version</span>&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><p>认为操作数据时会发生竞争，主动加锁。</p>
-<p>有竞争会阻塞。</p>
-<h3 id="数据库-1"><a href="#数据库-1" class="headerlink" title="数据库"></a>数据库</h3><h4 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h4><ul>
-<li>一级封锁协议。事务 T 要修改数据 A 时必须加写锁，直到 T 结束才释放锁。</li>
-<li>二级封锁协议。解决脏读。在一级的基础上，要求读取数据 A 时必须加读锁，读取完马上释放读锁。</li>
-<li>三级封锁协议。解决不可重复读。在二级的基础上，要求读取数据 A 时必须加读锁，直到事务结束了才能释读锁。</li>
-</ul>
-<h4 id="显式锁定"><a href="#显式锁定" class="headerlink" title="显式锁定"></a>显式锁定</h4><p>会根据隔离级别自动加锁。也可以显式指定读写锁，必须在事务中才能使用。</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> ... <span class="keyword">LOCK</span> <span class="keyword">In</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> ... <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
-<h1 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h1><blockquote>
-<ul>
-<li><a href="https://wizardforcel.gitbooks.io/the-art-of-programming-by-july/content/06.11.html">倒排索引(Inverted index)</a></li>
-</ul>
-</blockquote>
-<p>存储每个单词在所有文档中的存储位置。</p>
-<p>常被应用于搜索引擎和关键字查询的问题中。</p>
-<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>以英文为例，下面是要被索引的文本：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">T0 = &quot;it is what it is&quot;  </span><br><span class="line">T1 = &quot;what is it&quot;  </span><br><span class="line">T2 = &quot;it is a banana&quot;</span><br></pre></td></tr></table></figure>
-<p>我们就能得到下面的反向文件索引：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;a&quot;:      &#123;2&#125;</span><br><span class="line">&quot;banana&quot;: &#123;2&#125;</span><br><span class="line">&quot;is&quot;:     &#123;0, 1, 2&#125;</span><br><span class="line">&quot;it&quot;:     &#123;0, 1, 2&#125;</span><br><span class="line">&quot;what&quot;:   &#123;0, 1&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h1><blockquote>
-<ul>
-<li><a href="https://www.cnblogs.com/allensun/archive/2011/02/16/1956532.html">布隆过滤器 (Bloom Filter) 详解</a></li>
-</ul>
-</blockquote>
-<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>$m$ bits 组成的字节数组，初始都为 0。</p>
-<p>添加元素时，用 $k$ 个哈希函数把元素映射到 bits 的 $k$ 个位置上，这些位置都置为 1。</p>
-<p>查找元素时，如果映射后的 $k$ 个位置有为 0 的位置，说明元素不存在；否则元素<strong>可能</strong>存在。</p>
-<h2 id="误判率"><a href="#误判率" class="headerlink" title="误判率"></a>误判率</h2><p>当 $k$ 最优时，误判率 $p = ln2\frac{m}{n}$，$n$ 为元素的个数。</p>
-<p>所以，</p>
-<ul>
-<li>当误判率为 $1\%$ 时，存储每个元素需要9.6 bits。</li>
-<li>每当想将误判率降低为原来的 1/10，则存储每个元素需要增加4.8 bits</li>
-</ul>
-<h1 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h1><blockquote>
-<p><a href="https://www.zhihu.com/question/65502802/answer/802678798">什么是微服务架构</a></p>
-</blockquote>
-<h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><p>拆分服务，分工明确。</p>
-<p>数据库拆分，各服务可以采用异构的数据库。</p>
-<h2 id="容易出现的问题"><a href="#容易出现的问题" class="headerlink" title="容易出现的问题"></a>容易出现的问题</h2><ul>
-<li>定位故障点很苦难。</li>
-<li>稳定性下降。一个服务故障可能会产生雪崩效用，导致整个系统故障。</li>
-<li>服务数量非常多。部署、管理的工作量很大。</li>
-<li>测试困难。</li>
-</ul>
-<h2 id="常用解决方法"><a href="#常用解决方法" class="headerlink" title="常用解决方法"></a>常用解决方法</h2><ul>
-<li>监控。发现故障的征兆。</li>
-<li>链路跟踪。定位问题。</li>
-<li>日志分析。分析问题。</li>
-<li>网关。权限控制，服务治理。</li>
-<li>服务注册于发现 。动态扩容。</li>
-<li><p>熔断。</p>
-<ul>
-<li>所以当多次访问一个服务失败时，应熔断，标记该服务已停止工作，直接返回错误。直至该服务恢复正常后再重新建立连接。</li>
-</ul>
-</li>
-<li>服务降级。</li>
-<li>限流。<ul>
-<li>丢弃多于请求。</li>
-<li>分区限流。</li>
-</ul>
-</li>
-</ul>
-<h2 id="微服务框架"><a href="#微服务框架" class="headerlink" title="微服务框架"></a>微服务框架</h2><p>以上的功能能都需要在应用服务上添加一些对接代码。</p>
-<p>如果让每个应用服务自己实现是非常耗时耗力的。基于 DRY 的原则，可以开发一套微服务框架，将与各个组件对接的代码和另外一些公共代码抽离到框架中，所有的应用服务都统一使用这套框架进行开发。</p>
-<h1 id="ACID-CAP-BASE"><a href="#ACID-CAP-BASE" class="headerlink" title="ACID CAP BASE"></a>ACID CAP BASE</h1><blockquote>
-<ul>
-<li><a href="https://juejin.im/post/5b2663fcf265da59a401e6f8">分布式理论(二) - BASE理论</a></li>
-<li><a href="https://blog.csdn.net/qq_31854907/article/details/92796788">分布式系统一致性（ACID、CAP、BASE、二段提交、三段提交、TCC、幂等性）原理详解</a></li>
-</ul>
-</blockquote>
-<h2 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h2><ol>
-<li>A：Atomicity，原子性。</li>
-<li>C：Consistency，一致性。</li>
-<li>I：Isolation，隔离性。</li>
-<li>D：Durability，持久性。</li>
-</ol>
-<p>ACID 强一致性模型在分布式下很难实现。</p>
-<h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><ol>
-<li>C：Consistency。一致性。</li>
-<li>A：Availability。可用性。</li>
-<li>P：Partition tolerance。分区容错性。</li>
-</ol>
-<p>见 <a href="/2020/分布式/raft协议/" title="Raft 与 CAP">Raft 与 CAP</a></p>
-<h2 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h2><p>为了解决 CAP 三个无法同时保证，而提出了 BASE 理论。</p>
-<ol>
-<li>基本可用（Basically Available）</li>
-<li>软状态（Soft State）<ul>
-<li>允许系统中的数据存在中间状态，并认为该状态不影响系统的整体可用性，即允许系统在多个不同节点的数据副本存在数据延时。</li>
-</ul>
-</li>
-<li>最终一致性（Eventually Consistent）<ul>
-<li>软状态，不可能一直是软状态，必须有个时间期限。在期限过后，应当保证所有副本保持数据一致性，从而达到数据的最终一致性。这个时间期限取决于网络延时、系统负载、数据复制方案设计等因素。</li>
-</ul>
-</li>
-</ol>
-<h1 id="TCC、2PC、3PC"><a href="#TCC、2PC、3PC" class="headerlink" title="TCC、2PC、3PC"></a>TCC、2PC、3PC</h1><blockquote>
-<p><a href="http://anruence.com/2018/03/05/tcc-2pc-3pc/">理解TCC、2PC和3PC</a></p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>others</category>
-      </categories>
-      <tags>
-        <tag>record</tag>
-        <tag>interview</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>面经整理</title>
     <url>/2020/others/%E9%9D%A2%E7%BB%8F%E6%95%B4%E7%90%86/</url>
     <content><![CDATA[<h1 id="蚂蚁金服-中间件"><a href="#蚂蚁金服-中间件" class="headerlink" title="蚂蚁金服 中间件"></a>蚂蚁金服 中间件</h1><blockquote>
@@ -1696,6 +1954,129 @@ class AbstractStringBuilder {
 <li>在一个平面直角坐标系中，有一只蚂蚁从原点开始走，只可以向右边（与X正半轴平行）和上边（与Y轴正半轴平行）爬行，要到达（x,y）坐标，请问有几种走法，推导出一个公式。（开始 时候还没明白面试官的意图，然后我就一直在想，后面我想到是斐波那契数列，然后面试官说我的方向是对的，后面经过无数次提示终于推导出了公式）     </li>
 <li>有啥想问的没（我问对我面试的评价与建议还有面试官的工作日常）</li>
 </ol>
+]]></content>
+      <categories>
+        <category>others</category>
+      </categories>
+      <tags>
+        <tag>record</tag>
+        <tag>interview</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>面试常见问题记录</title>
+    <url>/2020/others/%E9%9D%A2%E8%AF%95%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h1 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h1><blockquote>
+<ul>
+<li><a href="https://blog.csdn.net/puhaiyang/article/details/72284702">对mysql乐观锁、悲观锁、共享锁、排它锁、行锁、表锁概念的理解</a></li>
+<li><a href="https://cyc2018.github.io/CS-Notes/#/notes/数据库系统原理?id=_2-两段锁协议">CSNote 数据库系统原理</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/53974502">mysql事务和锁 SELECT FOR UPDATE</a></li>
+</ul>
+</blockquote>
+<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><p>认为操作数据时不会发生竞争，不会加锁，而是更新数据时检查数据是否发生了变化。</p>
+<p>有竞争会失败，这时抛出错误，后续如何处理由客户决定。</p>
+<p>一般使用 CAS + 版本号 实现。</p>
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>在数据库中要自己添加一个版本号的字段</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">update</span> t_goods </span><br><span class="line">	<span class="keyword">set</span> <span class="keyword">status</span>=<span class="number">2</span>,<span class="keyword">version</span>=<span class="keyword">version</span>+<span class="number">1</span></span><br><span class="line">	<span class="keyword">where</span> <span class="keyword">id</span>=#&#123;<span class="keyword">id</span>&#125; <span class="keyword">and</span> <span class="keyword">version</span>=#&#123;<span class="keyword">version</span>&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2><p>认为操作数据时会发生竞争，主动加锁。</p>
+<p>有竞争会阻塞。</p>
+<h3 id="数据库-1"><a href="#数据库-1" class="headerlink" title="数据库"></a>数据库</h3><h4 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h4><ul>
+<li>一级封锁协议。事务 T 要修改数据 A 时必须加写锁，直到 T 结束才释放锁。</li>
+<li>二级封锁协议。解决脏读。在一级的基础上，要求读取数据 A 时必须加读锁，读取完马上释放读锁。</li>
+<li>三级封锁协议。解决不可重复读。在二级的基础上，要求读取数据 A 时必须加读锁，直到事务结束了才能释读锁。</li>
+</ul>
+<h4 id="显式锁定"><a href="#显式锁定" class="headerlink" title="显式锁定"></a>显式锁定</h4><p>会根据隔离级别自动加锁。也可以显式指定读写锁，必须在事务中才能使用。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> ... <span class="keyword">LOCK</span> <span class="keyword">In</span> <span class="keyword">SHARE</span> <span class="keyword">MODE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> ... <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="倒排索引"><a href="#倒排索引" class="headerlink" title="倒排索引"></a>倒排索引</h1><blockquote>
+<ul>
+<li><a href="https://wizardforcel.gitbooks.io/the-art-of-programming-by-july/content/06.11.html">倒排索引(Inverted index)</a></li>
+</ul>
+</blockquote>
+<p>存储每个单词在所有文档中的存储位置。</p>
+<p>常被应用于搜索引擎和关键字查询的问题中。</p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><p>以英文为例，下面是要被索引的文本：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">T0 = &quot;it is what it is&quot;  </span><br><span class="line">T1 = &quot;what is it&quot;  </span><br><span class="line">T2 = &quot;it is a banana&quot;</span><br></pre></td></tr></table></figure>
+<p>我们就能得到下面的反向文件索引：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;a&quot;:      &#123;2&#125;</span><br><span class="line">&quot;banana&quot;: &#123;2&#125;</span><br><span class="line">&quot;is&quot;:     &#123;0, 1, 2&#125;</span><br><span class="line">&quot;it&quot;:     &#123;0, 1, 2&#125;</span><br><span class="line">&quot;what&quot;:   &#123;0, 1&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="布隆过滤器"><a href="#布隆过滤器" class="headerlink" title="布隆过滤器"></a>布隆过滤器</h1><blockquote>
+<ul>
+<li><a href="https://www.cnblogs.com/allensun/archive/2011/02/16/1956532.html">布隆过滤器 (Bloom Filter) 详解</a></li>
+</ul>
+</blockquote>
+<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>$m$ bits 组成的字节数组，初始都为 0。</p>
+<p>添加元素时，用 $k$ 个哈希函数把元素映射到 bits 的 $k$ 个位置上，这些位置都置为 1。</p>
+<p>查找元素时，如果映射后的 $k$ 个位置有为 0 的位置，说明元素不存在；否则元素<strong>可能</strong>存在。</p>
+<h2 id="误判率"><a href="#误判率" class="headerlink" title="误判率"></a>误判率</h2><p>当 $k$ 最优时，误判率 $p = ln2\frac{m}{n}$，$n$ 为元素的个数。</p>
+<p>所以，</p>
+<ul>
+<li>当误判率为 $1\%$ 时，存储每个元素需要9.6 bits。</li>
+<li>每当想将误判率降低为原来的 1/10，则存储每个元素需要增加4.8 bits</li>
+</ul>
+<h1 id="微服务"><a href="#微服务" class="headerlink" title="微服务"></a>微服务</h1><blockquote>
+<p><a href="https://www.zhihu.com/question/65502802/answer/802678798">什么是微服务架构</a></p>
+</blockquote>
+<h2 id="介绍-1"><a href="#介绍-1" class="headerlink" title="介绍"></a>介绍</h2><p>拆分服务，分工明确。</p>
+<p>数据库拆分，各服务可以采用异构的数据库。</p>
+<h2 id="容易出现的问题"><a href="#容易出现的问题" class="headerlink" title="容易出现的问题"></a>容易出现的问题</h2><ul>
+<li>定位故障点很苦难。</li>
+<li>稳定性下降。一个服务故障可能会产生雪崩效用，导致整个系统故障。</li>
+<li>服务数量非常多。部署、管理的工作量很大。</li>
+<li>测试困难。</li>
+</ul>
+<h2 id="常用解决方法"><a href="#常用解决方法" class="headerlink" title="常用解决方法"></a>常用解决方法</h2><ul>
+<li>监控。发现故障的征兆。</li>
+<li>链路跟踪。定位问题。</li>
+<li>日志分析。分析问题。</li>
+<li>网关。权限控制，服务治理。</li>
+<li>服务注册于发现 。动态扩容。</li>
+<li><p>熔断。</p>
+<ul>
+<li>所以当多次访问一个服务失败时，应熔断，标记该服务已停止工作，直接返回错误。直至该服务恢复正常后再重新建立连接。</li>
+</ul>
+</li>
+<li>服务降级。</li>
+<li>限流。<ul>
+<li>丢弃多于请求。</li>
+<li>分区限流。</li>
+</ul>
+</li>
+</ul>
+<h2 id="微服务框架"><a href="#微服务框架" class="headerlink" title="微服务框架"></a>微服务框架</h2><p>以上的功能能都需要在应用服务上添加一些对接代码。</p>
+<p>如果让每个应用服务自己实现是非常耗时耗力的。基于 DRY 的原则，可以开发一套微服务框架，将与各个组件对接的代码和另外一些公共代码抽离到框架中，所有的应用服务都统一使用这套框架进行开发。</p>
+<h1 id="ACID-CAP-BASE"><a href="#ACID-CAP-BASE" class="headerlink" title="ACID CAP BASE"></a>ACID CAP BASE</h1><blockquote>
+<ul>
+<li><a href="https://juejin.im/post/5b2663fcf265da59a401e6f8">分布式理论(二) - BASE理论</a></li>
+<li><a href="https://blog.csdn.net/qq_31854907/article/details/92796788">分布式系统一致性（ACID、CAP、BASE、二段提交、三段提交、TCC、幂等性）原理详解</a></li>
+</ul>
+</blockquote>
+<h2 id="ACID"><a href="#ACID" class="headerlink" title="ACID"></a>ACID</h2><ol>
+<li>A：Atomicity，原子性。</li>
+<li>C：Consistency，一致性。</li>
+<li>I：Isolation，隔离性。</li>
+<li>D：Durability，持久性。</li>
+</ol>
+<p>ACID 强一致性模型在分布式下很难实现。</p>
+<h2 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h2><ol>
+<li>C：Consistency。一致性。</li>
+<li>A：Availability。可用性。</li>
+<li>P：Partition tolerance。分区容错性。</li>
+</ol>
+<p>见 <a href="/2020/分布式/raft协议/" title="Raft 与 CAP">Raft 与 CAP</a></p>
+<h2 id="BASE"><a href="#BASE" class="headerlink" title="BASE"></a>BASE</h2><p>为了解决 CAP 三个无法同时保证，而提出了 BASE 理论。</p>
+<ol>
+<li>基本可用（Basically Available）</li>
+<li>软状态（Soft State）<ul>
+<li>允许系统中的数据存在中间状态，并认为该状态不影响系统的整体可用性，即允许系统在多个不同节点的数据副本存在数据延时。</li>
+</ul>
+</li>
+<li>最终一致性（Eventually Consistent）<ul>
+<li>软状态，不可能一直是软状态，必须有个时间期限。在期限过后，应当保证所有副本保持数据一致性，从而达到数据的最终一致性。这个时间期限取决于网络延时、系统负载、数据复制方案设计等因素。</li>
+</ul>
+</li>
+</ol>
+<h1 id="TCC、2PC、3PC"><a href="#TCC、2PC、3PC" class="headerlink" title="TCC、2PC、3PC"></a>TCC、2PC、3PC</h1><blockquote>
+<p><a href="http://anruence.com/2018/03/05/tcc-2pc-3pc/">理解TCC、2PC和3PC</a></p>
+</blockquote>
 ]]></content>
       <categories>
         <category>others</category>
@@ -2648,21 +3029,6 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
-    <title>排序</title>
-    <url>/2020/algorithm/%E6%8E%92%E5%BA%8F/</url>
-    <content><![CDATA[<blockquote>
-<p><a href="https://www.zhihu.com/question/51337272/answer/572455307">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
-</blockquote>
-<p><img src="/images/v2-f50f588e8c546bb649b78f8ccc20689c_1440w.jpg" alt="img"></p>
-]]></content>
-      <categories>
-        <category>algorithm</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>红黑树</title>
     <url>/2020/algorithm/%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
     <content><![CDATA[<h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
@@ -2720,6 +3086,21 @@ class AbstractStringBuilder {
 <li><a href="https://zhuanlan.zhihu.com/p/22800206">数据结构：红黑树的删除</a></li>
 <li><a href="https://www.zhihu.com/question/19856999">红黑树比 AVL 树具体更高效在哪里？</a></li>
 </ol>
+]]></content>
+      <categories>
+        <category>algorithm</category>
+      </categories>
+      <tags>
+        <tag>algorithm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>排序</title>
+    <url>/2020/algorithm/%E6%8E%92%E5%BA%8F/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://www.zhihu.com/question/51337272/answer/572455307">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
+</blockquote>
+<p><img src="/images/v2-f50f588e8c546bb649b78f8ccc20689c_1440w.jpg" alt="img"></p>
 ]]></content>
       <categories>
         <category>algorithm</category>
@@ -3800,6 +4181,64 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>SPI 机制</title>
+    <url>/2020/java/jvm/SPI/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
+<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">Java SPI机制详解</a></li>
+<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
+</ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
+</li>
+<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
+</li>
+</ul>
+<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
+<li><strong>服务</strong> 一般是系统定义好的接口，</li>
+<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
+<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
+<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
+<p>例如 JDK 中定义了 <code>JDBC</code> 服务，而 MySQL、PostgreSQL 提供了具体的实现。<code>JDBC</code> 的服务接口定义在 <code>java.sql</code> 中，由引导类加载器进行的加载。而具体的服务实现类在 Classpath 下，应该由系统类加载器进行加载。显然，使用 JDBC 的引导类加载器是无法对这些具体服务进行加载的。</p>
+<p>因此，在 JDBC 4.0 以前，在连接数据库的时候，需要首先使用 <code>Class.forName(&quot;com.mysql.jdbc.Driver&quot;)</code> 来在服务使用者这里显式的加载服务实现者。</p>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>为了解决这个问题，需要使<strong>父类</strong>加载器去<strong>请求子类</strong>加载器去执行类加载任务，这样就要破坏双亲委派类加载机制。</p>
+<p>因此，引入了<strong>线程上下文类加载器</strong>，线程的上下文类加载器默认都是系统类加载器。这样，服务定义者就可以使用这个线程上下文类加载器完成服务提供者的类加载。</p>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p><code>java.util.ServiceLoader</code> 实现了上述的方案。</p>
+<p>在 <code>Classpath/resources/META-INF/services/MyService的接口全名</code> 文件中写入多个服务提供者的类全名（以行为单位），使用 <code>ServiceLoader</code> 就可以去加载这些服务提供者。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ServiceLoader&lt;MyService&gt; loader = ServiceLoader.load(MyService.class);</span><br><span class="line"><span class="keyword">for</span> (MyService serviceImpl : loader) &#123;</span><br><span class="line">  serviceImpl.func();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="JDBC-例子"><a href="#JDBC-例子" class="headerlink" title="JDBC 例子"></a>JDBC 例子</h2><h3 id="DriverManager"><a href="#DriverManager" class="headerlink" title="DriverManager"></a>DriverManager</h3><p>在 JDBC 中就使用了 <code>ServiceLoader</code> 去加载具体的驱动。</p>
+<p><code>DriverManager</code> 在类初始化时，使用 <code>ServiceLoader</code> 去加载了 <code>Driver.class</code> 的实现类。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DriverManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();</span><br><span class="line">        println(<span class="string">"JDBC DriverManager initialized"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadInitialDrivers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String drivers;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            drivers = AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;String&gt;() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> String <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> System.getProperty(<span class="string">"jdbc.drivers"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            drivers = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// If the driver is packaged as a Service Provider, load it.</span></span><br><span class="line">        <span class="comment">// Get all the drivers through the classloader</span></span><br><span class="line">        <span class="comment">// exposed as a java.sql.Driver.class service.</span></span><br><span class="line">        <span class="comment">// ServiceLoader.load() replaces the sun.misc.Providers()</span></span><br><span class="line"></span><br><span class="line">        AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">                Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">                        driversIterator.next();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">                <span class="comment">// Do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h3><p>在 <code>mysql-connector-java-5.1.45.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.mysql.jdbc.Driver</span><br><span class="line">com.mysql.fabric.jdbc.FabricMySQLDriver</span><br></pre></td></tr></table></figure>
+<p>在 <code>postgresql-42.2.2.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">org.postgresql.Driver</span><br></pre></td></tr></table></figure>
+<p>这样在使用 JDBC 的时候，直接获取连接就可以了，不需要额外加载对应的驱动类。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String url = <span class="string">"jdbc:mysql://localhost:3306/test"</span>;</span><br><span class="line">Connection conn = DriverManager.getConnection(url,username,password);</span><br></pre></td></tr></table></figure>
+<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><ul>
+<li><p>使用 <code>ServiceLoader.load(MyService.class)</code> 方法，会把当前线程的上下文类加载器存储在 <code>loader</code> 中。</p>
+</li>
+<li><p><code>ServiceLoader#iterator()</code> 返回一个内置的迭代器。</p>
+</li>
+<li><code>iterator#hasNext()</code> 会去读取所有 resources 文件夹中 META-INF/services/serviceName 文件。</li>
+<li><code>iterator#next()</code> 用 <code>loader</code> 去加载每一个 <code>hadNext()</code> 读取出来的类。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 默认使用上下文类加载器。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service)</span> </span>&#123;</span><br><span class="line">    ClassLoader cl = Thread.currentThread().getContextClassLoader();</span><br><span class="line">    <span class="keyword">return</span> ServiceLoader.load(service, cl);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service, ClassLoader loader)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ServiceLoader&lt;&gt;(service, loader);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">ServiceLoader</span><span class="params">(Class&lt;S&gt; svc, ClassLoader cl)</span> </span>&#123;</span><br><span class="line">    service = Objects.requireNonNull(svc, <span class="string">"Service interface cannot be null"</span>);</span><br><span class="line">    loader = (cl == <span class="keyword">null</span>) ? ClassLoader.getSystemClassLoader() : cl;</span><br><span class="line">    acc = (System.getSecurityManager() != <span class="keyword">null</span>) ? AccessController.getContext() : <span class="keyword">null</span>;</span><br><span class="line">    reload();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Iterator&lt;S&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX = <span class="string">"META-INF/services/"</span>;</span><br><span class="line"><span class="comment">// hasNext() 最终调用 hasNextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasNextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (nextName != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (configs == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String fullName = PREFIX + service.getName();</span><br><span class="line">            <span class="keyword">if</span> (loader == <span class="keyword">null</span>)</span><br><span class="line">              	<span class="comment">// 找到所有 resources 文件夹中 META-INF/services/serviceName 文件。</span></span><br><span class="line">                configs = ClassLoader.getSystemResources(fullName);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                configs = loader.getResources(fullName);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException x) &#123;</span><br><span class="line">            fail(service, <span class="string">"Error locating configuration files"</span>, x);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 遍历每一个 config 文件。</span></span><br><span class="line">    <span class="keyword">while</span> ((pending == <span class="keyword">null</span>) || !pending.hasNext()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!configs.hasMoreElements()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        pending = parse(service, configs.nextElement());</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 存储下一个要加载的类名。</span></span><br><span class="line">    nextName = pending.next();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// next() 最终调用 nextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> S <span class="title">nextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!hasNextService())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    String cn = nextName;</span><br><span class="line">    nextName = <span class="keyword">null</span>;</span><br><span class="line">    Class&lt;?&gt; c = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 使用构造函数传入的 loader，加载 nextName。</span></span><br><span class="line">        c = Class.forName(cn, <span class="keyword">false</span>, loader);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" not found"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!service.isAssignableFrom(c)) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn  + <span class="string">" not a subtype"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        S p = service.cast(c.newInstance());</span><br><span class="line">        providers.put(cn, p);</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" could not be instantiated"</span>,</span><br><span class="line">             x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Error();          <span class="comment">// This cannot happen</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>java</category>
+        <category>jvm</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>FileChannel与内存映射文件</title>
     <url>/2020/java/io/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -3880,104 +4319,6 @@ class AbstractStringBuilder {
       <tags>
         <tag>io</tag>
         <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>LinkedHashMap 源码分析</title>
-    <url>/2020/java/basic/LinkedHashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8">搞懂 Java LinkedHashMap 源码</a></li>
-</ul>
-<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
-<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
-</li>
-<li><p>使用双向链表，记录节点的访问顺序。</p>
-<ul>
-<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
-</li>
-<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在节点中，添加 before 和 after，来实现双向链表。</p>
-<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>相比 <code>HashMap</code>，在创建节点后，会把节点加入到链表尾部。</p>
-<h2 id="双向链表操作"><a href="#双向链表操作" class="headerlink" title="双向链表操作"></a>双向链表操作</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// unlink</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">        head = a;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span>)</span><br><span class="line">        tail = b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeInsertion</span><span class="params">(<span class="keyword">boolean</span> evict)</span> </span>&#123; <span class="comment">// possibly remove eldest</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    <span class="keyword">if</span> (evict &amp;&amp; (first = head) != <span class="keyword">null</span> &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key = first.key;</span><br><span class="line">        removeNode(hash(key), key, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">        p.after = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">            head = a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            b.after = a;</span><br><span class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">            a.before = b;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            last = b;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>在调用 <code>remove()</code> 时，使用 <code>afterNodeRemoval()</code> 把节点从链表删除。</li>
-<li>在调用 <code>get()</code>、<code>put</code> 更新已经存在的节点，使用 <code>afterNodeAccess()</code> 把节点挪到链表尾部。</li>
-<li>在插入新的节点后，调用 <code>afterNodeInsertion()</code>，如果 <code>removeEldestEntry()</code> 为 true，则删除头结点（最旧的节点）。<ul>
-<li>LinkedHashMap 中 <code>removeEldestEntry()</code> 会返回 false，这个功能是给子类用的。</li>
-</ul>
-</li>
-</ul>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>basic</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SPI 机制</title>
-    <url>/2020/java/jvm/SPI/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
-<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">Java SPI机制详解</a></li>
-<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
-</ul>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
-<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
-</li>
-<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
-</li>
-</ul>
-<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
-<li><strong>服务</strong> 一般是系统定义好的接口，</li>
-<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
-<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
-<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
-</ul>
-</li>
-</ul>
-<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
-<p>例如 JDK 中定义了 <code>JDBC</code> 服务，而 MySQL、PostgreSQL 提供了具体的实现。<code>JDBC</code> 的服务接口定义在 <code>java.sql</code> 中，由引导类加载器进行的加载。而具体的服务实现类在 Classpath 下，应该由系统类加载器进行加载。显然，使用 JDBC 的引导类加载器是无法对这些具体服务进行加载的。</p>
-<p>因此，在 JDBC 4.0 以前，在连接数据库的时候，需要首先使用 <code>Class.forName(&quot;com.mysql.jdbc.Driver&quot;)</code> 来在服务使用者这里显式的加载服务实现者。</p>
-<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>为了解决这个问题，需要使<strong>父类</strong>加载器去<strong>请求子类</strong>加载器去执行类加载任务，这样就要破坏双亲委派类加载机制。</p>
-<p>因此，引入了<strong>线程上下文类加载器</strong>，线程的上下文类加载器默认都是系统类加载器。这样，服务定义者就可以使用这个线程上下文类加载器完成服务提供者的类加载。</p>
-<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p><code>java.util.ServiceLoader</code> 实现了上述的方案。</p>
-<p>在 <code>Classpath/resources/META-INF/services/MyService的接口全名</code> 文件中写入多个服务提供者的类全名（以行为单位），使用 <code>ServiceLoader</code> 就可以去加载这些服务提供者。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ServiceLoader&lt;MyService&gt; loader = ServiceLoader.load(MyService.class);</span><br><span class="line"><span class="keyword">for</span> (MyService serviceImpl : loader) &#123;</span><br><span class="line">  serviceImpl.func();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="JDBC-例子"><a href="#JDBC-例子" class="headerlink" title="JDBC 例子"></a>JDBC 例子</h2><h3 id="DriverManager"><a href="#DriverManager" class="headerlink" title="DriverManager"></a>DriverManager</h3><p>在 JDBC 中就使用了 <code>ServiceLoader</code> 去加载具体的驱动。</p>
-<p><code>DriverManager</code> 在类初始化时，使用 <code>ServiceLoader</code> 去加载了 <code>Driver.class</code> 的实现类。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DriverManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();</span><br><span class="line">        println(<span class="string">"JDBC DriverManager initialized"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadInitialDrivers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String drivers;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            drivers = AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;String&gt;() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> String <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> System.getProperty(<span class="string">"jdbc.drivers"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            drivers = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// If the driver is packaged as a Service Provider, load it.</span></span><br><span class="line">        <span class="comment">// Get all the drivers through the classloader</span></span><br><span class="line">        <span class="comment">// exposed as a java.sql.Driver.class service.</span></span><br><span class="line">        <span class="comment">// ServiceLoader.load() replaces the sun.misc.Providers()</span></span><br><span class="line"></span><br><span class="line">        AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">                Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">                        driversIterator.next();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">                <span class="comment">// Do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h3><p>在 <code>mysql-connector-java-5.1.45.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.mysql.jdbc.Driver</span><br><span class="line">com.mysql.fabric.jdbc.FabricMySQLDriver</span><br></pre></td></tr></table></figure>
-<p>在 <code>postgresql-42.2.2.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">org.postgresql.Driver</span><br></pre></td></tr></table></figure>
-<p>这样在使用 JDBC 的时候，直接获取连接就可以了，不需要额外加载对应的驱动类。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String url = <span class="string">"jdbc:mysql://localhost:3306/test"</span>;</span><br><span class="line">Connection conn = DriverManager.getConnection(url,username,password);</span><br></pre></td></tr></table></figure>
-<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><ul>
-<li><p>使用 <code>ServiceLoader.load(MyService.class)</code> 方法，会把当前线程的上下文类加载器存储在 <code>loader</code> 中。</p>
-</li>
-<li><p><code>ServiceLoader#iterator()</code> 返回一个内置的迭代器。</p>
-</li>
-<li><code>iterator#hasNext()</code> 会去读取所有 resources 文件夹中 META-INF/services/serviceName 文件。</li>
-<li><code>iterator#next()</code> 用 <code>loader</code> 去加载每一个 <code>hadNext()</code> 读取出来的类。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 默认使用上下文类加载器。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service)</span> </span>&#123;</span><br><span class="line">    ClassLoader cl = Thread.currentThread().getContextClassLoader();</span><br><span class="line">    <span class="keyword">return</span> ServiceLoader.load(service, cl);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service, ClassLoader loader)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ServiceLoader&lt;&gt;(service, loader);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">ServiceLoader</span><span class="params">(Class&lt;S&gt; svc, ClassLoader cl)</span> </span>&#123;</span><br><span class="line">    service = Objects.requireNonNull(svc, <span class="string">"Service interface cannot be null"</span>);</span><br><span class="line">    loader = (cl == <span class="keyword">null</span>) ? ClassLoader.getSystemClassLoader() : cl;</span><br><span class="line">    acc = (System.getSecurityManager() != <span class="keyword">null</span>) ? AccessController.getContext() : <span class="keyword">null</span>;</span><br><span class="line">    reload();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Iterator&lt;S&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX = <span class="string">"META-INF/services/"</span>;</span><br><span class="line"><span class="comment">// hasNext() 最终调用 hasNextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasNextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (nextName != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (configs == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String fullName = PREFIX + service.getName();</span><br><span class="line">            <span class="keyword">if</span> (loader == <span class="keyword">null</span>)</span><br><span class="line">              	<span class="comment">// 找到所有 resources 文件夹中 META-INF/services/serviceName 文件。</span></span><br><span class="line">                configs = ClassLoader.getSystemResources(fullName);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                configs = loader.getResources(fullName);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException x) &#123;</span><br><span class="line">            fail(service, <span class="string">"Error locating configuration files"</span>, x);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 遍历每一个 config 文件。</span></span><br><span class="line">    <span class="keyword">while</span> ((pending == <span class="keyword">null</span>) || !pending.hasNext()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!configs.hasMoreElements()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        pending = parse(service, configs.nextElement());</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 存储下一个要加载的类名。</span></span><br><span class="line">    nextName = pending.next();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// next() 最终调用 nextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> S <span class="title">nextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!hasNextService())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    String cn = nextName;</span><br><span class="line">    nextName = <span class="keyword">null</span>;</span><br><span class="line">    Class&lt;?&gt; c = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 使用构造函数传入的 loader，加载 nextName。</span></span><br><span class="line">        c = Class.forName(cn, <span class="keyword">false</span>, loader);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" not found"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!service.isAssignableFrom(c)) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn  + <span class="string">" not a subtype"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        S p = service.cast(c.newInstance());</span><br><span class="line">        providers.put(cn, p);</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" could not be instantiated"</span>,</span><br><span class="line">             x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Error();          <span class="comment">// This cannot happen</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>java</category>
-        <category>jvm</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -4615,6 +4956,134 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>1. Java内存区域</title>
+    <url>/2020/java/jvm/1Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li>《深入理解 Java 虚拟机 - 第三版》</li>
+</ul>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
+<ol>
+<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
+</li>
+<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
+</li>
+</ol>
+<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
+<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
+<p>较小的内存空间。</p>
+<ul>
+<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
+<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
+</ul>
+<h2 id="Java-虚拟机栈"><a href="#Java-虚拟机栈" class="headerlink" title="Java 虚拟机栈"></a>Java 虚拟机栈</h2><p>每个 Java 方法被执行时，JVM 会创建一个栈帧，存储局部变量表、操作数栈、动态连结、方法出口等信息。</p>
+<p>方法从被调用到执行完毕的过程，对应栈帧在虚拟机栈中从入栈到出栈的过程。</p>
+<h2 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h2><p>局部变量表存放了</p>
+<ul>
+<li>基本数据类型</li>
+<li>对象引用</li>
+<li>returnAddress 类型（指向一条字节码指令的地址）</li>
+</ul>
+<p>它的存储空间使用局部变量槽（Slot）来表示，64 位的 <code>long</code> <code>double</code> 占用两个变量槽。</p>
+<p>局部变量表所需的内存空间，在编译期间就完成了分配。</p>
+<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>分配的栈过多、或栈的内存使用太多，会导致新的栈帧内存无法分配时，HotSpot 虚拟机都会抛出 <code>StackOverflowError</code>。</p>
+<h2 id="JVM-参数"><a href="#JVM-参数" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
+<li>-Xss：栈容量。</li>
+<li>-Xoss：本地方法栈容量。HotSpot 虚拟机不区分两个栈，所以这个参数没有用。</li>
+</ul>
+<h1 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h1><p>与 Java 虚拟机栈类似，为虚拟机使用到的本地 native 方法服务。</p>
+<p>《Java 虚拟机规范》没有强制规定如何实现本地方法栈。HotSpot 虚拟机中，直接把 Java 虚拟机栈 和 本地方法栈合二为一。</p>
+<h1 id="Java-堆"><a href="#Java-堆" class="headerlink" title="Java 堆"></a>Java 堆</h1><p>唯一目的：存放对象实例。是垃圾收集器管理的内存区域。</p>
+<h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><ol>
+<li>执行字节码 <code>new</code> 指令。<ol>
+<li>类加载检查。<ol>
+<li>检查指令的参数能否在常量池中定位到类的符号引用。</li>
+<li>进行类的加载、解析、初始化。（如果没有进行的话）。</li>
+</ol>
+</li>
+<li>为对象分配内存。<ul>
+<li>大小在类加载完成后可以完全确定。</li>
+<li>如果保证多个对象分配的线程安全？<ul>
+<li>CAS + 重试保证原子性更新。</li>
+<li>本地线程分配缓冲（Thread local Allocation Buffer，TLAB）。每个线程在 Java 堆中预先分配一块内存。分配内存现在线程的 TLAB 上进行，只有用完了，才去锁定。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>将分配来的内存空间（除了对象头）初始化为零。</li>
+<li>在对象头中设置必要的信息。</li>
+</ol>
+</li>
+<li>执行 <code>&lt;init&gt;()</code> 方法，即构造函数。</li>
+</ol>
+<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><ol>
+<li>对象头部信息。<ol>
+<li>Mark Word。对象自身运行时信息。对象哈希码、对象分代年龄、锁的信息。</li>
+<li>类型指针。指向它的元数据的指针。</li>
+<li>如果是 Java 数组，还需记录数组长度。</li>
+</ol>
+</li>
+<li>实例数据部分。</li>
+<li>对齐填充。<ol>
+<li>HotSpot 虚拟机要求对象起始地址必须是 8 字节的整数倍。</li>
+</ol>
+</li>
+</ol>
+<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p>两种主流方式。</p>
+<ul>
+<li>句柄。Java 堆中分出一块内存作为句柄池。reference 存储的是对象的句柄地址。句柄包含了对象实例数据的地址、类型数据的地址。<ul>
+<li>这种方式，不需要对象头存储类型指针。</li>
+</ul>
+</li>
+<li>直接指针。reference 直接指向对象实例数据的地址，类型数据的地址存储在对象头的类型指针中。HotSpot 使用这种方式。</li>
+</ul>
+<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code> 。</p>
+<h2 id="JVM-参数-1"><a href="#JVM-参数-1" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
+<li>堆的最小值：-Xms</li>
+<li>堆的最大值：-Xmx</li>
+</ul>
+<h1 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h1><p>存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。</p>
+<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>包含</p>
+<ul>
+<li>.class 文件中包含 编译时生成的字面量、符号引用。</li>
+<li>运行期间放入的新的常量，例如 <code>String.intern()</code>。</li>
+</ul>
+<h2 id="从永久代到元空间"><a href="#从永久代到元空间" class="headerlink" title="从永久代到元空间"></a>从永久代到元空间</h2><p>在 JDK 7 以前，HotSpot 虚拟机使用永久代来实现方法区。把收集器的分代设计扩展到了方法区。</p>
+<p>在 JDK 7 把字符串常量池、静态变量移到堆中。</p>
+<p>在 JDK 8 把剩余内容（主要是类型信息）移到本地 native 内存的元空间中。</p>
+<h2 id="异常-2"><a href="#异常-2" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code>。</p>
+<h2 id="JVM-参数-2"><a href="#JVM-参数-2" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><p>永久代大小（只对JDK 6、JDK 7中除字符串常量池、静态变量部分有效）</p>
+<ul>
+<li>-XX:PermSize 和 -XX:MaxPermSize。限制永久代的大小。</li>
+</ul>
+<p>元空间大小（只对JDK 8中类型信息）</p>
+<ul>
+<li>-XX:MaxMetaspaceSize。最大值。</li>
+<li>-XX:MinMetaspaceSize。最小值。</li>
+<li>-XX:MetaspaceSize。初始大小。</li>
+</ul>
+<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p>不是 《Java 虚拟机规范》 定义的内存区域。</p>
+<p>使用 native 函数 <code>unsafe.allocateMemory()</code> 分配的内存，直接在堆外分配。</p>
+<p>通过 Java 堆里的 <code>DirectByeteBuffer</code> 作为这块内存的引用进行操作。</p>
+<h2 id="异常-3"><a href="#异常-3" class="headerlink" title="异常"></a>异常</h2><ul>
+<li><p>使用  <code>ByeteBuffer.allocateDirect()</code> ，会抛出 <code>OutOfMemoryError:Direct buffer memory</code>。是在 Java 代码中，在向操作系统申请内存前，手动检查的。</p>
+</li>
+<li><p>使用 <code>unsafe.allocateMemory()</code>，会抛出 <code>java.lang.OutOfMemoryError\ n t sun.misc.Unsafe.allocateMemory(Native Method)</code>。是在操作系统申请内存时，抛出的。</p>
+</li>
+</ul>
+<h2 id="JVM-参数-3"><a href="#JVM-参数-3" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
+<li>-XX:MaxDirectMemorySize。只在 <code>ByeteBuffer.allocateDirect()</code> 手动检查时使用。<code>unsafe</code> 分配不受它的限制。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>jvm</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>I/O流相关类</title>
     <url>/2020/java/io/io%E6%B5%81/</url>
     <content><![CDATA[<h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
@@ -4867,6 +5336,46 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>LinkedHashMap 源码分析</title>
+    <url>/2020/java/basic/LinkedHashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8">搞懂 Java LinkedHashMap 源码</a></li>
+</ul>
+<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
+<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
+</li>
+<li><p>使用双向链表，记录节点的访问顺序。</p>
+<ul>
+<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
+</li>
+<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在节点中，添加 before 和 after，来实现双向链表。</p>
+<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>相比 <code>HashMap</code>，在创建节点后，会把节点加入到链表尾部。</p>
+<h2 id="双向链表操作"><a href="#双向链表操作" class="headerlink" title="双向链表操作"></a>双向链表操作</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// unlink</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">        head = a;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span>)</span><br><span class="line">        tail = b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeInsertion</span><span class="params">(<span class="keyword">boolean</span> evict)</span> </span>&#123; <span class="comment">// possibly remove eldest</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    <span class="keyword">if</span> (evict &amp;&amp; (first = head) != <span class="keyword">null</span> &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key = first.key;</span><br><span class="line">        removeNode(hash(key), key, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">        p.after = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">            head = a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            b.after = a;</span><br><span class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">            a.before = b;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            last = b;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在调用 <code>remove()</code> 时，使用 <code>afterNodeRemoval()</code> 把节点从链表删除。</li>
+<li>在调用 <code>get()</code>、<code>put</code> 更新已经存在的节点，使用 <code>afterNodeAccess()</code> 把节点挪到链表尾部。</li>
+<li>在插入新的节点后，调用 <code>afterNodeInsertion()</code>，如果 <code>removeEldestEntry()</code> 为 true，则删除头结点（最旧的节点）。<ul>
+<li>LinkedHashMap 中 <code>removeEldestEntry()</code> 会返回 false，这个功能是给子类用的。</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HashMap源码分析</title>
     <url>/2020/java/basic/HashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -4976,134 +5485,6 @@ class AbstractStringBuilder {
       </categories>
       <tags>
         <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>1. Java内存区域</title>
-    <url>/2020/java/jvm/1Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机 - 第三版》</li>
-</ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
-<ol>
-<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
-</li>
-<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
-</li>
-</ol>
-<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
-<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
-<p>较小的内存空间。</p>
-<ul>
-<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
-<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
-</ul>
-<h2 id="Java-虚拟机栈"><a href="#Java-虚拟机栈" class="headerlink" title="Java 虚拟机栈"></a>Java 虚拟机栈</h2><p>每个 Java 方法被执行时，JVM 会创建一个栈帧，存储局部变量表、操作数栈、动态连结、方法出口等信息。</p>
-<p>方法从被调用到执行完毕的过程，对应栈帧在虚拟机栈中从入栈到出栈的过程。</p>
-<h2 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h2><p>局部变量表存放了</p>
-<ul>
-<li>基本数据类型</li>
-<li>对象引用</li>
-<li>returnAddress 类型（指向一条字节码指令的地址）</li>
-</ul>
-<p>它的存储空间使用局部变量槽（Slot）来表示，64 位的 <code>long</code> <code>double</code> 占用两个变量槽。</p>
-<p>局部变量表所需的内存空间，在编译期间就完成了分配。</p>
-<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>分配的栈过多、或栈的内存使用太多，会导致新的栈帧内存无法分配时，HotSpot 虚拟机都会抛出 <code>StackOverflowError</code>。</p>
-<h2 id="JVM-参数"><a href="#JVM-参数" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
-<li>-Xss：栈容量。</li>
-<li>-Xoss：本地方法栈容量。HotSpot 虚拟机不区分两个栈，所以这个参数没有用。</li>
-</ul>
-<h1 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h1><p>与 Java 虚拟机栈类似，为虚拟机使用到的本地 native 方法服务。</p>
-<p>《Java 虚拟机规范》没有强制规定如何实现本地方法栈。HotSpot 虚拟机中，直接把 Java 虚拟机栈 和 本地方法栈合二为一。</p>
-<h1 id="Java-堆"><a href="#Java-堆" class="headerlink" title="Java 堆"></a>Java 堆</h1><p>唯一目的：存放对象实例。是垃圾收集器管理的内存区域。</p>
-<h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><ol>
-<li>执行字节码 <code>new</code> 指令。<ol>
-<li>类加载检查。<ol>
-<li>检查指令的参数能否在常量池中定位到类的符号引用。</li>
-<li>进行类的加载、解析、初始化。（如果没有进行的话）。</li>
-</ol>
-</li>
-<li>为对象分配内存。<ul>
-<li>大小在类加载完成后可以完全确定。</li>
-<li>如果保证多个对象分配的线程安全？<ul>
-<li>CAS + 重试保证原子性更新。</li>
-<li>本地线程分配缓冲（Thread local Allocation Buffer，TLAB）。每个线程在 Java 堆中预先分配一块内存。分配内存现在线程的 TLAB 上进行，只有用完了，才去锁定。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>将分配来的内存空间（除了对象头）初始化为零。</li>
-<li>在对象头中设置必要的信息。</li>
-</ol>
-</li>
-<li>执行 <code>&lt;init&gt;()</code> 方法，即构造函数。</li>
-</ol>
-<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><ol>
-<li>对象头部信息。<ol>
-<li>Mark Word。对象自身运行时信息。对象哈希码、对象分代年龄、锁的信息。</li>
-<li>类型指针。指向它的元数据的指针。</li>
-<li>如果是 Java 数组，还需记录数组长度。</li>
-</ol>
-</li>
-<li>实例数据部分。</li>
-<li>对齐填充。<ol>
-<li>HotSpot 虚拟机要求对象起始地址必须是 8 字节的整数倍。</li>
-</ol>
-</li>
-</ol>
-<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p>两种主流方式。</p>
-<ul>
-<li>句柄。Java 堆中分出一块内存作为句柄池。reference 存储的是对象的句柄地址。句柄包含了对象实例数据的地址、类型数据的地址。<ul>
-<li>这种方式，不需要对象头存储类型指针。</li>
-</ul>
-</li>
-<li>直接指针。reference 直接指向对象实例数据的地址，类型数据的地址存储在对象头的类型指针中。HotSpot 使用这种方式。</li>
-</ul>
-<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code> 。</p>
-<h2 id="JVM-参数-1"><a href="#JVM-参数-1" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
-<li>堆的最小值：-Xms</li>
-<li>堆的最大值：-Xmx</li>
-</ul>
-<h1 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h1><p>存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。</p>
-<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>包含</p>
-<ul>
-<li>.class 文件中包含 编译时生成的字面量、符号引用。</li>
-<li>运行期间放入的新的常量，例如 <code>String.intern()</code>。</li>
-</ul>
-<h2 id="从永久代到元空间"><a href="#从永久代到元空间" class="headerlink" title="从永久代到元空间"></a>从永久代到元空间</h2><p>在 JDK 7 以前，HotSpot 虚拟机使用永久代来实现方法区。把收集器的分代设计扩展到了方法区。</p>
-<p>在 JDK 7 把字符串常量池、静态变量移到堆中。</p>
-<p>在 JDK 8 把剩余内容（主要是类型信息）移到本地 native 内存的元空间中。</p>
-<h2 id="异常-2"><a href="#异常-2" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code>。</p>
-<h2 id="JVM-参数-2"><a href="#JVM-参数-2" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><p>永久代大小（只对JDK 6、JDK 7中除字符串常量池、静态变量部分有效）</p>
-<ul>
-<li>-XX:PermSize 和 -XX:MaxPermSize。限制永久代的大小。</li>
-</ul>
-<p>元空间大小（只对JDK 8中类型信息）</p>
-<ul>
-<li>-XX:MaxMetaspaceSize。最大值。</li>
-<li>-XX:MinMetaspaceSize。最小值。</li>
-<li>-XX:MetaspaceSize。初始大小。</li>
-</ul>
-<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p>不是 《Java 虚拟机规范》 定义的内存区域。</p>
-<p>使用 native 函数 <code>unsafe.allocateMemory()</code> 分配的内存，直接在堆外分配。</p>
-<p>通过 Java 堆里的 <code>DirectByeteBuffer</code> 作为这块内存的引用进行操作。</p>
-<h2 id="异常-3"><a href="#异常-3" class="headerlink" title="异常"></a>异常</h2><ul>
-<li><p>使用  <code>ByeteBuffer.allocateDirect()</code> ，会抛出 <code>OutOfMemoryError:Direct buffer memory</code>。是在 Java 代码中，在向操作系统申请内存前，手动检查的。</p>
-</li>
-<li><p>使用 <code>unsafe.allocateMemory()</code>，会抛出 <code>java.lang.OutOfMemoryError\ n t sun.misc.Unsafe.allocateMemory(Native Method)</code>。是在操作系统申请内存时，抛出的。</p>
-</li>
-</ul>
-<h2 id="JVM-参数-3"><a href="#JVM-参数-3" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
-<li>-XX:MaxDirectMemorySize。只在 <code>ByeteBuffer.allocateDirect()</code> 手动检查时使用。<code>unsafe</code> 分配不受它的限制。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>jvm</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>
@@ -5873,36 +6254,6 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
-    <title>8.5 DelayQueue 源码分析</title>
-    <url>/2020/java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E8%89%BA%E6%9C%AF%E7%AC%94%E8%AE%B0/8.5DelayQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="8-5-DelayQueue-源码分析"><a href="#8-5-DelayQueue-源码分析" class="headerlink" title="8.5 DelayQueue 源码分析"></a>8.5 DelayQueue 源码分析</h1><h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1. 数据结构"></a>1. 数据结构</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayQueue</span>&lt;<span class="title">E</span> <span class="keyword">extends</span> <span class="title">Delayed</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PriorityQueue&lt;E&gt; q = <span class="keyword">new</span> PriorityQueue&lt;E&gt;();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">transient</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">  	<span class="comment">// 出队线程阻塞在这里。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition available = lock.newCondition();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> Thread leader = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Condition signalled when a newer element becomes available</span></span><br><span class="line"><span class="comment">     * at the head of the queue or a new thread may need to</span></span><br><span class="line"><span class="comment">     * become leader.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DelayQueue</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Delayed</span> <span class="keyword">extends</span> <span class="title">Comparable</span>&lt;<span class="title">Delayed</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回还要延迟多久，</span></span><br><span class="line">  	<span class="comment">// 小于等于 0 时，说明时间到了。</span></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ol>
-<li>使用 <code>PriorityQueue</code> + <code>ReentrantLock</code> 实现。</li>
-<li>内部元素必须实现 <code>Delayed</code> 接口，等待队列的元素是按照节点的  <code>compareTo()</code> 从小到大出队的。</li>
-<li>使用 <code>leader</code> 每次头结点变化时，唤醒一个元素，使其有超时等待，其他线程无限等待。</li>
-</ol>
-<h2 id="2-入队-offer-e"><a href="#2-入队-offer-e" class="headerlink" title="2. 入队 offer(e)"></a>2. 入队 offer(e)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 无界，所以 put(e) 也是直接调用 offer(e)。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 2. 入优先队列。</span></span><br><span class="line">        q.offer(e);</span><br><span class="line">      	<span class="comment">// 3. 如果这次入队的元素最小，有了赋予一次 leader 的机会，唤醒等待队列上的一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (q.peek() == e) &#123;</span><br><span class="line">            leader = <span class="keyword">null</span>;</span><br><span class="line">            available.signal();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="3-阻塞出队-take"><a href="#3-阻塞出队-take" class="headerlink" title="3. 阻塞出队 take()"></a>3. 阻塞出队 take()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            E first = q.peek();</span><br><span class="line">          	<span class="comment">// 2. 如果队列为空，阻塞。</span></span><br><span class="line">            <span class="keyword">if</span> (first == <span class="keyword">null</span>)</span><br><span class="line">                available.await();</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">long</span> delay = first.getDelay(NANOSECONDS);</span><br><span class="line">              	<span class="comment">// 3. 如果首节点过期，返回。</span></span><br><span class="line">                <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> q.poll();</span><br><span class="line">                first = <span class="keyword">null</span>; <span class="comment">// don't retain ref while waiting</span></span><br><span class="line">                <span class="comment">// 4.1 如果 leader 不为 null，说明其他线程抢到了这次赋予 leader 的机会。</span></span><br><span class="line">              	<span class="comment">//		例如本线程是等待队列里被唤醒的，但是赋值 leader 前，</span></span><br><span class="line">              	<span class="comment">//		有了一个新的 take() 抢先完成了赋值 leader 的机会。</span></span><br><span class="line">              	<span class="keyword">if</span> (leader != <span class="keyword">null</span>)</span><br><span class="line">                    available.await();</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                  	<span class="comment">// 4.2 得到了赋值 leader 的机会，不忙等、而是等待 delay 时间。</span></span><br><span class="line">                    Thread thisThread = Thread.currentThread();</span><br><span class="line">                    leader = thisThread;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        available.awaitNanos(delay);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                      	<span class="comment">// 5. 清空 leader。</span></span><br><span class="line">                        <span class="keyword">if</span> (leader == thisThread)</span><br><span class="line">                            leader = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 6. 如果本线程取出一个元素后，队列里还有元素，</span></span><br><span class="line">      	<span class="comment">//			则又有赋予 leader 的权限了。唤醒一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (leader == <span class="keyword">null</span> &amp;&amp; q.peek() != <span class="keyword">null</span>)</span><br><span class="line">            available.signal();</span><br><span class="line">      	<span class="comment">// 7. 释放锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>在以下两个情况，会有一次赋值 <code>leader</code> 的机会，唤醒一个等待队列上的出队线程。<ul>
-<li>在入队操作后，如果本次入队的是最小元素。</li>
-<li>出队操作后，如果队列还有元素。</li>
-</ul>
-</li>
-<li>争夺到 <code>leader</code> 机会的出队线程，进行有超时的等待。</li>
-<li>队列没有元素时，所有出队线程都是无限等待。</li>
-</ul>
-<h2 id="4-非阻塞出队-poll"><a href="#4-非阻塞出队-poll" class="headerlink" title="4. 非阻塞出队 poll()"></a>4. 非阻塞出队 poll()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        E first = q.peek();</span><br><span class="line">      	<span class="comment">// 2.1 如果队列为空，返回 null。</span></span><br><span class="line">        <span class="keyword">if</span> (first == <span class="keyword">null</span> || first.getDelay(NANOSECONDS) &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      	<span class="comment">// 2.2 否则，出队首元素。</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> q.poll();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 3. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>java</category>
-        <category>concurrency</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>concurrency</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>8.4 PriorityBlockingQueue 源码分析</title>
     <url>/2020/java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E8%89%BA%E6%9C%AF%E7%AC%94%E8%AE%B0/8.4PriorityBlockingQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h1 id="8-4-PriorityBlockingQueue-源码分析"><a href="#8-4-PriorityBlockingQueue-源码分析" class="headerlink" title="8.4 PriorityBlockingQueue 源码分析"></a>8.4 PriorityBlockingQueue 源码分析</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
@@ -5928,6 +6279,36 @@ class AbstractStringBuilder {
 <p>默认初始容量为 11。</p>
 <h2 id="2-入队-offer"><a href="#2-入队-offer" class="headerlink" title="2. 入队 offer()"></a>2. 入队 offer()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 阻塞入队 put(e) 也是直接调用的 offer(e)。因为无界，所以无法阻塞。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (e == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 获取锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">int</span> n, cap;</span><br><span class="line">    Object[] array;</span><br><span class="line">  	<span class="comment">// 2. 如果数组满了，先扩容。</span></span><br><span class="line">    <span class="keyword">while</span> ((n = size) &gt;= (cap = (array = queue).length))</span><br><span class="line">        tryGrow(array, cap);</span><br><span class="line">    <span class="comment">// 3. 入队。</span></span><br><span class="line">  	<span class="keyword">try</span> &#123;</span><br><span class="line">        Comparator&lt;? <span class="keyword">super</span> E&gt; cmp = comparator;</span><br><span class="line">        <span class="keyword">if</span> (cmp == <span class="keyword">null</span>)</span><br><span class="line">            siftUpComparable(n, e, array);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            siftUpUsingComparator(n, e, array, cmp);</span><br><span class="line">        size = n + <span class="number">1</span>;</span><br><span class="line">        notEmpty.signal();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">tryGrow</span><span class="params">(Object[] array, <span class="keyword">int</span> oldCap)</span> </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 释放锁。使其他线程可以入队、出队。</span></span><br><span class="line">    lock.unlock(); <span class="comment">// must release and then re-acquire main lock</span></span><br><span class="line">    Object[] newArray = <span class="keyword">null</span>;</span><br><span class="line">  	<span class="comment">// 2. 获取扩容自旋锁。</span></span><br><span class="line">    <span class="keyword">if</span> (allocationSpinLock == <span class="number">0</span> &amp;&amp;</span><br><span class="line">        UNSAFE.compareAndSwapInt(<span class="keyword">this</span>, allocationSpinLockOffset,</span><br><span class="line">                                 <span class="number">0</span>, <span class="number">1</span>)) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">          	<span class="comment">// 3. 计算扩容后的数组代销。</span></span><br><span class="line">          	<span class="comment">// 		oldGap&lt;64则扩容新增oldcap+2,否者扩容50%，并且最大为MAX_ARRAY_SIZE。</span></span><br><span class="line">            <span class="keyword">int</span> newCap = oldCap + ((oldCap &lt; <span class="number">64</span>) ?</span><br><span class="line">                                   (oldCap + <span class="number">2</span>) : <span class="comment">// grow faster if small</span></span><br><span class="line">                                   (oldCap &gt;&gt; <span class="number">1</span>));</span><br><span class="line">            <span class="keyword">if</span> (newCap - MAX_ARRAY_SIZE &gt; <span class="number">0</span>) &#123;    <span class="comment">// possible overflow</span></span><br><span class="line">                <span class="keyword">int</span> minCap = oldCap + <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">if</span> (minCap &lt; <span class="number">0</span> || minCap &gt; MAX_ARRAY_SIZE)</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError();</span><br><span class="line">                newCap = MAX_ARRAY_SIZE;</span><br><span class="line">            &#125;</span><br><span class="line">          	<span class="comment">// 4. 创建扩容后的数组。</span></span><br><span class="line">            <span class="keyword">if</span> (newCap &gt; oldCap &amp;&amp; queue == array)</span><br><span class="line">                newArray = <span class="keyword">new</span> Object[newCap];</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            allocationSpinLock = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 4. 获取扩容自旋锁失败的线程，让出 CPU。</span></span><br><span class="line">    <span class="keyword">if</span> (newArray == <span class="keyword">null</span>) <span class="comment">// back off if another thread is allocating</span></span><br><span class="line">        Thread.yield();</span><br><span class="line">    <span class="comment">// 5. 获取锁。因为接下来，要把数组指向刚刚创建的数组、拷贝数据。</span></span><br><span class="line">  	lock.lock();</span><br><span class="line">    <span class="keyword">if</span> (newArray != <span class="keyword">null</span> &amp;&amp; queue == array) &#123;</span><br><span class="line">      	<span class="comment">// 5.1 把数组指向刚刚创建的数组。</span></span><br><span class="line">        queue = newArray;</span><br><span class="line">      	<span class="comment">// 5.2 拷贝数据。</span></span><br><span class="line">        System.arraycopy(array, <span class="number">0</span>, newArray, <span class="number">0</span>, oldCap);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_ARRAY_SIZE = Integer.MAX_VALUE - <span class="number">8</span>;</span><br></pre></td></tr></table></figure>
 ]]></content>
+      <categories>
+        <category>java</category>
+        <category>concurrency</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>concurrency</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>8.5 DelayQueue 源码分析</title>
+    <url>/2020/java/Java%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B%E7%9A%84%E8%89%BA%E6%9C%AF%E7%AC%94%E8%AE%B0/8.5DelayQueue%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="8-5-DelayQueue-源码分析"><a href="#8-5-DelayQueue-源码分析" class="headerlink" title="8.5 DelayQueue 源码分析"></a>8.5 DelayQueue 源码分析</h1><h2 id="1-数据结构"><a href="#1-数据结构" class="headerlink" title="1. 数据结构"></a>1. 数据结构</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DelayQueue</span>&lt;<span class="title">E</span> <span class="keyword">extends</span> <span class="title">Delayed</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractQueue</span>&lt;<span class="title">E</span>&gt;</span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">BlockingQueue</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> PriorityQueue&lt;E&gt; q = <span class="keyword">new</span> PriorityQueue&lt;E&gt;();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">transient</span> ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">  	<span class="comment">// 出队线程阻塞在这里。</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Condition available = lock.newCondition();</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">private</span> Thread leader = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Condition signalled when a newer element becomes available</span></span><br><span class="line"><span class="comment">     * at the head of the queue or a new thread may need to</span></span><br><span class="line"><span class="comment">     * become leader.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DelayQueue</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Delayed</span> <span class="keyword">extends</span> <span class="title">Comparable</span>&lt;<span class="title">Delayed</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回还要延迟多久，</span></span><br><span class="line">  	<span class="comment">// 小于等于 0 时，说明时间到了。</span></span><br><span class="line">    <span class="function"><span class="keyword">long</span> <span class="title">getDelay</span><span class="params">(TimeUnit unit)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用 <code>PriorityQueue</code> + <code>ReentrantLock</code> 实现。</li>
+<li>内部元素必须实现 <code>Delayed</code> 接口，等待队列的元素是按照节点的  <code>compareTo()</code> 从小到大出队的。</li>
+<li>使用 <code>leader</code> 每次头结点变化时，唤醒一个元素，使其有超时等待，其他线程无限等待。</li>
+</ol>
+<h2 id="2-入队-offer-e"><a href="#2-入队-offer-e" class="headerlink" title="2. 入队 offer(e)"></a>2. 入队 offer(e)</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 无界，所以 put(e) 也是直接调用 offer(e)。</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offer</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 2. 入优先队列。</span></span><br><span class="line">        q.offer(e);</span><br><span class="line">      	<span class="comment">// 3. 如果这次入队的元素最小，有了赋予一次 leader 的机会，唤醒等待队列上的一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (q.peek() == e) &#123;</span><br><span class="line">            leader = <span class="keyword">null</span>;</span><br><span class="line">            available.signal();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 4. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="3-阻塞出队-take"><a href="#3-阻塞出队-take" class="headerlink" title="3. 阻塞出队 take()"></a>3. 阻塞出队 take()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">take</span><span class="params">()</span> <span class="keyword">throws</span> InterruptedException </span>&#123;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lockInterruptibly();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">            E first = q.peek();</span><br><span class="line">          	<span class="comment">// 2. 如果队列为空，阻塞。</span></span><br><span class="line">            <span class="keyword">if</span> (first == <span class="keyword">null</span>)</span><br><span class="line">                available.await();</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">long</span> delay = first.getDelay(NANOSECONDS);</span><br><span class="line">              	<span class="comment">// 3. 如果首节点过期，返回。</span></span><br><span class="line">                <span class="keyword">if</span> (delay &lt;= <span class="number">0</span>)</span><br><span class="line">                    <span class="keyword">return</span> q.poll();</span><br><span class="line">                first = <span class="keyword">null</span>; <span class="comment">// don't retain ref while waiting</span></span><br><span class="line">                <span class="comment">// 4.1 如果 leader 不为 null，说明其他线程抢到了这次赋予 leader 的机会。</span></span><br><span class="line">              	<span class="comment">//		例如本线程是等待队列里被唤醒的，但是赋值 leader 前，</span></span><br><span class="line">              	<span class="comment">//		有了一个新的 take() 抢先完成了赋值 leader 的机会。</span></span><br><span class="line">              	<span class="keyword">if</span> (leader != <span class="keyword">null</span>)</span><br><span class="line">                    available.await();</span><br><span class="line">                <span class="keyword">else</span> &#123;</span><br><span class="line">                  	<span class="comment">// 4.2 得到了赋值 leader 的机会，不忙等、而是等待 delay 时间。</span></span><br><span class="line">                    Thread thisThread = Thread.currentThread();</span><br><span class="line">                    leader = thisThread;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        available.awaitNanos(delay);</span><br><span class="line">                    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                      	<span class="comment">// 5. 清空 leader。</span></span><br><span class="line">                        <span class="keyword">if</span> (leader == thisThread)</span><br><span class="line">                            leader = <span class="keyword">null</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 6. 如果本线程取出一个元素后，队列里还有元素，</span></span><br><span class="line">      	<span class="comment">//			则又有赋予 leader 的权限了。唤醒一个线程。</span></span><br><span class="line">        <span class="keyword">if</span> (leader == <span class="keyword">null</span> &amp;&amp; q.peek() != <span class="keyword">null</span>)</span><br><span class="line">            available.signal();</span><br><span class="line">      	<span class="comment">// 7. 释放锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在以下两个情况，会有一次赋值 <code>leader</code> 的机会，唤醒一个等待队列上的出队线程。<ul>
+<li>在入队操作后，如果本次入队的是最小元素。</li>
+<li>出队操作后，如果队列还有元素。</li>
+</ul>
+</li>
+<li>争夺到 <code>leader</code> 机会的出队线程，进行有超时的等待。</li>
+<li>队列没有元素时，所有出队线程都是无限等待。</li>
+</ul>
+<h2 id="4-非阻塞出队-poll"><a href="#4-非阻塞出队-poll" class="headerlink" title="4. 非阻塞出队 poll()"></a>4. 非阻塞出队 poll()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">poll</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">  	<span class="comment">// 1. 加锁。</span></span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        E first = q.peek();</span><br><span class="line">      	<span class="comment">// 2.1 如果队列为空，返回 null。</span></span><br><span class="line">        <span class="keyword">if</span> (first == <span class="keyword">null</span> || first.getDelay(NANOSECONDS) &gt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">      	<span class="comment">// 2.2 否则，出队首元素。</span></span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> q.poll();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      	<span class="comment">// 3. 解锁。</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>java</category>
         <category>concurrency</category>

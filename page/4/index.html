@@ -182,6 +182,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/Zookeeper基本概念/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/分布式/Zookeeper基本概念/" class="post-title-link" itemprop="url">ZooKeeper 基本概念</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-06 20:38:00 / Modified: 21:10:49" itemprop="dateCreated datePublished" datetime="2020-03-06T20:38:00+08:00">2020-03-06</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/分布式/" itemprop="url" rel="index"><span itemprop="name">分布式</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/分布式/Zookeeper基本概念/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/分布式/Zookeeper基本概念/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><p><a href="https://www.cnblogs.com/binarylei/p/8721126.html">Zookeeper 系列（一）基本概念</a></p>
+</li>
+<li><p><a href="http://www.jasongj.com/zookeeper/distributedlock/">深入浅出Zookeeper（二） 基于Zookeeper的分布式锁与领导选举</a></p>
+</li>
+</ul>
+<h1 id="属性结构"><a href="#属性结构" class="headerlink" title="属性结构"></a>属性结构</h1><p>ZooKeeper 使用类似文件系统的方式组织数据。</p>
+<p>每个节点用从根节点到它的绝对路径表示 <code>/node1/node12</code>。</p>
+<p>其中 <code>/zookeeper</code> 用以保存管理信息，比如关键配额信息。</p>
+<h1 id="Znode"><a href="#Znode" class="headerlink" title="Znode"></a>Znode</h1><p>每个节点用 Znode 表示，兼具文件和目录两种特点。</p>
+<p>由 3 部分组成:</p>
+<ul>
+<li><strong>stat</strong> ：状态信息, 描述该 Znode 的版本、权限等信息</li>
+<li><strong>data</strong> ：关联的数据。最多为 1M。主要做配置、状态管理，不要用来存储大数据。</li>
+<li><strong>children</strong> ：子节点。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/分布式/Zookeeper基本概念/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/分布式/分布式ID生成/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -680,97 +784,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/排序/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/algorithm/排序/" class="post-title-link" itemprop="url">排序</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-05 19:44:00" itemprop="dateCreated datePublished" datetime="2020-03-05T19:44:00+08:00">2020-03-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-14 16:23:07" itemprop="dateModified" datetime="2020-03-14T16:23:07+08:00">2020-03-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/algorithm/排序/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/排序/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p><a href="https://www.zhihu.com/question/51337272/answer/572455307">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
-</blockquote>
-<p><img src="/images/v2-f50f588e8c546bb649b78f8ccc20689c_1440w.jpg" alt="img"></p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/红黑树/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -888,6 +901,97 @@
 <li><a href="https://zhuanlan.zhihu.com/p/22800206">数据结构：红黑树的删除</a></li>
 <li><a href="https://www.zhihu.com/question/19856999">红黑树比 AVL 树具体更高效在哪里？</a></li>
 </ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/algorithm/排序/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/algorithm/排序/" class="post-title-link" itemprop="url">排序</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-05 19:44:00" itemprop="dateCreated datePublished" datetime="2020-03-05T19:44:00+08:00">2020-03-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-14 16:23:07" itemprop="dateModified" datetime="2020-03-14T16:23:07+08:00">2020-03-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/algorithm/" itemprop="url" rel="index"><span itemprop="name">algorithm</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/algorithm/排序/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/algorithm/排序/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <blockquote>
+<p><a href="https://www.zhihu.com/question/51337272/answer/572455307">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
+</blockquote>
+<p><img src="/images/v2-f50f588e8c546bb649b78f8ccc20689c_1440w.jpg" alt="img"></p>
 
       
     </div>
@@ -1137,121 +1241,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/四种io/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/计算机网络/四种io/" class="post-title-link" itemprop="url">同步/异步IO与阻塞/非阻塞IO</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-05 19:18:00" itemprop="dateCreated datePublished" datetime="2020-03-05T19:18:00+08:00">2020-03-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-07 20:19:23" itemprop="dateModified" datetime="2020-03-07T20:19:23+08:00">2020-03-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/计算机网络/四种io/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/四种io/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>对于读/写 I/O 操作，流程分为两步（以读事件为例）：</p>
-<ol>
-<li><p>等待数据准备好。（例如从网络来的数据写入网卡、再复制进内核）。</p>
-</li>
-<li><p>数据从内核空间复制到用户空间。</p>
-</li>
-</ol>
-<h1 id="阻塞与非阻塞-I-O"><a href="#阻塞与非阻塞-I-O" class="headerlink" title="阻塞与非阻塞 I/O"></a>阻塞与非阻塞 I/O</h1><p>阻  I/O 和非阻塞 I/O 是看在调用 <code>read()</code>接口时，在阶段 1 数据没有准备好时，处理的方法。</p>
-<ul>
-<li>阻塞 I/O 调用 read()` 接口在数据没有准备好时，会阻塞在这个系统调用出。（这个进程被放入了等待队列）。</li>
-<li>非阻塞 I/O 调用 <code>read()</code> 接口在数据没有准备好时，会直接返回失败。</li>
-</ul>
-<p><img src="/images/阻塞io.jpg" alt="阻塞I/O"><br><img src="/images/非阻塞io.jpg" alt="非阻塞I/O"></p>
-<h1 id="同步与异步-I-O"><a href="#同步与异步-I-O" class="headerlink" title="同步与异步 I/O"></a>同步与异步 I/O</h1><p>同步 I/O 和异步 I/O 是看在有数据可读时，是否要等待从内核拷贝到用户空间的过程。</p>
-<ul>
-<li>同步 I/O 在有数据可读时，会等待从内核拷贝到用户的过程。</li>
-<li><p>异步 I/O 在有数据可读时，会继续做其他的，等内核已经拷贝数据到用户空间，再进行数据的处理。</p>
-<p><img src="/images/异步io.jpg" alt="异步I/O"></p>
-</li>
-</ul>
-<h1 id="Netty-使用的-NIO，为什么说自己是异步事件驱动的"><a href="#Netty-使用的-NIO，为什么说自己是异步事件驱动的" class="headerlink" title="Netty 使用的 NIO，为什么说自己是异步事件驱动的"></a>Netty 使用的 NIO，为什么说自己是异步事件驱动的</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/计算机网络/四种io/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1324,7 +1313,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-count">80</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

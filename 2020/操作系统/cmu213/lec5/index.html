@@ -20,20 +20,20 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64 使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction set architecutre 指令集架构。 Microarchite">
+  <meta name="description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64。 注意该系列学习笔记除非特别说明，否则处理器默认是x86-64。   使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction s">
 <meta name="keywords" content="操作系统,CMU213">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics">
 <meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec5/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64 使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction set architecutre 指令集架构。 Microarchite">
+<meta property="og:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64。 注意该系列学习笔记除非特别说明，否则处理器默认是x86-64。   使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction s">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ziheliu.github.io/images/x86-64-registers.png">
 <meta property="og:image" content="http://ziheliu.github.io/images/movq.png">
-<meta property="og:updated_time" content="2020-04-10T07:07:53.626Z">
+<meta property="og:updated_time" content="2020-04-10T13:17:07.033Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics">
-<meta name="twitter:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64 使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction set architecutre 指令集架构。 Microarchite">
+<meta name="twitter:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64。 注意该系列学习笔记除非特别说明，否则处理器默认是x86-64。   使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction s">
 <meta name="twitter:image" content="http://ziheliu.github.io/images/x86-64-registers.png">
 
 <link rel="canonical" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec5/">
@@ -220,7 +220,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-10 15:07:53" itemprop="dateModified" datetime="2020-04-10T15:07:53+08:00">2020-04-10</time>
+                <time title="Modified: 2020-04-10 21:17:07" itemprop="dateModified" datetime="2020-04-10T21:17:07+08:00">2020-04-10</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -266,7 +266,10 @@
 </ul>
 <h1 id="处理器"><a href="#处理器" class="headerlink" title="处理器"></a>处理器</h1><p>Intel </p>
 <ul>
-<li>常用处理器：x86 x86-64</li>
+<li>常用处理器：x86 x86-64。<ul>
+<li>注意该系列学习笔记除非特别说明，否则处理器默认是x86-64。</li>
+</ul>
+</li>
 <li>使用 MISC（复杂指令集）。</li>
 </ul>
 <p>ARM</p>
@@ -278,6 +281,9 @@
 <p>Microarchitecture: architecutre的实现。</p>
 <p>Machine Code: 处理器去执行的二进制程序。</p>
 <p>Assembly Code：Machine Code的text表示。</p>
+<ul>
+<li>注意，该系列学习笔记中的汇编，是 Linux 上的汇编，与 Intel 和 Microsoft 上的有些不同。</li>
+</ul>
 <h1 id="汇编代码的相关结构"><a href="#汇编代码的相关结构" class="headerlink" title="汇编代码的相关结构"></a>汇编代码的相关结构</h1><h2 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h2><ul>
 <li>下一条要执行的指令地址。</li>
 </ul>
@@ -286,8 +292,25 @@
 <p><img src="/images/x86-64-registers.png" alt="x86-64-registers"></p>
 <ul>
 <li>使用 <code>%r</code> 得到寄存器的 64 bits，使用 <code>%e</code> 得到寄存器的低 32 bits。</li>
-<li>前 8 个寄存器的名字从 IA32 继承来，命名方式是为了标识每个寄存器的用途。但在 x86-64 中一般不区分它们的用途。<ul>
+<li><p>前 8 个寄存器的名字从 IA32 继承来，命名方式是为了标识每个寄存器的用途。但在 x86-64 中一般不区分它们的用途。</p>
+<ul>
 <li><code>%esp</code> stack pointer，栈指针。</li>
+</ul>
+</li>
+<li><p>对于前 8 个寄存器。</p>
+<ul>
+<li><p><code>%rax</code> 访问 64 bit 位、<code>%eax</code> 低 32 位、<code>%ax</code> 低 16 位、<code>%ah</code> 倒数第二个 byte、<code>%al</code> 低 8 位。</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">0x1122334455667788</span><br><span class="line">  ================ rax (64 bits)</span><br><span class="line">          ======== eax (32 bits)</span><br><span class="line">              ====  ax (16 bits)</span><br><span class="line">              ==    ah (8 bits)</span><br><span class="line">                ==  al (8 bits)</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+<li><p>对于后 8 个寄存器。</p>
+<ul>
+<li><p><code>%r8</code> 64位、<code>%r8d</code> 低 32 位、<code>%r8w</code> 低16位、<code>%r8b</code> 低 8 位。</p>
+</li>
+<li><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0x1122334455667788</span><br><span class="line">  ================ r8 (64 bits)</span><br><span class="line">          ======== r8d (32 bits)</span><br><span class="line">              ==== r8w (16 bits)</span><br><span class="line">                == r8b (8 bits)</span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 </li>
 </ul>
@@ -326,7 +349,8 @@
 <ul>
 <li>二进制序列表示一系列的指令。</li>
 </ul>
-<h1 id="汇编的操作"><a href="#汇编的操作" class="headerlink" title="汇编的操作"></a>汇编的操作</h1><h2 id="代数运算"><a href="#代数运算" class="headerlink" title="代数运算"></a>代数运算</h2><p>在寄存器/内存上进行代数运算。</p>
+<h1 id="汇编的操作"><a href="#汇编的操作" class="headerlink" title="汇编的操作"></a>汇编的操作</h1><p>以 <code>q</code> 结尾的指令表示对 64 位数据进行操作，表示 quadword（四字）。</p>
+<h2 id="代数运算"><a href="#代数运算" class="headerlink" title="代数运算"></a>代数运算</h2><p>在寄存器/内存上进行代数运算。</p>
 <h3 id="leaq"><a href="#leaq" class="headerlink" title="leaq"></a>leaq</h3><p>load effective address。</p>
 <p>将一个内存地址直接存储在目的寄存器中。</p>
 <h4 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">m12</span><span class="params">(<span class="keyword">long</span> x)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> x*<span class="number">12</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -412,10 +436,94 @@
 <h3 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">arith</span><span class="params">(<span class="keyword">long</span> x, <span class="keyword">long</span> y, <span class="keyword">long</span> z)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> t1 = x+y;</span><br><span class="line">  <span class="keyword">long</span> t2 = z+t1;</span><br><span class="line">  <span class="keyword">long</span> t3 = x+<span class="number">4</span>;</span><br><span class="line">  <span class="keyword">long</span> t4 = y * <span class="number">48</span>;</span><br><span class="line">  <span class="keyword">long</span> t5 = t3 + t4;</span><br><span class="line">  <span class="keyword">long</span> rval = t2 * t5;</span><br><span class="line">  <span class="keyword">return</span> rval;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>对应的 Assembly Code：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">arith:</span><br><span class="line">  leaq    (%rdi,%rsi), %rax   # t1. rax = rdi + rsi.</span><br><span class="line">  addq    %rdx, %rax          # t2. rax = rax + rdx.</span><br><span class="line">  leaq    (%rsi,%rsi,2), %rdx #     rdx = rsi + rsi * 2 = 3 * rsi.</span><br><span class="line">  salq    $4, %rdx            # t4. rdx = rdx &lt;&lt; 4 = (3 * rsi) * 16 = rsi * 48.</span><br><span class="line">  leaq    4(%rdi,%rdx), %rcx  # t5. rcx = (rdi + 4) + rdx.</span><br><span class="line">  imulq   %rcx, %rax          # rval. rax = rcx * rax.</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
-<h2 id="传递数据"><a href="#传递数据" class="headerlink" title="传递数据"></a>传递数据</h2><p>在寄存器/内存间传递数据。</p>
+<h2 id="传送数据"><a href="#传送数据" class="headerlink" title="传送数据"></a>传送数据</h2><p>在寄存器/内存间传送数据。</p>
 <h3 id="movq"><a href="#movq" class="headerlink" title="movq"></a>movq</h3><p>用于在 寄存器与寄存器、寄存器与内存、寄存器与常数、常数与内存之间的数据传输。</p>
 <p>注意，内存与内存不能直接进行数据传输。</p>
 <p><img src="/images/movq.png" alt="movq"></p>
+<h4 id="mov-系列命令"><a href="#mov-系列命令" class="headerlink" title="mov 系列命令"></a>mov 系列命令</h4><div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>movb</td>
+<td>传送字节</td>
+</tr>
+<tr>
+<td>movw</td>
+<td>传送字</td>
+</tr>
+<tr>
+<td>movl</td>
+<td>传送双字</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>符号扩展，用 <code>Source</code> 的符号位填充多余的位。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>movsbw</td>
+<td>传送做了符号扩展的字节到字</td>
+</tr>
+<tr>
+<td>movsbl</td>
+<td>传送做了符号扩展的字节到双字</td>
+</tr>
+<tr>
+<td>movswl</td>
+<td>传送做了符号扩展的字到双字</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>零扩展，用 0 填充多余的位。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>动作</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>movzbw</td>
+<td>传送做了零扩展的字节到字</td>
+</tr>
+<tr>
+<td>movzbl</td>
+<td>传送做了零扩展的字节到字</td>
+</tr>
+<tr>
+<td>movzwl</td>
+<td>传送做了零扩展的字节到字</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h4 id="四字、双字、字、字节"><a href="#四字、双字、字、字节" class="headerlink" title="四字、双字、字、字节"></a>四字、双字、字、字节</h4><ul>
+<li>字节 byte，1 byte。</li>
+<li>字 Word，2 bytes。</li>
+<li>双字 DWord (Double Word)，4 bytes。</li>
+<li>四字 QWord (Quad Word)，8 bytes。</li>
+</ul>
+<p>MOVZ S，D         D&lt;-S(零扩展)              传送扩展字节</p>
+<p>Movzbw           传送做了符号扩展字节到字</p>
+<p>Movzbl            传送做了符号扩展字节到双字</p>
+<p>Movzwl            传送做了符号扩展字到双字</p>
 <h3 id="如何使用某一位置的内存"><a href="#如何使用某一位置的内存" class="headerlink" title="如何使用某一位置的内存"></a>如何使用某一位置的内存</h3><ul>
 <li><code>(rb)</code>：<code>Mem[Reg[rb]]</code>。</li>
 <li><code>D(rb)</code>：<code>Mem[Reg[rb] + D]</code>。</li>
@@ -429,7 +537,7 @@
 <p>Assembly Code：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">swap:</span><br><span class="line">   movq    (%rdi), %rax</span><br><span class="line">   movq    (%rsi), %rdx</span><br><span class="line">   movq    %rdx, (%rdi)</span><br><span class="line">   movq    %rax, (%rsi)</span><br><span class="line">   ret</span><br></pre></td></tr></table></figure>
 <p>寄存器 <code>%rdx</code>、<code>%rax</code> 用于存储临时变量 <code>t0</code>、<code>t1</code>，而没有存在内存里。</p>
-<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器。</p>
+<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器，<code>ret</code> 指令返回 <code>%rax</code> 的值。</p>
 <h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><ul>
 <li>Unconditional jumps to/from procedures</li>
 <li>Conditional branches</li>
@@ -456,7 +564,10 @@
     <a href="/2020/mq/rocketmq的Namesrv/" rel="prev" title="RocketMQ 的 Namesrv">
       <i class="fa fa-chevron-left"></i> RocketMQ 的 Namesrv
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/操作系统/cmu213/lec6/" rel="next" title="CMU213 学习笔记-Lec6-Machine-Level Programming II：Control">
+      CMU213 学习笔记-Lec6-Machine-Level Programming II：Control <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -523,7 +634,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理器"><span class="nav-number">2.</span> <span class="nav-text">处理器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#术语"><span class="nav-number">3.</span> <span class="nav-text">术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编代码的相关结构"><span class="nav-number">4.</span> <span class="nav-text">汇编代码的相关结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序计数器"><span class="nav-number">4.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寄存器"><span class="nav-number">4.2.</span> <span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Condition-codes"><span class="nav-number">4.3.</span> <span class="nav-text">Condition codes</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#将-C-代码转变为可执行程序"><span class="nav-number">5.</span> <span class="nav-text">将 C 代码转变为可执行程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">5.1.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#C-代码"><span class="nav-number">5.1.1.</span> <span class="nav-text">C 代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Assembly-Code"><span class="nav-number">5.1.2.</span> <span class="nav-text">Assembly Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Machine-Code"><span class="nav-number">5.1.3.</span> <span class="nav-text">Machine Code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#反汇编"><span class="nav-number">5.1.3.1.</span> <span class="nav-text">反汇编</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编的数据类型"><span class="nav-number">6.</span> <span class="nav-text">汇编的数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编的操作"><span class="nav-number">7.</span> <span class="nav-text">汇编的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代数运算"><span class="nav-number">7.1.</span> <span class="nav-text">代数运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#leaq"><span class="nav-number">7.1.1.</span> <span class="nav-text">leaq</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#例子-1"><span class="nav-number">7.1.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二元指令"><span class="nav-number">7.1.2.</span> <span class="nav-text">二元指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一元指令"><span class="nav-number">7.1.3.</span> <span class="nav-text">一元指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-2"><span class="nav-number">7.1.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传递数据"><span class="nav-number">7.2.</span> <span class="nav-text">传递数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#movq"><span class="nav-number">7.2.1.</span> <span class="nav-text">movq</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用某一位置的内存"><span class="nav-number">7.2.2.</span> <span class="nav-text">如何使用某一位置的内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-3"><span class="nav-number">7.2.3.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程控制"><span class="nav-number">7.3.</span> <span class="nav-text">流程控制</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#处理器"><span class="nav-number">2.</span> <span class="nav-text">处理器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#术语"><span class="nav-number">3.</span> <span class="nav-text">术语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编代码的相关结构"><span class="nav-number">4.</span> <span class="nav-text">汇编代码的相关结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序计数器"><span class="nav-number">4.1.</span> <span class="nav-text">程序计数器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#寄存器"><span class="nav-number">4.2.</span> <span class="nav-text">寄存器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Condition-codes"><span class="nav-number">4.3.</span> <span class="nav-text">Condition codes</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#将-C-代码转变为可执行程序"><span class="nav-number">5.</span> <span class="nav-text">将 C 代码转变为可执行程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">5.1.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#C-代码"><span class="nav-number">5.1.1.</span> <span class="nav-text">C 代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Assembly-Code"><span class="nav-number">5.1.2.</span> <span class="nav-text">Assembly Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Machine-Code"><span class="nav-number">5.1.3.</span> <span class="nav-text">Machine Code</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#反汇编"><span class="nav-number">5.1.3.1.</span> <span class="nav-text">反汇编</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编的数据类型"><span class="nav-number">6.</span> <span class="nav-text">汇编的数据类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#汇编的操作"><span class="nav-number">7.</span> <span class="nav-text">汇编的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#代数运算"><span class="nav-number">7.1.</span> <span class="nav-text">代数运算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#leaq"><span class="nav-number">7.1.1.</span> <span class="nav-text">leaq</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#例子-1"><span class="nav-number">7.1.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#二元指令"><span class="nav-number">7.1.2.</span> <span class="nav-text">二元指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一元指令"><span class="nav-number">7.1.3.</span> <span class="nav-text">一元指令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-2"><span class="nav-number">7.1.4.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传送数据"><span class="nav-number">7.2.</span> <span class="nav-text">传送数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#movq"><span class="nav-number">7.2.1.</span> <span class="nav-text">movq</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mov-系列命令"><span class="nav-number">7.2.1.1.</span> <span class="nav-text">mov 系列命令</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四字、双字、字、字节"><span class="nav-number">7.2.1.2.</span> <span class="nav-text">四字、双字、字、字节</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何使用某一位置的内存"><span class="nav-number">7.2.2.</span> <span class="nav-text">如何使用某一位置的内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-3"><span class="nav-number">7.2.3.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程控制"><span class="nav-number">7.3.</span> <span class="nav-text">流程控制</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -539,7 +650,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-count">80</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

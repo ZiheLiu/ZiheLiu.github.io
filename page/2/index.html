@@ -182,6 +182,121 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/系统设计/代理服务负载均衡/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/系统设计/代理服务负载均衡/" class="post-title-link" itemprop="url">代理服务的负载均衡方案</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-16 15:21:00" itemprop="dateCreated datePublished" datetime="2020-03-16T15:21:00+08:00">2020-03-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-19 15:49:48" itemprop="dateModified" datetime="2020-03-19T15:49:48+08:00">2020-03-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/系统设计/代理服务负载均衡/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/系统设计/代理服务负载均衡/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/61847281">讲讲亿级PV的负载均衡架构</a></li>
+<li><a href="https://blog.csdn.net/Running_free/article/details/77981201">LVS 四种工作模式原理、优缺点比较及简单配置</a></li>
+<li><a href="http://dubbo.apache.org/zh-cn/blog/dubbo-loadbalance.html">Dubbo的负载均衡</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/24440059">聊聊一致性哈希</a></li>
+</ul>
+<h1 id="LVS-原理"><a href="#LVS-原理" class="headerlink" title="LVS 原理"></a>LVS 原理</h1><blockquote>
+<ul>
+<li><a href="https://www.cnblogs.com/liwei0526vip/p/6370103.html">负载均衡 LVS 入门教程详解 - 目录</a></li>
+<li><a href="https://blog.csdn.net/liwei0526vip/article/details/103104483">负载均衡 LVS 入门教程详解 - 基础原理</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/31777732">原理上搞懂LVS的DR和NAT模式的缺陷，不看小心踩坑</a></li>
+</ul>
+</blockquote>
+<h2 id="术语"><a href="#术语" class="headerlink" title="术语"></a>术语</h2><p>CIP：Client IP，表示的是客户端 IP 地址。<br>VIP：Virtual IP，表示负载均衡对外提供访问的 IP 地址，一般负载均衡 IP 都会通过 Virtual IP 实现高可用。<br>RIP：RealServer IP，表示负载均衡后端的真实服务器 IP 地址。<br>DIP：Director IP，表示负载均衡与后端服务器通信的 IP 地址。<br>CMAC：客户端的 MAC 地址，准确的应该是 LVS 连接的路由器的 MAC 地址。<br>VMAC：负载均衡 LVS 的 VIP 对应的 MAC 地址。<br>DMAC：负载均衡 LVS 的 DIP 对应的 MAC 地址。<br>RMAC：后端真实服务器的 RIP 地址对应的 MAC 地址。</p>
+<h2 id="DR-模式"><a href="#DR-模式" class="headerlink" title="DR 模式"></a>DR 模式</h2><p>Direct Routing</p>
+<h3 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h3><ul>
+<li><p>发送时，在 LVS 把源 MAC 地址从 CMAC 改为 DMAC，目标 MAC 地址 从 VMAC 改为 RMAC。</p>
+</li>
+<li><p>回复时，在 RS 构建数据包，源 MAC 地址是 RMAC，目标地址是 CMAC（RS与LVS的一下跳路由器的地址）。</p>
+</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/系统设计/代理服务负载均衡/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/系统设计/高并发限流/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1161,113 +1276,6 @@ AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stri
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/others/面试常见问题记录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/others/面试常见问题记录/" class="post-title-link" itemprop="url">面试常见问题记录</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-10 15:45:00" itemprop="dateCreated datePublished" datetime="2020-03-10T15:45:00+08:00">2020-03-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-16 15:35:43" itemprop="dateModified" datetime="2020-03-16T15:35:43+08:00">2020-03-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/others/" itemprop="url" rel="index"><span itemprop="name">others</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/others/面试常见问题记录/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/others/面试常见问题记录/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="乐观锁与悲观锁"><a href="#乐观锁与悲观锁" class="headerlink" title="乐观锁与悲观锁"></a>乐观锁与悲观锁</h1><blockquote>
-<ul>
-<li><a href="https://blog.csdn.net/puhaiyang/article/details/72284702">对mysql乐观锁、悲观锁、共享锁、排它锁、行锁、表锁概念的理解</a></li>
-<li><a href="https://cyc2018.github.io/CS-Notes/#/notes/数据库系统原理?id=_2-两段锁协议">CSNote 数据库系统原理</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/53974502">mysql事务和锁 SELECT FOR UPDATE</a></li>
-</ul>
-</blockquote>
-<h2 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h2><p>认为操作数据时不会发生竞争，不会加锁，而是更新数据时检查数据是否发生了变化。</p>
-<p>有竞争会失败，这时抛出错误，后续如何处理由客户决定。</p>
-<p>一般使用 CAS + 版本号 实现。</p>
-<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>在数据库中要自己添加一个版本号的字段</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">update</span> t_goods </span><br><span class="line">	<span class="keyword">set</span> <span class="keyword">status</span>=<span class="number">2</span>,<span class="keyword">version</span>=<span class="keyword">version</span>+<span class="number">1</span></span><br><span class="line">	<span class="keyword">where</span> <span class="keyword">id</span>=#&#123;<span class="keyword">id</span>&#125; <span class="keyword">and</span> <span class="keyword">version</span>=#&#123;<span class="keyword">version</span>&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/others/面试常见问题记录/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1340,7 +1348,7 @@ AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stri
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">79</span>
+          <span class="site-state-item-count">80</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
