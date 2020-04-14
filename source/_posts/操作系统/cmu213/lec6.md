@@ -11,6 +11,10 @@ mathjax: true
 typora-root-url: ../../../
 ---
 
+# 引用
+
+- [【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频](https://www.bilibili.com/video/BV1iW411d7hd?t=2580&p=6)
+
 # Processor State
 
 寄存器包含了当前正在执行程序的信息。
