@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  ABIApplication Binary Interface (ABI) 应用程序二进制接口。是机器程序级别的接口。  从开发 x86-64 机器设计时演化而来。超越了硬件成为软件标准。  针对 Linux。  系统的不同部分（Linux 程序、编译器、操作系统）对如何管理机器上的资源有一些共同的理">
+<meta name="keywords" content="操作系统,CMU213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures">
+<meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec7/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  ABIApplication Binary Interface (ABI) 应用程序二进制接口。是机器程序级别的接口。  从开发 x86-64 机器设计时演化而来。超越了硬件成为软件标准。  针对 Linux。  系统的不同部分（Linux 程序、编译器、操作系统）对如何管理机器上的资源有一些共同的理">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-stack.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-stackframepng.png">
+<meta property="og:updated_time" content="2020-04-14T12:04:11.729Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures">
+<meta name="twitter:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  ABIApplication Binary Interface (ABI) 应用程序二进制接口。是机器程序级别的接口。  从开发 x86-64 机器设计时演化而来。超越了硬件成为软件标准。  针对 Linux。  系统的不同部分（Linux 程序、编译器、操作系统）对如何管理机器上的资源有一些共同的理">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/cmu213-stack.png">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec7/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-13 16:45:00" itemprop="dateCreated datePublished" datetime="2020-04-13T16:45:00+08:00">2020-04-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-14 20:04:11" itemprop="dateModified" datetime="2020-04-14T20:04:11+08:00">2020-04-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec7/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec7/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.bilibili.com/video/BV1iW411d7hd?t=2580&amp;p=5">【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频</a></li>
+</ul>
+<h1 id="ABI"><a href="#ABI" class="headerlink" title="ABI"></a>ABI</h1><p>Application Binary Interface (ABI) 应用程序二进制接口。是机器程序级别的接口。</p>
+<ul>
+<li><p>从开发 x86-64 机器设计时演化而来。超越了硬件成为软件标准。</p>
+</li>
+<li><p>针对 Linux。</p>
+</li>
+<li><p>系统的不同部分（Linux 程序、编译器、操作系统）对如何管理机器上的资源有一些共同的理解、并遵循这套标准。</p>
+</li>
+</ul>
+<h1 id="Mechanisms-in-Procedures"><a href="#Mechanisms-in-Procedures" class="headerlink" title="Mechanisms in Procedures"></a>Mechanisms in Procedures</h1><blockquote>
+<p>这里的 procedures 是统一的术语，指的是 函数（function）、过程（procedure）、类的方法（method）。</p>
+</blockquote>
+<h2 id="三方面的机制"><a href="#三方面的机制" class="headerlink" title="三方面的机制"></a>三方面的机制</h2><h3 id="转移控制权"><a href="#转移控制权" class="headerlink" title="转移控制权"></a>转移控制权</h3><ul>
+<li>将控制权转移给一个 procedure。</li>
+<li>确保 procedure 执行到退出点后，能返回到正确的位置。因此需要记录返回位置的信息。</li>
+</ul>
+<h3 id="传递数据"><a href="#传递数据" class="headerlink" title="传递数据"></a>传递数据</h3><ul>
+<li><p>procedure 的参数。</p>
+</li>
+<li><p>返回值。因此需要规定如何回传数据的约定。</p>
+</li>
+</ul>
+<h3 id="内存分配"><a href="#内存分配" class="headerlink" title="内存分配"></a>内存分配</h3><ul>
+<li>在 procedure 执行期间分配内存。在哪里分配？如何确保正确分配？</li>
+<li>在 procedure 返回后，局部内存需要被释放掉。 </li>
+</ul>
+<h2 id="减少开销"><a href="#减少开销" class="headerlink" title="减少开销"></a>减少开销</h2><p>x86-64 会尽量减少 procedure 调用的开销。因为好的编程风格，每个函数应该专注于很小的功能。</p>
+<p>因此，原则之一是 只做绝对必要的事情、尽可能规避开销。</p>
+<ul>
+<li>如果数据不是必要的，就不分配和释放内存给它。</li>
+<li>如果没有传递任何值，就不传递他们。</li>
+</ul>
+<h1 id="栈-Stack"><a href="#栈-Stack" class="headerlink" title="栈 Stack"></a>栈 Stack</h1><p>使用栈来管理 procedure 调用与返回中涉及的状态。</p>
+<p>之所以用栈，是因为栈的<code>后进先出</code>与 procedure 的调用与返回的思想一致。</p>
+<h2 id="基本结构"><a href="#基本结构" class="headerlink" title="基本结构"></a>基本结构</h2><ul>
+<li><p>组织形式为内存中某一段连续的区域。</p>
+</li>
+<li><p>栈的开始地址是编号非常高的地址。</p>
+</li>
+<li><code>%rsp</code> 是栈顶指针，值是当前栈顶的地址。<ul>
+<li>在栈生长时（即分配更多的数据给栈），通过递减指针来完成的。</li>
+</ul>
+</li>
+</ul>
+<p><img src="/images/cmu213-stack.png" alt="cmu213-stack"></p>
+<h2 id="Push-指令"><a href="#Push-指令" class="headerlink" title="Push 指令"></a>Push 指令</h2><p>把数据写入栈中。</p>
+<ul>
+<li>格式：<code>pushq Src</code>。</li>
+<li>源操作数可以来自寄存器、内存、立即数。</li>
+<li>目标的内存地址通过 把 <code>%rsp</code> 递减 8 （申请内存）来确定。</li>
+</ul>
+<p>由于 x86-64 的地址是 8 byte的，<code>push</code>、<code>pop</code>、<code>call</code>、<code>ret</code> 等命令只能适用于 8 byte 的地址。</p>
+<h2 id="Pop-指令"><a href="#Pop-指令" class="headerlink" title="Pop 指令"></a>Pop 指令</h2><p>从栈中读取数据，将其存储在<strong>寄存器</strong>中。</p>
+<ul>
+<li>格式：<code>popq Dest</code>。</li>
+<li>读取的地址由当前的 <code>%rsp</code> 给出。</li>
+<li>然把把 <code>%rsp</code> 递增 8（释放内存）。</li>
+<li>将结果存储在寄存器中。</li>
+</ul>
+<h1 id="传递控制权"><a href="#传递控制权" class="headerlink" title="传递控制权"></a>传递控制权</h1><h2 id="call-指令"><a href="#call-指令" class="headerlink" title="call 指令"></a>call 指令</h2><p><code>call label</code>。</p>
+<ol>
+<li>把这个 <code>call</code> 指令之后的指令（返回时要继续执行的指令）的地址 <code>push</code> 到栈中。</li>
+<li>跳到 <code>lable</code> 的地址（<code>%rip</code> 设置为   <code>label</code> 的地址）  。</li>
+</ol>
+<h2 id="ret-指令"><a href="#ret-指令" class="headerlink" title="ret 指令"></a>ret 指令</h2><p><code>ret</code>。</p>
+<ol>
+<li>从栈中 <code>pop</code> 出地址。</li>
+<li>跳到这个地址。</li>
+</ol>
+<p>可以看到，<code>call</code> 和 <code>ret</code> 指令并没有完成 procedure 调用和返回的全部任务，只完成了控制权的部分。</p>
+<h1 id="传递数据-1"><a href="#传递数据-1" class="headerlink" title="传递数据"></a>传递数据</h1><h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p>procedure 的前 6 个参数依次使用如下的寄存器存储。</p>
+<ul>
+<li><code>%rdi</code></li>
+<li><code>%rsi</code></li>
+<li><code>%rdx</code></li>
+<li><code>%rcx</code></li>
+<li><code>%r8</code></li>
+<li><code>%r9</code></li>
+</ul>
+<p>参数要求是整数或指针类型。浮点类型由另外一组单独的寄存器传递的。</p>
+<p>超过 6 个的参数放入栈上的内存中。在 A32 中所有参数都是通过栈传递的。</p>
+<h2 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h2><p>返回值由 <code>%rax</code> 存储。</p>
+<h1 id="管理局部数据"><a href="#管理局部数据" class="headerlink" title="管理局部数据"></a>管理局部数据</h1><h2 id="栈帧"><a href="#栈帧" class="headerlink" title="栈帧"></a>栈帧</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>栈上用于特定 <code>call</code> 的每个内存块成为栈帧。</p>
+<p>在栈中为每个被调用且未返回的过程保留一个栈帧。</p>
+<p>为了避免无限循环版本的递归，会把数据不断 <code>push</code> 到栈中，大部分系统限制了栈的最大深度。</p>
+<h3 id="两个指针分割"><a href="#两个指针分割" class="headerlink" title="两个指针分割"></a>两个指针分割</h3><p>一个栈帧由两个指针分割。</p>
+<ul>
+<li><code>%rbp</code> 基指针（base pointer）。是可选的，一般不会使用。</li>
+<li><code>%rsp</code> 栈指针。</li>
+</ul>
+<p>所以大部分情况，甚至都不知道一个栈帧的具体范围。</p>
+<p>既然 <code>%rbp</code> 是可选的，程序怎么知道如何释放空间，如何将栈重置会正确的位置？</p>
+<ul>
+<li>编译器知道它分配时，将分配多少 byte（例如 16 byte），那么它知道最后要释放 16 byte。</li>
+<li>有一些特殊情况，无法提前知道分配多少空间，例如分配一个可变大小的数组或内存缓冲区时，会在这些情况使用 <code>%rbp</code> 是实现。</li>
+</ul>
+<h3 id="栈帧中的内容"><a href="#栈帧中的内容" class="headerlink" title="栈帧中的内容"></a>栈帧中的内容</h3><ul>
+<li><code>%rbp</code>。如果使用了基指针，需要在 procedure 调用时，存储旧的基指针的值，以便在被调用的 procedure 返回时恢复它。</li>
+<li>其他需要被保存的状态（无法被保存在寄存器中），例如一些寄存器、局部数组。</li>
+<li>第6个之外的参数。</li>
+</ul>
+<p><img src="/images/cmu213-stackframepng.png" alt="cmu213-stackframepng" width="50%" /></p>
+<h2 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h2><h3 id="incr"><a href="#incr" class="headerlink" title="incr"></a>incr</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">incr</span><span class="params">(<span class="keyword">long</span> *p, <span class="keyword">long</span> val)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> x = *p;</span><br><span class="line">    <span class="keyword">long</span> y = x + val;</span><br><span class="line">    *p = y;</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">incr:</span><br><span class="line">  movq    (%rdi), %rax # x = *p。</span><br><span class="line">  addq    %rax, %rsi   # val += x。 </span><br><span class="line">  movq    %rsi, (%rdi) # *p = val。</span><br><span class="line">  ret                  # return x。</span><br></pre></td></tr></table></figure>
+<h3 id="Calling-incr"><a href="#Calling-incr" class="headerlink" title="Calling incr"></a>Calling incr</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">call_incr</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> v1 = <span class="number">15213</span>;            <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">long</span> v2 = incr(&amp;v1, <span class="number">3000</span>);  <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">return</span> v1+v2;               <span class="comment">// 3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于要使用 <code>v1</code> 的地址，所以 <code>v1</code> 不能存储在寄存器中，而要在栈中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">call_incr:</span><br><span class="line">  subq    $16, %rsp        # 1.1 %rsp递减16，申请16byte空间。</span><br><span class="line">  movq    $15213, 8(%rsp)  # 1.1 存储15213在%rsp+8地址处。</span><br><span class="line">  movl    $3000, %esi      # 2.1 把 3000 放入第二个参数。</span><br><span class="line">  leaq    8(%rsp), %rdi    # 2.2 把 %rsp+8，即&amp;v1放入第一个参数。</span><br><span class="line">  call    incr             # 2.3 调用 incr()。</span><br><span class="line">  addq    8(%rsp), %rax    # 3.1 %rax += v1。</span><br><span class="line">  addq    $16, %rsp        # 0   %rsp递增16，释放16byte空间。</span><br><span class="line">  ret                      # 3.2 跳到%rsp存储的地址对应的指令。</span><br></pre></td></tr></table></figure>
+<p>需要注意的点：</p>
+<ul>
+<li><p>1.1 在栈中申请了 16 byte 内存，但是只是在高 8 byte 作为 long 来使用了，低 8 byte 没有使用。用来对齐。</p>
+</li>
+<li><p>2.1 使用 <code>movl</code> 和 <code>%esi</code>、而不是 <code>movq</code> 和 <code>%rsi</code>，因为 3000 足够小，使用 <code>movl</code> 足够了，前面 4 位会自动置为 0。</p>
+</li>
+<li><p>1.1 和 0 处申请和释放了栈汇总的内存。显式使用栈帧来进行数据管理、栈管理。</p>
+</li>
+</ul>
+<h2 id="保存寄存器状态的约定"><a href="#保存寄存器状态的约定" class="headerlink" title="保存寄存器状态的约定"></a>保存寄存器状态的约定</h2><p>因为调用者和被调用者 procedure 都会使用寄存器，为了保证被调用者使用寄存器时，调用者的数据不会被覆盖掉，需要保存寄存器状态。</p>
+<p>可以有两种方法保存寄存器的状态：</p>
+<ul>
+<li>在调用者处保存使用过的寄存器的状态。<ul>
+<li>ABI 中，<code>%r10</code> 和 <code>%r11</code> 用来在<strong>调用者处</strong>，调用其他函数前，保存临时数据。</li>
+</ul>
+</li>
+<li>在被调用者处，在使用寄存器前保存寄存器的状态。<ul>
+<li><code>%rbx</code>、<code>%r12</code>、<code>%r13</code>、<code>%r14</code> 用来在<strong>被调用者处</strong>保存临时数据。</li>
+<li>如果不使用栈指针，<code>%rbp</code> 也可以用来在<strong>被调用者处</strong>保存临时数据。</li>
+<li>这些寄存器在使用前需要把数据 <code>push</code> 到栈中，在 procedure 返回前再 <code>pop</code> 回寄存器中。</li>
+</ul>
+</li>
+</ul>
+<h3 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">call_incr2</span><span class="params">(<span class="keyword">long</span> x)</span> </span>&#123;       <span class="comment">// 0</span></span><br><span class="line">    <span class="keyword">long</span> v1 = <span class="number">15213</span>;            <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">long</span> v2 = incr(&amp;v1, <span class="number">3000</span>);  <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">return</span> x+v2;                <span class="comment">// 3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">call_incr2:</span><br><span class="line">  pushq   %rbx              # 把 %rbx 的旧值 push 到栈上。</span><br><span class="line">  subq    $16, %rsp         </span><br><span class="line">  movq    %rdi, %rbx        # 把 %rdi 的值暂存到 %rbx 中。</span><br><span class="line">  movq    $15213, 8(%rsp)</span><br><span class="line">  movl    $3000, %esi</span><br><span class="line">  leaq    8(%rsp), %rdi</span><br><span class="line">  call    incr</span><br><span class="line">  addq    %rbx, %rax</span><br><span class="line">  addq    $16, %rsp</span><br><span class="line">  popq    %rbx              # 把栈中%rbx的旧值pop出恢复给%rbx。</span><br><span class="line">  ret</span><br></pre></td></tr></table></figure>
+<p>以上例子，使用 <code>%rbx</code>，在<strong>被调用者</strong>处暂存数据 <code>x</code>。</p>
+<ul>
+<li>由于在 0 处 <code>x</code> 需要使用 <code>%rdi</code>，在 2 处 <code>pcount_r()</code> 也需要使用 <code>%rdi</code>，因此要把 <code>x</code> 的值从 <code>%rdi</code> 暂存到 <code>%rbx</code> 中。</li>
+</ul>
+<h1 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h1><h2 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Recursive popcount */</span></span><br><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">pcount_r</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> x)</span> </span>&#123;       <span class="comment">// 0</span></span><br><span class="line">  <span class="keyword">if</span> (x == <span class="number">0</span>)                          <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">else</span>                                 <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">return</span> (x &amp; <span class="number">1</span>) + pcount_r(x &gt;&gt; <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pcount_r:</span><br><span class="line">  movl    $0, %eax      # 1.1 return_val = 0。</span><br><span class="line">  testq   %rdi, %rdi    # 1.2 测试x是否为0。</span><br><span class="line">  je      .L6           # 1.3 如果x为0，跳到.L6指令处。</span><br><span class="line">  pushq   %rbx          # 2.0 把%rbx旧值存储到栈中。</span><br><span class="line">  movq    %rdi, %rbx    # 2.1 暂存x到%rbx。</span><br><span class="line">  andl    $1, %ebx      # 2.2 tmp = x &amp; 1。</span><br><span class="line">  shrq    %rdi          # 2.3 x &gt;&gt;= 1。</span><br><span class="line">  call    pcount_r      # 2.4 调用pcount_r。递归调用。</span><br><span class="line">  addq    %rbx, %rax    # 2.5 %rax += tmp。 </span><br><span class="line">  popq    %rbx          # 2.6 恢复%rbx旧值。</span><br><span class="line">.L6:</span><br><span class="line">  rep; ret</span><br></pre></td></tr></table></figure>
+<p>2.1 在<strong>被调用者</strong>处使用 <code>%rbx</code> 暂存数据 <code>x</code>。</p>
+<h2 id="发现"><a href="#发现" class="headerlink" title="发现"></a>发现</h2><p>无须特殊考虑递归的情况，原因如下：</p>
+<ul>
+<li>栈帧意味着每个函数调用都有各自私有的存储空间。<ul>
+<li>用来保存寄存器状态、本地变量。</li>
+<li>用来 保存返回的指针。</li>
+</ul>
+</li>
+<li>保存寄存器状态的约定 避免一个函数调用 弄坏其他函数调用的数据。</li>
+<li>栈的规则与 call/return 的模式相一致。<ul>
+<li>如果 <code>P</code> 调用了 <code>Q</code>，则 <code>Q</code> 会在 <code>P</code> 之前结束。</li>
+<li>后进先出。</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+              <a href="/tags/CMU213/" rel="tag"># CMU213</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/操作系统/cmu213/lec6/" rel="prev" title="CMU213 学习笔记-Lec6-Machine-Level Programming II：Control">
+      <i class="fa fa-chevron-left"></i> CMU213 学习笔记-Lec6-Machine-Level Programming II：Control
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ABI"><span class="nav-number">2.</span> <span class="nav-text">ABI</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Mechanisms-in-Procedures"><span class="nav-number">3.</span> <span class="nav-text">Mechanisms in Procedures</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#三方面的机制"><span class="nav-number">3.1.</span> <span class="nav-text">三方面的机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#转移控制权"><span class="nav-number">3.1.1.</span> <span class="nav-text">转移控制权</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#传递数据"><span class="nav-number">3.1.2.</span> <span class="nav-text">传递数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内存分配"><span class="nav-number">3.1.3.</span> <span class="nav-text">内存分配</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#减少开销"><span class="nav-number">3.2.</span> <span class="nav-text">减少开销</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#栈-Stack"><span class="nav-number">4.</span> <span class="nav-text">栈 Stack</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本结构"><span class="nav-number">4.1.</span> <span class="nav-text">基本结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Push-指令"><span class="nav-number">4.2.</span> <span class="nav-text">Push 指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pop-指令"><span class="nav-number">4.3.</span> <span class="nav-text">Pop 指令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#传递控制权"><span class="nav-number">5.</span> <span class="nav-text">传递控制权</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#call-指令"><span class="nav-number">5.1.</span> <span class="nav-text">call 指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ret-指令"><span class="nav-number">5.2.</span> <span class="nav-text">ret 指令</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#传递数据-1"><span class="nav-number">6.</span> <span class="nav-text">传递数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#参数"><span class="nav-number">6.1.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#返回值"><span class="nav-number">6.2.</span> <span class="nav-text">返回值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#管理局部数据"><span class="nav-number">7.</span> <span class="nav-text">管理局部数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#栈帧"><span class="nav-number">7.1.</span> <span class="nav-text">栈帧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#定义"><span class="nav-number">7.1.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两个指针分割"><span class="nav-number">7.1.2.</span> <span class="nav-text">两个指针分割</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#栈帧中的内容"><span class="nav-number">7.1.3.</span> <span class="nav-text">栈帧中的内容</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子"><span class="nav-number">7.2.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#incr"><span class="nav-number">7.2.1.</span> <span class="nav-text">incr</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Calling-incr"><span class="nav-number">7.2.2.</span> <span class="nav-text">Calling incr</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保存寄存器状态的约定"><span class="nav-number">7.3.</span> <span class="nav-text">保存寄存器状态的约定</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-1"><span class="nav-number">7.3.1.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#递归"><span class="nav-number">8.</span> <span class="nav-text">递归</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#例子-2"><span class="nav-number">8.1.</span> <span class="nav-text">例子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发现"><span class="nav-number">8.2.</span> <span class="nav-text">发现</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">81</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/操作系统/cmu213/lec7/";
+    this.page.identifier = "2020/操作系统/cmu213/lec7/";
+    this.page.title = "CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

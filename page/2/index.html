@@ -182,6 +182,102 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/系统设计/秒杀系统设计/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/系统设计/秒杀系统设计/" class="post-title-link" itemprop="url">秒杀系统设计</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-03-16 16:19:00 / Modified: 17:15:25" itemprop="dateCreated datePublished" datetime="2020-03-16T16:19:00+08:00">2020-03-16</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/系统设计/秒杀系统设计/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/系统设计/秒杀系统设计/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://time.geekbang.org/column/article/109572">01 | 为什么需要消息队列？</a></li>
+<li><a href="https://blog.csdn.net/CSDN_Terence/article/details/77744042">Java开发面试：高并发秒杀系统如何设计与优化</a></li>
+</ul>
+<h1 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h1><h2 id="客户端流控"><a href="#客户端流控" class="headerlink" title="客户端流控"></a>客户端流控</h2><p>在客户端，屏蔽用户高频请求，比如在网页中设置 5s 一次访问限制，可以防止用户过度刷接口。</p>
+<h2 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h2><p>活动页面可以静态的元素全部静态化，尽量减少动态元素；通过CDN缓存静态资源，来抗峰值。 </p>
+<h1 id="中间代理层"><a href="#中间代理层" class="headerlink" title="中间代理层"></a>中间代理层</h1><p>使用 DNS + LVS + Nginx 进行网关的负载均衡。</p>
+<h1 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/系统设计/秒杀系统设计/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/系统设计/代理服务负载均衡/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1173,114 +1269,11 @@ AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stri
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/epoll的et与lt/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/netty/epoll的et与lt/" class="post-title-link" itemprop="url">Epoll 边缘触发与水平触发</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-10 16:12:00 / Modified: 16:23:00" itemprop="dateCreated datePublished" datetime="2020-03-10T16:12:00+08:00">2020-03-10</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/netty/epoll的et与lt/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/epoll的et与lt/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <blockquote>
-<p><a href="https://blog.csdn.net/dongfuye/article/details/50880251">epoll LT/ET 深入剖析</a>（主要参考）</p>
-<p><a href="https://www.zhihu.com/question/22524908/answer/69054646">java nio使用的是水平触发还是边缘触发</a></p>
-</blockquote>
-<h1 id="水平触发-Level-Triggered-LT"><a href="#水平触发-Level-Triggered-LT" class="headerlink" title="水平触发 Level Triggered (LT)"></a>水平触发 Level Triggered (LT)</h1><ul>
-<li>socket 接收缓冲区不为空，有数据可读， 读事件一直触发。</li>
-<li>socket 发送缓冲区不满，可以继续写入数据， 写事件一直触发。</li>
-</ul>
-<h1 id="边缘触发-Edge-Triggered-ET"><a href="#边缘触发-Edge-Triggered-ET" class="headerlink" title="边缘触发 Edge Triggered (ET)"></a>边缘触发 Edge Triggered (ET)</h1><p>仅在状态变化时触发事件。</p>
-<ul>
-<li>socket 的接收缓冲区状态变化时触发读事件，即空的接收缓冲区刚接收到数据时，触发读事件。</li>
-<li>socket 的发送缓冲区状态变化时触发写事件，即满的缓冲区刚空出空间时，触发写事件。</li>
-</ul>
-<h1 id="LT-处理过程"><a href="#LT-处理过程" class="headerlink" title="LT 处理过程"></a>LT 处理过程</h1><h2 id="监听"><a href="#监听" class="headerlink" title="监听"></a>监听</h2><p>select 一个一个连接，监听每个连接的 <code>EPOLLIN</code> 事件。</p>
-<h2 id="读取"><a href="#读取" class="headerlink" title="读取"></a>读取</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/epoll的et与lt/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="Previous page"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1348,7 +1341,7 @@ AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stri
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-count">81</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

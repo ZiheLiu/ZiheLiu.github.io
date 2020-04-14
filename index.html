@@ -182,6 +182,123 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/操作系统/cmu213/lec7/" class="post-title-link" itemprop="url">CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-13 16:45:00" itemprop="dateCreated datePublished" datetime="2020-04-13T16:45:00+08:00">2020-04-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-14 20:04:11" itemprop="dateModified" datetime="2020-04-14T20:04:11+08:00">2020-04-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec7/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec7/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.bilibili.com/video/BV1iW411d7hd?t=2580&amp;p=5">【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频</a></li>
+</ul>
+<h1 id="ABI"><a href="#ABI" class="headerlink" title="ABI"></a>ABI</h1><p>Application Binary Interface (ABI) 应用程序二进制接口。是机器程序级别的接口。</p>
+<ul>
+<li><p>从开发 x86-64 机器设计时演化而来。超越了硬件成为软件标准。</p>
+</li>
+<li><p>针对 Linux。</p>
+</li>
+<li><p>系统的不同部分（Linux 程序、编译器、操作系统）对如何管理机器上的资源有一些共同的理解、并遵循这套标准。</p>
+</li>
+</ul>
+<h1 id="Mechanisms-in-Procedures"><a href="#Mechanisms-in-Procedures" class="headerlink" title="Mechanisms in Procedures"></a>Mechanisms in Procedures</h1><blockquote>
+<p>这里的 procedures 是统一的术语，指的是 函数（function）、过程（procedure）、类的方法（method）。</p>
+</blockquote>
+<h2 id="三方面的机制"><a href="#三方面的机制" class="headerlink" title="三方面的机制"></a>三方面的机制</h2><h3 id="转移控制权"><a href="#转移控制权" class="headerlink" title="转移控制权"></a>转移控制权</h3><ul>
+<li>将控制权转移给一个 procedure。</li>
+<li>确保 procedure 执行到退出点后，能返回到正确的位置。因此需要记录返回位置的信息。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/操作系统/cmu213/lec7/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -206,14 +323,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-04-09 16:16:00" itemprop="dateCreated datePublished" datetime="2020-04-09T16:16:00+08:00">2020-04-09</time>
+              <time title="Created: 2020-04-09 18:16:00" itemprop="dateCreated datePublished" datetime="2020-04-09T18:16:00+08:00">2020-04-09</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-13 16:01:53" itemprop="dateModified" datetime="2020-04-13T16:01:53+08:00">2020-04-13</time>
+                <time title="Modified: 2020-04-14 20:04:07" itemprop="dateModified" datetime="2020-04-14T20:04:07+08:00">2020-04-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -254,7 +371,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Processor-State"><a href="#Processor-State" class="headerlink" title="Processor State"></a>Processor State</h1><p>寄存器包含了当前正在执行程序的信息。</p>
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://www.bilibili.com/video/BV1iW411d7hd?t=2580&amp;p=6">【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频</a></li>
+</ul>
+<h1 id="Processor-State"><a href="#Processor-State" class="headerlink" title="Processor State"></a>Processor State</h1><p>寄存器包含了当前正在执行程序的信息。</p>
 <ul>
 <li>暂存数据。<ul>
 <li><code>%rax</code>，…</li>
@@ -289,7 +409,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="相关指令"><a href="#相关指令" class="headerlink" title="相关指令"></a>相关指令</h3><h4 id="cmp"><a href="#cmp" class="headerlink" title="cmp"></a>cmp</h4><p><code>cmpq Src2, Src1</code> 指令。</p>
+<h3 id="相关指令"><a href="#相关指令" class="headerlink" title="相关指令"></a>相关指令</h3>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/操作系统/cmu213/lec6/#more" rel="contents">
@@ -347,7 +467,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-10 21:17:07" itemprop="dateModified" datetime="2020-04-10T21:17:07+08:00">2020-04-10</time>
+                <time title="Modified: 2020-04-14 16:43:27" itemprop="dateModified" datetime="2020-04-14T16:43:27+08:00">2020-04-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1279,107 +1399,11 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/系统设计/秒杀系统设计/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/系统设计/秒杀系统设计/" class="post-title-link" itemprop="url">秒杀系统设计</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-16 16:19:00 / Modified: 17:15:25" itemprop="dateCreated datePublished" datetime="2020-03-16T16:19:00+08:00">2020-03-16</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/系统设计/" itemprop="url" rel="index"><span itemprop="name">系统设计</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/系统设计/秒杀系统设计/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/系统设计/秒杀系统设计/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://time.geekbang.org/column/article/109572">01 | 为什么需要消息队列？</a></li>
-<li><a href="https://blog.csdn.net/CSDN_Terence/article/details/77744042">Java开发面试：高并发秒杀系统如何设计与优化</a></li>
-</ul>
-<h1 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h1><h2 id="客户端流控"><a href="#客户端流控" class="headerlink" title="客户端流控"></a>客户端流控</h2><p>在客户端，屏蔽用户高频请求，比如在网页中设置 5s 一次访问限制，可以防止用户过度刷接口。</p>
-<h2 id="静态资源"><a href="#静态资源" class="headerlink" title="静态资源"></a>静态资源</h2><p>活动页面可以静态的元素全部静态化，尽量减少动态元素；通过CDN缓存静态资源，来抗峰值。 </p>
-<h1 id="中间代理层"><a href="#中间代理层" class="headerlink" title="中间代理层"></a>中间代理层</h1><p>使用 DNS + LVS + Nginx 进行网关的负载均衡。</p>
-<h1 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h1>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/系统设计/秒杀系统设计/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
   </nav>
 
 
@@ -1447,7 +1471,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-count">81</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

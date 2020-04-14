@@ -30,7 +30,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="http://ziheliu.github.io/images/x86-64-registers.png">
 <meta property="og:image" content="http://ziheliu.github.io/images/movq.png">
-<meta property="og:updated_time" content="2020-04-10T13:17:07.033Z">
+<meta property="og:updated_time" content="2020-04-14T08:43:27.050Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CMU213 学习笔记-Lec5-Machine-Level Programming I：Basics">
 <meta name="twitter:description" content="引用 【精校中英字幕】2015 CMU 15-213 CSAPP 深入理解计算机系统 课程视频  处理器Intel   常用处理器：x86 x86-64。 注意该系列学习笔记除非特别说明，否则处理器默认是x86-64。   使用 MISC（复杂指令集）。  ARM  Acorn RISC Machine 使用 RISC （简单指令集）。  术语Architecutre: instruction s">
@@ -220,7 +220,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-10 21:17:07" itemprop="dateModified" datetime="2020-04-10T21:17:07+08:00">2020-04-10</time>
+                <time title="Modified: 2020-04-14 16:43:27" itemprop="dateModified" datetime="2020-04-14T16:43:27+08:00">2020-04-14</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -537,7 +537,7 @@
 <p>Assembly Code：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">swap:</span><br><span class="line">   movq    (%rdi), %rax</span><br><span class="line">   movq    (%rsi), %rdx</span><br><span class="line">   movq    %rdx, (%rdi)</span><br><span class="line">   movq    %rax, (%rsi)</span><br><span class="line">   ret</span><br></pre></td></tr></table></figure>
 <p>寄存器 <code>%rdx</code>、<code>%rax</code> 用于存储临时变量 <code>t0</code>、<code>t1</code>，而没有存在内存里。</p>
-<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器，<code>ret</code> 指令返回 <code>%rax</code> 的值。</p>
+<p>注意，固定的，<code>%rdi</code> 是第一个参数寄存器，<code>%rsi</code> 是第二个参数寄存器，<code>ret</code> 指令返回 <code>%rax</code> 的值。这些都在 ABI 中规定的 见<a href="/2020/操作系统/cmu213/lec7/" title="CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures">CMU213 学习笔记-Lec7-Machine-Level Programming II：Procedures</a>。</p>
 <h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><ul>
 <li>Unconditional jumps to/from procedures</li>
 <li>Conditional branches</li>
@@ -650,7 +650,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">80</span>
+          <span class="site-state-item-count">81</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
