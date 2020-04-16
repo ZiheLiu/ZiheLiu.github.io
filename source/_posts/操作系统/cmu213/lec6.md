@@ -113,19 +113,19 @@ int gt (long x, long y) {
 
 ## jX 系列指令
 
-| jX   | Condition    | Description                |
-| ---- | ------------ | -------------------------- |
-| jmp  | 1            | Unconditional              |
-| je   | ZF           | Equal  / Zero              |
-| jne  | ~ZF          | Not  Equal / Not Zero      |
-| js   | SF           | Negative                   |
-| jns  | ~SF          | Nonnegative                |
-| jg   | ~(SF^OF)&~ZF | Greater  (Signed)          |
-| jge  | ~(SF^OF)     | Greater  or Equal (Signed) |
-| jl   | (SF^OF)      | Less  (Signed)             |
-| jle  | (SF^OF)\|ZF  | Less  or Equal (Signed)    |
-| ja   | ~CF&~ZF      | Above  (unsigned)          |
-| jb   | CF           | Below  (unsigned)          |
+| jX   | Condition      | Description                |
+| ---- | -------------- | -------------------------- |
+| jmp  | 1              | Unconditional              |
+| je   | ZF             | Equal  / Zero              |
+| jne  | ~ZF            | Not  Equal / Not Zero      |
+| js   | SF             | Negative                   |
+| jns  | ~SF            | Nonnegative                |
+| jg   | ~(SF^OF)&~ZF   | Greater  (Signed)          |
+| jge  | ~(SF^OF)       | Greater  or Equal (Signed) |
+| jl   | (SF^OF)        | Less  (Signed)             |
+| jle  | (SF^OF)&#124;ZF | Less  or Equal (Signed)    |
+| ja   | ~CF&~ZF        | Above  (unsigned)          |
+| jb   | CF             | Below  (unsigned)          |
 
 ### 例子
 
