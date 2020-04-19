@@ -182,6 +182,136 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/操作系统/cmu213/lec9/" class="post-title-link" itemprop="url">CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-16 21:03:00" itemprop="dateCreated datePublished" datetime="2020-04-16T21:03:00+08:00">2020-04-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-19 15:58:51" itemprop="dateModified" datetime="2020-04-19T15:58:51+08:00">2020-04-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec9/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec9/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h1><p><img src="/images/cmu213-lec9-memory-layout.png" alt="cmu213-lec9-memory-layoutpng"></p>
+<h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><ul>
+<li>有 8 MB 大小的限制。<ul>
+<li>可以使用 <code>limit</code> 命令，查看 <code>stackszie</code> 字段。</li>
+<li>如果访问超过 8 MB 的内存地址，会产生一个 segmentation fault。</li>
+</ul>
+</li>
+<li>例如局部变量。</li>
+<li>从高地址到低地址分配内存。</li>
+<li>起始地址是 <code>0x07FF_FFFF_FFFF_FFFF</code>。<ul>
+<li>因为 DRAM 很贵，所以 64 位机器限制只能使用地址空间中的 47 位地址，128 TB 的内存限制。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h2><ul>
+<li>存储动态申请的变量。</li>
+<li>调用 <code>malloc()</code>、<code>calloc()</code>、<code>new()</code>。</li>
+<li>如果尝试引用 Heap 区中还没有通过内存分配程序分配的地址，会产生一个 segmentation fault。</li>
+</ul>
+<h2 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h2><ul>
+<li>存储静态变量。<ul>
+<li>存放程序开始时分配的数据。</li>
+<li>例如全局变量。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Text-Shared-Libraries"><a href="#Text-Shared-Libraries" class="headerlink" title="Text / Shared Libraries"></a>Text / Shared Libraries</h2><ul>
+<li>存储可执行的机器指令序列。</li>
+<li>只读的。</li>
+<li>Text 区存储自己的代码。</li>
+<li>Shared Libraries 区存储库的代码。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/操作系统/cmu213/lec9/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1278,122 +1408,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/Linux命令记录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/操作系统/Linux命令记录/" class="post-title-link" itemprop="url">Linux 命令记录</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-19 16:30:00 / Modified: 20:47:43" itemprop="dateCreated datePublished" datetime="2020-03-19T16:30:00+08:00">2020-03-19</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/操作系统/Linux命令记录/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/Linux命令记录/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://www.runoob.com/linux/linux-comm-grep.html">Linux grep 命令</a></li>
-<li><a href="https://blog.csdn.net/BlueCY/article/details/6545517">linux文件名匹配（通配符使用）</a></li>
-<li><a href="https://www.cnblogs.com/chengmo/archive/2010/10/21/1856577.html">linux shell 管道命令(pipe)使用及与shell重定向区别</a></li>
-<li><a href="https://blog.csdn.net/hanner_cheung/article/details/6081440">ps aux指令詳解</a></li>
-<li><a href="https://blog.csdn.net/pmt123456/article/details/53544295">SIGINT、SIGQUIT、 SIGTERM、SIGSTOP区别</a></li>
-<li><a href="https://blog.csdn.net/u012787436/article/details/39722583">Linux后台进程管理以及ctrl+z（挂起）、ctrl+c（中断）、ctrl+\（退出）和ctrl+d（EOF）的区别</a></li>
-<li><a href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/lsof.html">3. lsof 一切皆文件</a></li>
-<li><a href="https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/index.html">Linux 工具参考篇</a></li>
-</ul>
-<h1 id="grep-查找字符串"><a href="#grep-查找字符串" class="headerlink" title="grep 查找字符串"></a>grep 查找字符串</h1><p>用于查找文件/目录里符合条件的字符串。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> 查找符合 &lt;filename-pattern&gt; 的文件、且包含 &lt;str&gt; 的行。</span><br><span class="line"><span class="meta">$</span> grep &lt;str&gt; &lt;filename-pattern&gt;</span><br><span class="line"><span class="meta">#</span> 查找符合 &lt;dir-pattern&gt; 的目录下、且包含 &lt;str&gt; 的行。</span><br><span class="line"><span class="meta">$</span> grep -r &lt;str&gt; &lt;dir-pattern&gt;</span><br></pre></td></tr></table></figure>
-<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><ul>
-<li><p><code>-n --line-number</code> 在每一行开头显示行数。只在有且只有一个文件匹配的时候，才会有效。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> grep -n 'te' parent/child/file1</span><br><span class="line">1:test</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-<h2 id="匹配规则"><a href="#匹配规则" class="headerlink" title="匹配规则"></a>匹配规则</h2><ul>
-<li><code>*</code> 匹配文件名中的任何字符串，包括空字符串。</li>
-</ul>
-<ul>
-<li><p><code>?</code> 匹配文件名中的任何单个字符。</p>
-</li>
-<li><p><code>[...]</code>  匹配 <code>[ ]</code> 中所包含的任何字符。</p>
-</li>
-<li><p><code>[!...]</code>  匹配 <code>[ ]</code> 中非感叹号 <code>!</code> 之后的字符。</p>
-</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/操作系统/Linux命令记录/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1466,7 +1480,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">83</span>
+          <span class="site-state-item-count">84</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

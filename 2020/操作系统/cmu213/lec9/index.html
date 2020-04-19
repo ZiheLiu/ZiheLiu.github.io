@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="内存布局 Stack 有 8 MB 大小的限制。 可以使用 limit 命令，查看 stackszie 字段。 如果访问超过 8 MB 的内存地址，会产生一个 segmentation fault。   例如局部变量。 从高地址到低地址分配内存。 起始地址是 0x07FF_FFFF_FFFF_FFFF。 因为 DRAM 很贵，所以 64 位机器限制只能使用地址空间中的 47 位地址，128 TB">
+<meta name="keywords" content="操作系统,CMU213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics">
+<meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec9/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="内存布局 Stack 有 8 MB 大小的限制。 可以使用 limit 命令，查看 stackszie 字段。 如果访问超过 8 MB 的内存地址，会产生一个 segmentation fault。   例如局部变量。 从高地址到低地址分配内存。 起始地址是 0x07FF_FFFF_FFFF_FFFF。 因为 DRAM 很贵，所以 64 位机器限制只能使用地址空间中的 47 位地址，128 TB">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec9-memory-layout.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cum213-lec9-面向返回编程攻击.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cum213-lec9-面向返回编程攻击-example1.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cum213-lec9-面向返回编程攻击-example2.png">
+<meta property="og:updated_time" content="2020-04-19T07:58:51.670Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics">
+<meta name="twitter:description" content="内存布局 Stack 有 8 MB 大小的限制。 可以使用 limit 命令，查看 stackszie 字段。 如果访问超过 8 MB 的内存地址，会产生一个 segmentation fault。   例如局部变量。 从高地址到低地址分配内存。 起始地址是 0x07FF_FFFF_FFFF_FFFF。 因为 DRAM 很贵，所以 64 位机器限制只能使用地址空间中的 47 位地址，128 TB">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/cmu213-lec9-memory-layout.png">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-16 21:03:00" itemprop="dateCreated datePublished" datetime="2020-04-16T21:03:00+08:00">2020-04-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-19 15:58:51" itemprop="dateModified" datetime="2020-04-19T15:58:51+08:00">2020-04-19</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec9/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec9/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="内存布局"><a href="#内存布局" class="headerlink" title="内存布局"></a>内存布局</h1><p><img src="/images/cmu213-lec9-memory-layout.png" alt="cmu213-lec9-memory-layoutpng"></p>
+<h2 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h2><ul>
+<li>有 8 MB 大小的限制。<ul>
+<li>可以使用 <code>limit</code> 命令，查看 <code>stackszie</code> 字段。</li>
+<li>如果访问超过 8 MB 的内存地址，会产生一个 segmentation fault。</li>
+</ul>
+</li>
+<li>例如局部变量。</li>
+<li>从高地址到低地址分配内存。</li>
+<li>起始地址是 <code>0x07FF_FFFF_FFFF_FFFF</code>。<ul>
+<li>因为 DRAM 很贵，所以 64 位机器限制只能使用地址空间中的 47 位地址，128 TB 的内存限制。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Heap"><a href="#Heap" class="headerlink" title="Heap"></a>Heap</h2><ul>
+<li>存储动态申请的变量。</li>
+<li>调用 <code>malloc()</code>、<code>calloc()</code>、<code>new()</code>。</li>
+<li>如果尝试引用 Heap 区中还没有通过内存分配程序分配的地址，会产生一个 segmentation fault。</li>
+</ul>
+<h2 id="Data"><a href="#Data" class="headerlink" title="Data"></a>Data</h2><ul>
+<li>存储静态变量。<ul>
+<li>存放程序开始时分配的数据。</li>
+<li>例如全局变量。</li>
+</ul>
+</li>
+</ul>
+<h2 id="Text-Shared-Libraries"><a href="#Text-Shared-Libraries" class="headerlink" title="Text / Shared Libraries"></a>Text / Shared Libraries</h2><ul>
+<li>存储可执行的机器指令序列。</li>
+<li>只读的。</li>
+<li>Text 区存储自己的代码。</li>
+<li>Shared Libraries 区存储库的代码。</li>
+</ul>
+<h1 id="缓冲区溢出-Buffer-Overflow"><a href="#缓冲区溢出-Buffer-Overflow" class="headerlink" title="缓冲区溢出 Buffer Overflow"></a>缓冲区溢出 Buffer Overflow</h1><h2 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h2><p>如果有途径能让外界使程序的 buffer 溢出，将会产生安全问题。在编写程序时，要考虑变量的值是否值得信任。</p>
+<h2 id="产生-Buffer-Overflow-的情形"><a href="#产生-Buffer-Overflow-的情形" class="headerlink" title="产生 Buffer Overflow 的情形"></a>产生 Buffer Overflow 的情形</h2><ul>
+<li>访问数组范围的索引元素。</li>
+<li>没有检查输入字符串的长度。<ul>
+<li>很多存储字符串、但不检查边界情况的库函数。</li>
+</ul>
+</li>
+</ul>
+<h3 id="String-Library-Code"><a href="#String-Library-Code" class="headerlink" title="String Library Code"></a>String Library Code</h3><p><code>gets()</code> 库函数与下面类似：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Get string from stdin */</span></span><br><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">gets</span><span class="params">(<span class="keyword">char</span> *dest)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> c = getchar();</span><br><span class="line">    <span class="keyword">char</span> *p = dest;</span><br><span class="line">    <span class="keyword">while</span> (c != EOF &amp;&amp; c != <span class="string">'\n'</span>) &#123;</span><br><span class="line">        *p++ = c;</span><br><span class="line">        c = getchar();</span><br><span class="line">    &#125;</span><br><span class="line">    *p = <span class="string">'\0'</span>;</span><br><span class="line">    <span class="keyword">return</span> dest;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个函数没有停止读取的条件，可能传入的 Buffer <code>dest</code> 不够大。</p>
+<p>如下的函数都有类似的问题：</p>
+<ul>
+<li><code>strcpy()</code>、<code>strcat()</code>。</li>
+<li><code>scanf()</code>、<code>fscanf()</code>、<code>sscanf()</code> 在使用 <code>%s</code> 读取字符串时。</li>
+</ul>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Echo Line */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">4</span>];  <span class="comment">/* Way too small! */</span></span><br><span class="line">    gets(buf);</span><br><span class="line">    <span class="built_in">puts</span>(buf);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">call_echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    echo();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">unix&gt;</span>./bufdemo-nsp</span><br><span class="line">Type a string: 012345678901234567890123</span><br><span class="line">012345678901234567890123</span><br><span class="line"></span><br><span class="line"><span class="meta">unix&gt;</span>./bufdemo-nsp</span><br><span class="line">Type a string:0123456789012345678901234</span><br><span class="line">Segmentation Fault</span><br></pre></td></tr></table></figure>
+<p>注意，虽然 <code>buf</code> 只能存储 3 个字符，但是输入 24 个字符也是可以正常执行的。原因请看下面的 Assembly Code：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"> 00000000004006cf &lt;echo&gt;:</span><br><span class="line">  4006cf:	48 83 ec 18          	sub    $0x18,%rsp</span><br><span class="line">  4006d3:	48 89 e7             	mov    %rsp,%rdi</span><br><span class="line">  4006d6:	e8 a5 ff ff ff       	callq  400680 &lt;gets&gt;</span><br><span class="line">  4006db:	48 89 e7             	mov    %rsp,%rdi</span><br><span class="line">  4006de:	e8 3d fe ff ff       	callq  400520 &lt;puts@plt&gt;</span><br><span class="line">  4006e3:	48 83 c4 18          	add    $0x18,%rsp</span><br><span class="line">  4006e7:	c3                   	retq </span><br><span class="line"></span><br><span class="line">&lt;call_echo&gt;:</span><br><span class="line">  4006e8:	48 83 ec 08          	sub    $0x8,%rsp</span><br><span class="line">  4006ec:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">  4006f1:	e8 d9 ff ff ff       	callq  4006cf &lt;echo&gt;</span><br><span class="line">  4006f6:	48 83 c4 08          	add    $0x8,%rsp</span><br><span class="line">  4006fa:	c3                   	retq</span><br></pre></td></tr></table></figure>
+<p><code>4006cf</code> 处代码，在栈上分配了 24 bytes 的内存。本来的栈顶是 <code>4006f6</code> 这个地址（<code>call_echo()</code> 调动 <code>echo()</code> 前把下一条指令放入栈中）。</p>
+<p>因此，输出 24 个字符后，会把返回地址变为 <code>400600</code>，但是程序并没有崩溃，而是可能跳到了奇怪的地方。</p>
+<h2 id="代码注入攻击"><a href="#代码注入攻击" class="headerlink" title="代码注入攻击"></a>代码注入攻击</h2><p>类似于 <code>gets()</code> 没有边界检查的输入函数，</p>
+<ol>
+<li>可以把想要执行的代码作为字符串输入。</li>
+<li>并把栈中的调用函数结束后的下一条指令地址替换为自己的地址。</li>
+<li>在这个函数执行到 <code>ret</code> 后，会跳到我们注入的代码中。</li>
+</ol>
+<h2 id="如何防止代码注入攻击"><a href="#如何防止代码注入攻击" class="headerlink" title="如何防止代码注入攻击"></a>如何防止代码注入攻击</h2><h3 id="在代码中防止溢出缺陷"><a href="#在代码中防止溢出缺陷" class="headerlink" title="在代码中防止溢出缺陷"></a>在代码中防止溢出缺陷</h3><p>使用 <code>fgets()</code> 代替 <code>gets()</code>。</p>
+<p>使用 <code>strncpy()</code> 代替 <code>strcpy()</code>。</p>
+<p>在 <code>scanf()</code> 中使用 <code>%ns</code> 代替 <code>%s</code>。</p>
+<h3 id="系统级保护"><a href="#系统级保护" class="headerlink" title="系统级保护"></a>系统级保护</h3><h4 id="ASLR"><a href="#ASLR" class="headerlink" title="ASLR"></a>ASLR</h4><p>随机化栈偏移量（ASLR，Address Space Layout Randomization），每次运行时地址是变化的。</p>
+<p>在主程序被调用之前，会在栈上分配随机大小（几MB）的空间。</p>
+<h4 id="Nonexecutale-code-segments"><a href="#Nonexecutale-code-segments" class="headerlink" title="Nonexecutale code segments"></a>Nonexecutale code segments</h4><p>在 x86 中，每个内存区域会标记是 <code>read-only</code> 还是 <code>writeable</code> 的。</p>
+<p>x86-64 增加了第三权限 <code>execute</code>。</p>
+<p>所以，标记栈为 <code>non-executable</code> 来防止代码注入攻击。</p>
+<h3 id="Stack-Canaries"><a href="#Stack-Canaries" class="headerlink" title="Stack Canaries"></a>Stack Canaries</h3><h4 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h4><p>检车代码中潜在的缓冲区溢出风险。</p>
+<ul>
+<li>在栈 buffer 中存入一个特殊的值 <code>canary</code>。</li>
+<li>在退出函数之前，检查 <code>cannary</code> 值是否发生了变化。</li>
+</ul>
+<h4 id="Assembly-Code"><a href="#Assembly-Code" class="headerlink" title="Assembly Code"></a>Assembly Code</h4><p>在 gcc 编译时，添加 <code>-fstack-protector</code> 参数来启用，新的版本是默认启用的。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Echo Line */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">echo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">char</span> buf[<span class="number">4</span>];  <span class="comment">/* Way too small! */</span></span><br><span class="line">    gets(buf);</span><br><span class="line">    <span class="built_in">puts</span>(buf);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">40072f:	sub    $0x18,%rsp</span><br><span class="line">400733:	mov    %fs:0x28,%rax   # 获取 canary</span><br><span class="line">40073c:	mov    %rax,0x8(%rsp)  # 把 canary 存入栈中，buffer 只能使用 8 bytes 了。</span><br><span class="line">400741:	xor    %eax,%eax       # 清空 %rax</span><br><span class="line">400743:	mov    %rsp,%rdi</span><br><span class="line">400746:	callq  4006e0 &lt;gets&gt;</span><br><span class="line">40074b:	mov    %rsp,%rdi</span><br><span class="line">40074e:	callq  400570 &lt;puts@plt&gt;</span><br><span class="line">400753:	mov    0x8(%rsp),%rax  # 从栈中获取值</span><br><span class="line">400758:	xor    %fs:0x28,%rax   # 检查与canary 是否相同，不相同，则执行__stack_chk_fail。</span><br><span class="line">400761:	je     400768 &lt;echo+0x39&gt;</span><br><span class="line">400763:	callq  400580 &lt;__stack_chk_fail@plt&gt;</span><br><span class="line">400768:	add    $0x18,%rsp</span><br><span class="line">40076c:	retq</span><br></pre></td></tr></table></figure>
+<p><code>%fs</code> 是为 8086 设计的寄存器，是某块内存中的值，每次运行程序会变。</p>
+<h2 id="面向返回编程攻击"><a href="#面向返回编程攻击" class="headerlink" title="面向返回编程攻击"></a>面向返回编程攻击</h2><p>不使用指令来填充栈，而是使用 gadget 的地址来填充栈。</p>
+<p>gadget：在代码区域中本来存在的代码中，<code>ret</code>  指令 + 前一条指令 称为 gadget。</p>
+<p>可以把想要执行的指令序列，拆分为一个个指令，找到对应的 gadget，用它们的地址填充栈。</p>
+<p><img src="/images/cum213-lec9-面向返回编程攻击.png" alt="cum213-lec9-面向返回编程攻击"></p>
+<h3 id="Gadget-例子-1"><a href="#Gadget-例子-1" class="headerlink" title="Gadget 例子 1"></a>Gadget 例子 1</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">ab_plus_c</span><span class="params">(<span class="keyword">long</span> a, <span class="keyword">long</span> b, <span class="keyword">long</span> c)</span> </span>&#123;                                                             </span><br><span class="line">   <span class="keyword">return</span> a*b + c;                                                                           </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/cum213-lec9-面向返回编程攻击-example1.png" alt="cum213-lec9-面向返回编程攻击-example1"></p>
+<h3 id="Gadget-例子-2"><a href="#Gadget-例子-2" class="headerlink" title="Gadget 例子 2"></a>Gadget 例子 2</h3><p>有时候，可以不是本来代码区中存在的代码，而是只要代码区中的字节可以组成 gadget 就可以。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setval</span><span class="params">(<span class="keyword">unsigned</span> *p)</span> </span>&#123;                                                                         </span><br><span class="line">    *p = <span class="number">3347663060u</span>;                                                                              </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="/images/cum213-lec9-面向返回编程攻击-example2.png" alt="cum213-lec9-面向返回编程攻击-example2"></p>
+<h1 id="Unions"><a href="#Unions" class="headerlink" title="Unions"></a>Unions</h1><h2 id="union"><a href="#union" class="headerlink" title="union"></a>union</h2><ul>
+<li>根据最大的字段分配内存。</li>
+<li>所有字段共用一块内存，因此只能使用一个字段。</li>
+</ul>
+<p>注意，在 IA32 与 x86-64 中，是小端表示法（对于一个数据类型，地址小的字节是数据的低位）。</p>
+<p>而在 Sun 中，是大端表示法。使用 union 可能会写出只适用于一种机器的代码。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+              <a href="/tags/CMU213/" rel="tag"># CMU213</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/操作系统/cmu213/lec8/" rel="prev" title="CMU213 学习笔记-Lec8-Machine-Level Programming VI：Data">
+      <i class="fa fa-chevron-left"></i> CMU213 学习笔记-Lec8-Machine-Level Programming VI：Data
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#内存布局"><span class="nav-number">1.</span> <span class="nav-text">内存布局</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Stack"><span class="nav-number">1.1.</span> <span class="nav-text">Stack</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Heap"><span class="nav-number">1.2.</span> <span class="nav-text">Heap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data"><span class="nav-number">1.3.</span> <span class="nav-text">Data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Text-Shared-Libraries"><span class="nav-number">1.4.</span> <span class="nav-text">Text / Shared Libraries</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缓冲区溢出-Buffer-Overflow"><span class="nav-number">2.</span> <span class="nav-text">缓冲区溢出 Buffer Overflow</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#危害"><span class="nav-number">2.1.</span> <span class="nav-text">危害</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#产生-Buffer-Overflow-的情形"><span class="nav-number">2.2.</span> <span class="nav-text">产生 Buffer Overflow 的情形</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#String-Library-Code"><span class="nav-number">2.2.1.</span> <span class="nav-text">String Library Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">2.2.2.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码注入攻击"><span class="nav-number">2.3.</span> <span class="nav-text">代码注入攻击</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何防止代码注入攻击"><span class="nav-number">2.4.</span> <span class="nav-text">如何防止代码注入攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#在代码中防止溢出缺陷"><span class="nav-number">2.4.1.</span> <span class="nav-text">在代码中防止溢出缺陷</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#系统级保护"><span class="nav-number">2.4.2.</span> <span class="nav-text">系统级保护</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ASLR"><span class="nav-number">2.4.2.1.</span> <span class="nav-text">ASLR</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Nonexecutale-code-segments"><span class="nav-number">2.4.2.2.</span> <span class="nav-text">Nonexecutale code segments</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stack-Canaries"><span class="nav-number">2.4.3.</span> <span class="nav-text">Stack Canaries</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#思想"><span class="nav-number">2.4.3.1.</span> <span class="nav-text">思想</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Assembly-Code"><span class="nav-number">2.4.3.2.</span> <span class="nav-text">Assembly Code</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面向返回编程攻击"><span class="nav-number">2.5.</span> <span class="nav-text">面向返回编程攻击</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gadget-例子-1"><span class="nav-number">2.5.1.</span> <span class="nav-text">Gadget 例子 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gadget-例子-2"><span class="nav-number">2.5.2.</span> <span class="nav-text">Gadget 例子 2</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Unions"><span class="nav-number">3.</span> <span class="nav-text">Unions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#union"><span class="nav-number">3.1.</span> <span class="nav-text">union</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/操作系统/cmu213/lec9/";
+    this.page.identifier = "2020/操作系统/cmu213/lec9/";
+    this.page.title = "CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
