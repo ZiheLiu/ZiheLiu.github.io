@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="编译器通用优化方式如果编译器不确定某些优化的效果，就不会优化它。 Code Motion减少计算执行的频率。  如果它每次都会产生相同的结果。 常见的例子，把代码移出循环。  例子123456void set_row(double *a, double *b, long i, long n) &amp;#123;    long j;    for (j = 0; j &amp;lt; n; j++) &amp;#123">
+<meta name="keywords" content="操作系统,CMU213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU213 学习笔记-Lec10-Program Optimization">
+<meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec10/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="编译器通用优化方式如果编译器不确定某些优化的效果，就不会优化它。 Code Motion减少计算执行的频率。  如果它每次都会产生相同的结果。 常见的例子，把代码移出循环。  例子123456void set_row(double *a, double *b, long i, long n) &amp;#123;    long j;    for (j = 0; j &amp;lt; n; j++) &amp;#123">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec10-exmaple-pce.png">
+<meta property="og:updated_time" content="2020-04-20T14:23:34.315Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CMU213 学习笔记-Lec10-Program Optimization">
+<meta name="twitter:description" content="编译器通用优化方式如果编译器不确定某些优化的效果，就不会优化它。 Code Motion减少计算执行的频率。  如果它每次都会产生相同的结果。 常见的例子，把代码移出循环。  例子123456void set_row(double *a, double *b, long i, long n) &amp;#123;    long j;    for (j = 0; j &amp;lt; n; j++) &amp;#123">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/cmu213-lec10-exmaple-pce.png">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec10/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>CMU213 学习笔记-Lec10-Program Optimization | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU213 学习笔记-Lec10-Program Optimization
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-19 20:40:00" itemprop="dateCreated datePublished" datetime="2020-04-19T20:40:00+08:00">2020-04-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-20 22:23:34" itemprop="dateModified" datetime="2020-04-20T22:23:34+08:00">2020-04-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec10/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec10/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="编译器通用优化方式"><a href="#编译器通用优化方式" class="headerlink" title="编译器通用优化方式"></a>编译器通用优化方式</h1><p>如果编译器不确定某些优化的效果，就不会优化它。</p>
+<h2 id="Code-Motion"><a href="#Code-Motion" class="headerlink" title="Code Motion"></a>Code Motion</h2><p>减少计算执行的频率。</p>
+<ul>
+<li>如果它每次都会产生相同的结果。</li>
+<li>常见的例子，把代码移出循环。</li>
+</ul>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_row</span><span class="params">(<span class="keyword">double</span> *a, <span class="keyword">double</span> *b, <span class="keyword">long</span> i, <span class="keyword">long</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> j;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">      a[n*i+j] = b[j];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会优化为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_row</span><span class="params">(<span class="keyword">double</span> *a, <span class="keyword">double</span> *b, <span class="keyword">long</span> i, <span class="keyword">long</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> j;</span><br><span class="line">    <span class="keyword">int</span> ni = n * i; <span class="comment">// 预先计算 n*i</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">      a[ni+j] = b[j];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>优化后的 Assembly code：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">set_row:</span><br><span class="line">	testq	%rcx, %rcx		            # Test n</span><br><span class="line">	jle	.L1			                    # If 0, goto done</span><br><span class="line">	imulq	%rcx, %rdx		            # ni = n*i.这里！</span><br><span class="line">	leaq	(%rdi,%rdx,8), %rdx	      # rowp = A + ni*8</span><br><span class="line">	movl	$0, %eax	               	# j = 0</span><br><span class="line">.L3:				      	              # loop:</span><br><span class="line">	movsd	(%rsi,%rax,8), %xmm0    	# t = b[j]</span><br><span class="line">	movsd	%xmm0, (%rdx,%rax,8)   	  # M[A+ni*8 + j*8] = t</span><br><span class="line">	addq	$1, %rax			            # j++</span><br><span class="line">	cmpq	%rcx, %rax		            # j:n</span><br><span class="line">	jne	.L3			                    # if !=, goto loop</span><br><span class="line">.L1:				      	              # done:</span><br><span class="line">	rep ; ret</span><br></pre></td></tr></table></figure></p>
+<h2 id="Reduction-in-Strength"><a href="#Reduction-in-Strength" class="headerlink" title="Reduction in Strength"></a>Reduction in Strength</h2><p>使用性能好的指令代替性能差的指令。</p>
+<ul>
+<li>使用移位运算代替乘法和除法。<ul>
+<li>例如 <code>16 * x</code> —&gt; <code>x &lt;&lt; 4</code>。</li>
+<li>是否优化，依赖于乘法和除法指令的性能。<ul>
+<li>在 Intel Nehalem，整数乘法需要 3 个 CPU cycles。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>识别结果序列。</li>
+</ul>
+<h3 id="例子-1"><a href="#例子-1" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">  <span class="keyword">int</span> ni = n*i;</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++)</span><br><span class="line">    a[ni + j] = b[j];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会优化为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> ni = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">  <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++)</span><br><span class="line">    a[ni + j] = b[j];</span><br><span class="line">  ni += n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Share-Common-Subexpressions"><a href="#Share-Common-Subexpressions" class="headerlink" title="Share Common Subexpressions"></a>Share Common Subexpressions</h2><ul>
+<li>复用表达式的共通部分。</li>
+<li>gcc 在开启 <code>-O1</code> 后使用此优化。</li>
+</ul>
+<h3 id="例子-2"><a href="#例子-2" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Sum neighbors of i,j */</span></span><br><span class="line"><span class="comment">// 需要 3 次乘法。</span></span><br><span class="line">up =    val[(i<span class="number">-1</span>)*n + j  ];</span><br><span class="line">down =  val[(i+<span class="number">1</span>)*n + j  ];</span><br><span class="line">left =  val[i*n     + j<span class="number">-1</span>]; <span class="comment">// left 与 right 只用求一次 i*n</span></span><br><span class="line">right = val[i*n     + j+<span class="number">1</span>];</span><br><span class="line">sum = up + down + left + right;</span><br></pre></td></tr></table></figure>
+<p>会优化为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要 1 次乘法。</span></span><br><span class="line"><span class="keyword">long</span> inj = i*n + j;</span><br><span class="line">up =    val[inj - n];</span><br><span class="line">down =  val[inj + n];</span><br><span class="line">left =  val[inj - <span class="number">1</span>];</span><br><span class="line">right = val[inj + <span class="number">1</span>];</span><br><span class="line">sum = up + down + left + right;</span><br></pre></td></tr></table></figure>
+<h1 id="Optimization-Blocker"><a href="#Optimization-Blocker" class="headerlink" title="Optimization Blocker"></a>Optimization Blocker</h1><h2 id="Procedure-Calls"><a href="#Procedure-Calls" class="headerlink" title="Procedure Calls"></a>Procedure Calls</h2><p>编译器把 procedure 看做是黑盒的。</p>
+<ul>
+<li>procedure 可能有副作用。例如维护了全局状态，每次调用值 +1。</li>
+<li>每次调用 procedure，代码中可能会对其参数进行改变。</li>
+</ul>
+<p>所以，</p>
+<ul>
+<li>对于 procedure，要自己去做 code motion。</li>
+</ul>
+<h3 id="例子-3"><a href="#例子-3" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lower</span><span class="params">(<span class="keyword">char</span> *s)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">size_t</span> i;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; <span class="built_in">strlen</span>(s); i++)</span><br><span class="line">    <span class="keyword">if</span> (s[i] &gt;= <span class="string">'A'</span> &amp;&amp; s[i] &lt;= <span class="string">'Z'</span>)</span><br><span class="line">      s[i] -= (<span class="string">'A'</span> - <span class="string">'a'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>strlen()</code> 每个循环都会被执行一次。不会用 code emtion 进行优化。</p>
+<p>而 <code>strlen()</code> 需要遍历直到字符是 <code>\0</code>，即时间复杂度是 $O(n)$ 的。</p>
+<h2 id="Memory-Aliasing"><a href="#Memory-Aliasing" class="headerlink" title="Memory Aliasing"></a>Memory Aliasing</h2><p>两个不同的指针可以指向同一块内存，这样会导致编译器有时无法进行优化。</p>
+<h3 id="例子-4"><a href="#例子-4" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// a 是 n*n 的矩阵</span></span><br><span class="line"><span class="comment">// b 是 n 维数组</span></span><br><span class="line"><span class="comment">// sum_rows1() 作用是，把 a 的每一行的和存到 b 中。</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">sum_rows1</span><span class="params">(<span class="keyword">double</span> *a, <span class="keyword">double</span> *b, <span class="keyword">long</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> i, j;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">	      b[i] = <span class="number">0</span>;</span><br><span class="line">	      <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++)</span><br><span class="line">	        b[i] += a[i*n + j];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Assembly Code 如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># sum_rows1 inner loop</span><br><span class="line">.L4:</span><br><span class="line">        movsd   (%rsi,%rax,8), %xmm0	# FP load</span><br><span class="line">        addsd   (%rdi), %xmm0		# FP add</span><br><span class="line">        movsd   %xmm0, (%rsi,%rax,8)	# FP store</span><br><span class="line">        addq    $8, %rdi</span><br><span class="line">        cmpq    %rcx, %rdi</span><br><span class="line">        jne     .L4</span><br></pre></td></tr></table></figure>
+<p>通过汇编可以看到，<code>b[i] += a[i*n + j]</code> 需要从内存读取 <code>a</code> 和 <code>b</code> 的对应位置，相加后再写回到内存中 <code>b</code> 的对应位置。</p>
+<p>由于 <code>b</code> 和 <code>a</code> 在内存中可能有重叠，所以编译器不能使用 Code Motion 去优化。</p>
+<p>例如，可以通过如下方式调用 <code>sum_rows1()</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> A[<span class="number">9</span>] = </span><br><span class="line">  &#123; <span class="number">0</span>,   <span class="number">1</span>,   <span class="number">2</span>,</span><br><span class="line">    <span class="number">4</span>,   <span class="number">8</span>,  <span class="number">16</span>&#125;,</span><br><span class="line">   <span class="number">32</span>,  <span class="number">64</span>, <span class="number">128</span>&#125;;</span><br><span class="line"><span class="keyword">double</span> *B = A+<span class="number">3</span>;</span><br><span class="line">sum_rows1(A, B, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+<h1 id="利用指令级并行"><a href="#利用指令级并行" class="headerlink" title="利用指令级并行"></a>利用指令级并行</h1><p>有些指令之间是独立的，CPU 可以并行执行这些指令。</p>
+<p>Superscalar Processor 可以在一个时钟周期执行多条指令。</p>
+<p>把指令进行拆分、分组，</p>
+<h2 id="流水线操作"><a href="#流水线操作" class="headerlink" title="流水线操作"></a>流水线操作</h2><p>单个硬件上的操作，可以分解为一系列不同的阶段，例如乘法指令需要多个阶段。</p>
+<p>一个阶段的硬件，在计算完一个值把它传给下一个阶段后，可以马上进行下一个值的计算。</p>
+<h3 id="例子-5"><a href="#例子-5" class="headerlink" title="例子"></a>例子</h3><p>假设乘法需要 3 个阶段（每个阶段一个时钟周期）。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">long</span> <span class="title">mult_eg</span><span class="params">(<span class="keyword">long</span> a, <span class="keyword">long</span> b, <span class="keyword">long</span> c)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> p1 = a*b;</span><br><span class="line">    <span class="keyword">long</span> p2 = a*c;</span><br><span class="line">    <span class="keyword">long</span> p3 = p1 * p2;</span><br><span class="line">    <span class="keyword">return</span> p3;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Time</strong></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>5</td>
+<td>6</td>
+<td>7</td>
+</tr>
+<tr>
+<td>Stage  1</td>
+<td><strong>a*b</strong></td>
+<td><strong>a*c</strong></td>
+<td></td>
+<td></td>
+<td><strong>p1*p2</strong></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Stage  2</td>
+<td></td>
+<td><strong>a*b</strong></td>
+<td><strong>a*c</strong></td>
+<td></td>
+<td></td>
+<td><strong>p1*p2</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>Stage  3</td>
+<td></td>
+<td></td>
+<td><strong>a*b</strong></td>
+<td><strong>a*c</strong></td>
+<td></td>
+<td></td>
+<td><strong>p1*p2</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>总共只需要 7 个时钟周期，而不是 9 个，就可以完成计算。</p>
+<h2 id="Haswell-CPU"><a href="#Haswell-CPU" class="headerlink" title="Haswell CPU"></a><strong>Haswell</strong> CPU</h2><ul>
+<li><p>每种指令可以并行执行的数量：</p>
+<ul>
+<li>2 load, with address computation</li>
+<li>1 store, with address computation</li>
+<li>4 integer</li>
+<li>2 FP multiply</li>
+<li>1 FP add</li>
+<li>1 FP divide</li>
+</ul>
+</li>
+<li><p>指令的延时、在流水线操作中一个阶段的时间：</p>
+</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Instruction</th>
+<th>Latency</th>
+<th>Cycles/Issue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Load / Store</td>
+<td>4</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Integer Multiply</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Integer/Long Divide</strong></td>
+<td>3-30</td>
+<td>3-30</td>
+</tr>
+<tr>
+<td>Single/Double FP Multiply</td>
+<td>5</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Single/Double FP Add</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td><strong>Single/Double FP Divide</strong></td>
+<td>3-15</td>
+<td>3-15</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>  可以看到，</p>
+<ul>
+<li><p>大多数指令需要几个时钟周期，但是采用了流水线技术，流水线的一个阶段只需要一个时钟周期。</p>
+</li>
+<li><p>除法指令非常慢，且没有流水线。</p>
+</li>
+</ul>
+<h2 id="分支预测"><a href="#分支预测" class="headerlink" title="分支预测"></a>分支预测</h2><p>CPU 会猜测哪个分支会被执行，提前执行对应分支的代码。</p>
+<p>执行这部分代码时，要保证没有副作用。</p>
+<p>在 CPU 中，有寄存器重命名块，每个寄存器都有几百个副本，计算的结果保存在这些副本中。分支预测的结果存储在寄存器的副本中。</p>
+<h2 id="例子-6"><a href="#例子-6" class="headerlink" title="例子"></a>例子</h2><h3 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* data structure for vectors */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	<span class="keyword">size_t</span> len;</span><br><span class="line">	<span class="keyword">data_t</span> *data;</span><br><span class="line">&#125; vec;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* retrieve vector element</span></span><br><span class="line"><span class="comment">   and store at val */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">get_vec_element</span><span class="params">(*vec v, <span class="keyword">size_t</span> idx, <span class="keyword">data_t</span> *val)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (idx &gt;= v-&gt;len)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">	*val = v-&gt;data[idx];</span><br><span class="line">	<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="评价指标"><a href="#评价指标" class="headerlink" title="评价指标"></a>评价指标</h3><ul>
+<li><p>CPE（Cycles Per Element）：每个元素计算所需要的时钟周期。CPE 是下图直线的斜率。</p>
+</li>
+<li><p>$T = CPE*n + Overhead$。总的时间。</p>
+</li>
+</ul>
+<p><img src="/images/cmu213-lec10-exmaple-pce.png" alt="cmu213-lec10-exmaple-pce" width="75%" /></p>
+<h3 id="baseline"><a href="#baseline" class="headerlink" title="baseline"></a>baseline</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine1</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">int</span> i;</span><br><span class="line">    *dest = IDENT;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; vec_length(v); i++) &#123;</span><br><span class="line">	      <span class="keyword">data_t</span> val;</span><br><span class="line">	      get_vec_element(v, i, &amp;val);</span><br><span class="line">	      *dest = *dest OP val;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>data_t</code> 通过 <code>typedef</code> 设置为 <code>int</code> 或 <code>double</code>。</p>
+</li>
+<li><p><code>OP</code> 通过 <code>typedef</code> 设置为 <code>+</code> 或 <code>*</code>。</p>
+</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Integer</th>
+<th>Integer</th>
+<th>Double FP</th>
+<th>Double FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation</td>
+<td>Add</td>
+<td>Mult</td>
+<td>Add</td>
+<td>Mult</td>
+</tr>
+<tr>
+<td>Combine1 unoptimized</td>
+<td>22.68</td>
+<td>20.02</td>
+<td>19.98</td>
+<td>20.18</td>
+</tr>
+<tr>
+<td>Combine1 –O1</td>
+<td>10.12</td>
+<td>10.12</td>
+<td>10.17</td>
+<td>11.14</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="基础优化"><a href="#基础优化" class="headerlink" title="基础优化"></a>基础优化</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">combine4</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">long</span> i;</span><br><span class="line">  <span class="keyword">long</span> length = vec_length(v);</span><br><span class="line">  <span class="keyword">data_t</span> *d = get_vec_start(v);</span><br><span class="line">  <span class="keyword">data_t</span> t = IDENT;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; length; i++)</span><br><span class="line">    t = t OP d[i];</span><br><span class="line">  *dest = t;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>进行了如下的优化：</p>
+<ul>
+<li><code>vec_length()</code> 调用移出循环。</li>
+<li>避免每次调用 <code>get_vec_element()</code> 的边界检查。</li>
+<li>用临时变量累加。（使用寄存器，而不是内存累加）。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Integer</th>
+<th>Integer</th>
+<th>Double FP</th>
+<th>Double FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation</td>
+<td>Add</td>
+<td>Mult</td>
+<td>Add</td>
+<td>Mult</td>
+</tr>
+<tr>
+<td>Combine1 –O1</td>
+<td>10.12</td>
+<td>10.12</td>
+<td>10.17</td>
+<td>11.14</td>
+</tr>
+<tr>
+<td><strong>Combine4  -O1</strong></td>
+<td>1.27</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>可以看到 整数加法的 耗时略高于 1，因为在循环的计数上开销比较大。</p>
+<h3 id="循环展开"><a href="#循环展开" class="headerlink" title="循环展开"></a>循环展开</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unroll2a_combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> length = vec_length(v);</span><br><span class="line">    <span class="keyword">long</span> limit = length<span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">data_t</span> *d = get_vec_start(v);</span><br><span class="line">    <span class="keyword">data_t</span> x = IDENT;</span><br><span class="line">    <span class="keyword">long</span> i;</span><br><span class="line">    <span class="comment">/* Combine 2 elements at a time */</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; limit; i+=<span class="number">2</span>) &#123;</span><br><span class="line">	      x = (x OP d[i]) OP d[i+<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* Finish any remaining elements */</span></span><br><span class="line">    <span class="keyword">for</span> (; i &lt; length; i++) &#123;</span><br><span class="line">	      x = x OP d[i];</span><br><span class="line">    &#125;</span><br><span class="line">    *dest = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>每个迭代，计算两个数字的累加。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Integer</th>
+<th>Integer</th>
+<th>Double FP</th>
+<th>Double FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation</td>
+<td>Add</td>
+<td>Mult</td>
+<td>Add</td>
+<td>Mult</td>
+</tr>
+<tr>
+<td>Combine4</td>
+<td>1.27</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+<tr>
+<td><strong>Unroll 2x1a</strong></td>
+<td>1.01</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+<tr>
+<td>Latency Bound</td>
+<td>1.00</td>
+<td>3.00</td>
+<td>3.00</td>
+<td>5.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="循环展开-结合律"><a href="#循环展开-结合律" class="headerlink" title="循环展开 + 结合律"></a>循环展开 + 结合律</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unroll2aa_combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> length = vec_length(v);</span><br><span class="line">    <span class="keyword">long</span> limit = length<span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">data_t</span> *d = get_vec_start(v);</span><br><span class="line">    <span class="keyword">data_t</span> x = IDENT;</span><br><span class="line">    <span class="keyword">long</span> i;</span><br><span class="line">    <span class="comment">/* Combine 2 elements at a time */</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; limit; i+=<span class="number">2</span>) &#123;</span><br><span class="line">	       x = x OP (d[i] OP d[i+<span class="number">1</span>]); <span class="comment">// 这里与 unroll2a_combine() 不同。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* Finish any remaining elements */</span></span><br><span class="line">    <span class="keyword">for</span> (; i &lt; length; i++) &#123;</span><br><span class="line">	      x = x OP d[i];</span><br><span class="line">    &#125;</span><br><span class="line">    *dest = x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用结合律后，在计算 <code>x OP tmp</code> 时，可以提前计算下一个迭代的 <code>d[i] OP d[i+1]</code>，时钟周期缩减一半。</p>
+<p>但是浮点数除法不满足结合律，要保证不会出现舍入的情况下使用。</p>
+<ul>
+<li>因此，编译器不会对浮点数采用结合律进行优化。</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Integer</th>
+<th>Integer</th>
+<th>Double FP</th>
+<th>Double FP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation</td>
+<td>Add</td>
+<td>Mult</td>
+<td>Add</td>
+<td>Mult</td>
+</tr>
+<tr>
+<td>Combine4</td>
+<td>1.27</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+<tr>
+<td>Unroll 2x1a</td>
+<td>1.01</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+<tr>
+<td><strong>Unroll 2x1aa</strong></td>
+<td>1.01</td>
+<td>1.51</td>
+<td>1.51</td>
+<td>2.51</td>
+</tr>
+<tr>
+<td>Latency Bound</td>
+<td>1.00</td>
+<td>3.00</td>
+<td>3.00</td>
+<td>5.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="循环展开-多个累加器"><a href="#循环展开-多个累加器" class="headerlink" title="循环展开 + 多个累加器"></a>循环展开 + 多个累加器</h3><p>可以使用两个累加器来进行计算，每次迭代，分别累加到不同的累加器上。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">unroll2a_combine</span><span class="params">(vec_ptr v, <span class="keyword">data_t</span> *dest)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> length = vec_length(v);</span><br><span class="line">    <span class="keyword">long</span> limit = length<span class="number">-1</span>;</span><br><span class="line">    <span class="keyword">data_t</span> *d = get_vec_start(v);</span><br><span class="line">    <span class="keyword">data_t</span> x0 = IDENT;</span><br><span class="line">    <span class="keyword">data_t</span> x1 = IDENT;</span><br><span class="line">    <span class="keyword">long</span> i;</span><br><span class="line">    <span class="comment">/* Combine 2 elements at a time */</span></span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; limit; i+=<span class="number">2</span>) &#123;</span><br><span class="line">       x0 = x0 OP d[i];</span><br><span class="line">       x1 = x1 OP d[i+<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* Finish any remaining elements */</span></span><br><span class="line">    <span class="keyword">for</span> (; i &lt; length; i++) &#123;</span><br><span class="line">	x0 = x0 OP d[i];</span><br><span class="line">    &#125;</span><br><span class="line">    *dest = x0 OP x1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也相当于使用了结合律，改变了元素结合的顺序。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Integer</th>
+<th>Double FP</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operation</td>
+<td>Add</td>
+<td>Mult</td>
+<td>Add</td>
+<td>Mult</td>
+</tr>
+<tr>
+<td>Combine4</td>
+<td>1.27</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+<tr>
+<td>Unroll 2x1a</td>
+<td>1.01</td>
+<td>3.01</td>
+<td>3.01</td>
+<td>5.01</td>
+</tr>
+<tr>
+<td>Unroll 2x1aa</td>
+<td>1.01</td>
+<td>1.51</td>
+<td>1.51</td>
+<td>2.51</td>
+</tr>
+<tr>
+<td><strong>Unroll 2x2</strong></td>
+<td>0.81</td>
+<td>1.51</td>
+<td>1.51</td>
+<td>2.51</td>
+</tr>
+<tr>
+<td>Latency Bound</td>
+<td>1.00</td>
+<td>3.00</td>
+<td>3.00</td>
+<td>5.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="循环展开-多个累加器-调参"><a href="#循环展开-多个累加器-调参" class="headerlink" title="循环展开 + 多个累加器 + 调参"></a>循环展开 + 多个累加器 + 调参</h3><ul>
+<li>循环展开。每个迭代计算 <code>L</code> 个元素。</li>
+<li>多个累加器。每次迭代使用 <code>K</code> 个累加器，要求 <code>L</code> 是 <code>K</code> 的倍数。</li>
+</ul>
+<p>机器</p>
+<ul>
+<li><p>Intel Haswell </p>
+</li>
+<li><p>Double FP Multiplication</p>
+</li>
+<li><p>Latency bound: 5.00. Throughput bound: 0.50 </p>
+</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th><strong>FP  *</strong></th>
+<th><strong>Unrolling  Factor L</strong></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>K</strong></td>
+<td>1</td>
+<td>2</td>
+<td>3</td>
+<td>4</td>
+<td>6</td>
+<td>8</td>
+<td>10</td>
+<td>12</td>
+</tr>
+<tr>
+<td>1</td>
+<td>5.01</td>
+<td>5.01</td>
+<td>5.01</td>
+<td>5.01</td>
+<td>5.01</td>
+<td>5.01</td>
+<td>5.01</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td></td>
+<td>2.51</td>
+<td></td>
+<td>2.51</td>
+<td></td>
+<td>2.51</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td></td>
+<td></td>
+<td>1.67</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td></td>
+<td></td>
+<td></td>
+<td>1.25</td>
+<td></td>
+<td>1.26</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.84</td>
+<td></td>
+<td></td>
+<td>0.88</td>
+</tr>
+<tr>
+<td>8</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.63</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>10</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td><strong>0.51</strong></td>
+<td></td>
+</tr>
+<tr>
+<td>12</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>0.52</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>在 $L = 10$、$K=10$ 时，CPE 达到了吞吐率的边界值 0.5。</p>
+<p>最优 CPE 与 Latency 无关，只与吞吐率有关。</p>
+<h3 id="向量化"><a href="#向量化" class="headerlink" title="向量化"></a>向量化</h3><p>向量化浮点数计算，可以同时进行 4 个 double 的加法计算。</p>
+<p>gcc 对这个优化得不太好，需要用 gcc 的插件。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>使用编译器的优化级别。</li>
+<li>不要编写愚蠢的代码。<ul>
+<li>编写编译器友好的代码。<ul>
+<li>Procedure Calls &amp; Memory Aliasing    </li>
+</ul>
+</li>
+<li>关注循环中的代码（大部分工作在循环中完成）。</li>
+</ul>
+</li>
+<li>针对特定机器优化代码。<ul>
+<li>利用指令级并行。</li>
+<li>避免不可预测的分支。</li>
+<li>缓存友好（还没有讲）。</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+              <a href="/tags/CMU213/" rel="tag"># CMU213</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/操作系统/cmu213/lec9/" rel="prev" title="CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics">
+      <i class="fa fa-chevron-left"></i> CMU213 学习笔记-Lec9-Machine-Level Programming V：Advanced Topics
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#编译器通用优化方式"><span class="nav-number">1.</span> <span class="nav-text">编译器通用优化方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Code-Motion"><span class="nav-number">1.1.</span> <span class="nav-text">Code Motion</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">1.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reduction-in-Strength"><span class="nav-number">1.2.</span> <span class="nav-text">Reduction in Strength</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Share-Common-Subexpressions"><span class="nav-number">1.3.</span> <span class="nav-text">Share Common Subexpressions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-2"><span class="nav-number">1.3.1.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Optimization-Blocker"><span class="nav-number">2.</span> <span class="nav-text">Optimization Blocker</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Procedure-Calls"><span class="nav-number">2.1.</span> <span class="nav-text">Procedure Calls</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-3"><span class="nav-number">2.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Memory-Aliasing"><span class="nav-number">2.2.</span> <span class="nav-text">Memory Aliasing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-4"><span class="nav-number">2.2.1.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#利用指令级并行"><span class="nav-number">3.</span> <span class="nav-text">利用指令级并行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#流水线操作"><span class="nav-number">3.1.</span> <span class="nav-text">流水线操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#例子-5"><span class="nav-number">3.1.1.</span> <span class="nav-text">例子</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Haswell-CPU"><span class="nav-number">3.2.</span> <span class="nav-text">Haswell CPU</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分支预测"><span class="nav-number">3.3.</span> <span class="nav-text">分支预测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#例子-6"><span class="nav-number">3.4.</span> <span class="nav-text">例子</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据结构"><span class="nav-number">3.4.1.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评价指标"><span class="nav-number">3.4.2.</span> <span class="nav-text">评价指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#baseline"><span class="nav-number">3.4.3.</span> <span class="nav-text">baseline</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#基础优化"><span class="nav-number">3.4.4.</span> <span class="nav-text">基础优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环展开"><span class="nav-number">3.4.5.</span> <span class="nav-text">循环展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环展开-结合律"><span class="nav-number">3.4.6.</span> <span class="nav-text">循环展开 + 结合律</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环展开-多个累加器"><span class="nav-number">3.4.7.</span> <span class="nav-text">循环展开 + 多个累加器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环展开-多个累加器-调参"><span class="nav-number">3.4.8.</span> <span class="nav-text">循环展开 + 多个累加器 + 调参</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#向量化"><span class="nav-number">3.4.9.</span> <span class="nav-text">向量化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">85</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/操作系统/cmu213/lec10/";
+    this.page.identifier = "2020/操作系统/cmu213/lec10/";
+    this.page.title = "CMU213 学习笔记-Lec10-Program Optimization";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

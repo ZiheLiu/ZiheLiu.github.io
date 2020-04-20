@@ -182,6 +182,213 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/mq/rocketmq的Producer/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/mq/rocketmq的Producer/" class="post-title-link" itemprop="url">RocketMQ 的 Producer</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-22 09:59:00" itemprop="dateCreated datePublished" datetime="2020-03-22T09:59:00+08:00">2020-03-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-24 09:04:55" itemprop="dateModified" datetime="2020-03-24T09:04:55+08:00">2020-03-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/mq/rocketmq的Producer/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/mq/rocketmq的Producer/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><ol>
+<li>设置 namespace</li>
+<li>设置 producerGroup</li>
+<li><p>实例化 defaultMQProducerImpl</p>
+<ul>
+<li>创建为ASYNC send所用的线程池，大小CPUS，60秒 keepalive。</li>
+</ul>
+</li>
+<li><p>start()</p>
+<ol>
+<li><p>检查producerGroup命名。</p>
+</li>
+<li><p>如果instanceName是DEFAULT，把 instanceName 改为 PID。</p>
+</li>
+<li><p>根据clientId（<code>&lt;ip&gt;@&lt;instanceName&gt;(@unitName)</code>）获得或创建MQClientInstance。</p>
+</li>
+<li><p>在MQClientInstance注册producer，在producerTable中存入group-&gt;producer的映射。</p>
+</li>
+<li><p>创建AUTO_CREATE_TOPIC_KEY_TOPIC主题。</p>
+</li>
+<li><p>启动MQClientInstance。<code>MQClientInstance#start()</code>。</p>
+<ul>
+<li>只有没有启动过才会真正启动。否则直接返回。</li>
+</ul>
+<ol>
+<li>如果配置中没有指明NameServer的地址，从指定的URL用HTTP GET获取。</li>
+<li>启动remotingClient。</li>
+<li>启动一些定时任务。都是在同一个单线程的newSingleThreadScheduledExecutor中。<ol>
+<li>如果配置中没有指明NameServer的地址，每120秒从指定的URL用HTTP GET获取。</li>
+<li>默认每30秒从NameServer更新路由。</li>
+<li>默认每30秒向所有Broker发送心跳。</li>
+<li>默认每5秒持久化Consumer的offset。</li>
+</ol>
+</li>
+<li>启动 pull message 线程（Consumer使用）。</li>
+<li>启动rebalance consumer线程（Consumer使用）。默认每20000秒rebalance一次。</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h1 id="异步发送流程"><a href="#异步发送流程" class="headerlink" title="异步发送流程"></a>异步发送流程</h1><ol>
+<li><code>send()</code> 提交任务给executor执行。<ul>
+<li>调用 <code>sendDefaultImpl()</code>。</li>
+<li>并用 <code>try catch{}</code> 包起来，把异常传给 <code>sendCallback.onException(e)</code>。</li>
+</ul>
+</li>
+<li><code>sendDefaultImpl()</code> 选择队列，交给下一步执行。SYNC模式会在这里重试。<ul>
+<li>检查 Producer 运行状态、消息的格式。</li>
+<li>获取topic路由信息。</li>
+<li>SYNC模式，以下最多重复RetryTimes次。其他模式，只执行一次。<ul>
+<li>选择一个queue。</li>
+<li>调用 <code>sendKernelImpl()</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>sendKernelImpl()</code> 设置要发往的地址、请求头部信息。<ul>
+<li>找到queue对应的broker的Addr。</li>
+<li>设置uniqID。</li>
+<li>设置Request的Header信息。</li>
+<li>调用 <code>MQClientAPIImpl#sendMessage()</code>。</li>
+</ul>
+</li>
+<li><code>MQClientAPIImpl#sendMessage()</code><ul>
+<li>设置Request的Body信息。</li>
+<li>调用 <code>MQClientAPIImpl#sendMessageAsync()</code>。</li>
+</ul>
+</li>
+<li><code>MQClientAPIImpl#sendMessageAsync()</code><ul>
+<li>调用 <code>NettyRemoteClient#invokeAsync()</code>。</li>
+<li>传入了一个回调函数 <code>invokeCallback</code>。<ul>
+<li>如果response不为空，即Broker在timeout前给了回复。<ul>
+<li>如果用户传入的<code>sendCallback</code>是null，则执行钩子函数后返回。</li>
+<li>否则，调用 <code>sendCallback.onSuccess(sendResult)</code>。</li>
+</ul>
+</li>
+<li>如果response为空，重新调用 <code>MQClientAPIImpl#sendMessageAsync()</code>。<ul>
+<li>这样每次失败，都在回调函数里再次调用，直到达到 RetryTimes后把异常传给<code>sendCallback.onException(e)</code>。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>NettyRemoteClient#invokeAsync()</code><ul>
+<li>检查 channel<ul>
+<li>如果没有创建过，则连接这个broker。</li>
+<li>如果channel inactive了，关闭连接，抛出异常。</li>
+</ul>
+</li>
+<li>调用 <code>NettyRemoteClient#invokeAsyncImpl()</code>。</li>
+</ul>
+</li>
+<li><code>NettyRemoteClient#invokeAsyncImpl()</code><ul>
+<li>创建ResponseFuture，设置回调为第5步传入的回调函数<code>invokeCallback</code>。<ul>
+<li>在Broker返回消息的时候，会调用这个回调函数。</li>
+</ul>
+</li>
+<li>用 <code>channel.write()</code> 写入request，这里是异步的。</li>
+</ul>
+</li>
+</ol>
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
+<li>超时时间是否需要包含在 executor 的排队的时间？</li>
+<li>为什么 netty的EventLoopGroup线程数目只有一个，连接所有的broker、NameServer都用一个。</li>
+<li>encoder，没用netty的对象池</li>
+</ul>
+<h1 id="选择消息队列"><a href="#选择消息队列" class="headerlink" title="选择消息队列"></a>选择消息队列</h1><h2 id="默认机制"><a href="#默认机制" class="headerlink" title="默认机制"></a>默认机制</h2><p>sendLatencyFaultEnable=false，没有开启故障延迟。</p>
+<ul>
+<li>如果lastBrokerName为null，轮询下一个queue。</li>
+<li>否则，轮询时，避开lastBrokerName的queue。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/mq/rocketmq的Producer/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/Linux命令记录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1161,121 +1368,6 @@ AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stri
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty参数/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/netty/netty参数/" class="post-title-link" itemprop="url">Netty 参数</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-12 13:41:00" itemprop="dateCreated datePublished" datetime="2020-03-12T13:41:00+08:00">2020-03-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-13 10:59:04" itemprop="dateModified" datetime="2020-03-13T10:59:04+08:00">2020-03-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/netty/netty参数/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty参数/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="SO-REUSEADDR"><a href="#SO-REUSEADDR" class="headerlink" title="SO_REUSEADDR"></a>SO_REUSEADDR</h1><ol>
-<li>SO_REUSEADDR 允许启动一个监听服务器并捆绑一个端口，即使以前建立的将此端口用做他们的本地端口的连接仍存在（TIME_WAIT）。这通常是<strong>重启监听服务器</strong>时出现，若不设置此选项，则 bind 时将出错。</li>
-<li>SO_REUSEADDR 允许在同一端口上启动同一服务器的<strong>多个实例</strong>，只要每个实例捆绑一个<strong>不同的本地 IP 地址</strong>即可。</li>
-<li>SO_REUSEADDR 允许<strong>单个进程</strong>捆绑同一端口到多个套接口上，只要每个捆绑指定<strong>不同的本地 IP 地址</strong>即可。这一般不用于TCP服务器。</li>
-<li>SO_REUSEADDR 允许完全重复的捆绑：当一个IP地址和端口绑定到某个套接口上时，还允许此IP地址和端口捆绑到另一个套接口上。一般来说，这个特性仅在支持多播的系统上才有，而且只对UDP套接口而言（TCP不支持多播）。</li>
-</ol>
-<h1 id="SO-REUSEPORT"><a href="#SO-REUSEPORT" class="headerlink" title="SO_REUSEPORT"></a>SO_REUSEPORT</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p>使用 <code>select</code>、<code>epoll</code> 多路复用技术，也只能在一个线程监听连接的到来，无法利用多核 CPU。</p>
-<p>在 Linux 3.9 以后增加了 OP_REUSEPORT 参数，可以多次绑定同一个端口。</p>
-<blockquote>
-<p>The new socket option allows multiple sockets on the same host to bind to the same port, and is intended to improve the performance of multithreaded network server applications running on top of multicore systems.</p>
-</blockquote>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
-<li>允许多个套接字 bind()/listen() 同一个 TCP/UDP 端口。<ul>
-<li>每一个线程拥有自己的服务器套接字。</li>
-<li>在服务器套接字上没有了锁的竞争。</li>
-</ul>
-</li>
-<li>内核层面实现负载均衡。</li>
-<li>安全层面，监听同一个端口的套接字只能位于同一个用户下面。</li>
-</ul>
-<h2 id="Netty-中使用"><a href="#Netty-中使用" class="headerlink" title="Netty 中使用"></a>Netty 中使用</h2>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/netty/netty参数/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1348,7 +1440,7 @@ AbstractStringBuilder <|-- stringbuffer="" abstractstringbuilder="" <|--="" stri
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

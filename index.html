@@ -182,6 +182,114 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/操作系统/cmu213/lec10/" class="post-title-link" itemprop="url">CMU213 学习笔记-Lec10-Program Optimization</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-19 20:40:00" itemprop="dateCreated datePublished" datetime="2020-04-19T20:40:00+08:00">2020-04-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-20 22:23:34" itemprop="dateModified" datetime="2020-04-20T22:23:34+08:00">2020-04-20</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec10/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec10/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="编译器通用优化方式"><a href="#编译器通用优化方式" class="headerlink" title="编译器通用优化方式"></a>编译器通用优化方式</h1><p>如果编译器不确定某些优化的效果，就不会优化它。</p>
+<h2 id="Code-Motion"><a href="#Code-Motion" class="headerlink" title="Code Motion"></a>Code Motion</h2><p>减少计算执行的频率。</p>
+<ul>
+<li>如果它每次都会产生相同的结果。</li>
+<li>常见的例子，把代码移出循环。</li>
+</ul>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_row</span><span class="params">(<span class="keyword">double</span> *a, <span class="keyword">double</span> *b, <span class="keyword">long</span> i, <span class="keyword">long</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> j;</span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">      a[n*i+j] = b[j];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>会优化为</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">set_row</span><span class="params">(<span class="keyword">double</span> *a, <span class="keyword">double</span> *b, <span class="keyword">long</span> i, <span class="keyword">long</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">long</span> j;</span><br><span class="line">    <span class="keyword">int</span> ni = n * i; <span class="comment">// 预先计算 n*i</span></span><br><span class="line">    <span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; n; j++) &#123;</span><br><span class="line">      a[ni+j] = b[j];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>优化后的 Assembly code：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">set_row:</span><br><span class="line">	testq	%rcx, %rcx		            # Test n</span><br><span class="line">	jle	.L1			                    # If 0, goto done</span><br><span class="line">	imulq	%rcx, %rdx		            # ni = n*i.这里！</span><br><span class="line">	leaq	(%rdi,%rdx,8), %rdx	      # rowp = A + ni*8</span><br><span class="line">	movl	$0, %eax	               	# j = 0</span><br><span class="line">.L3:				      	              # loop:</span><br><span class="line">	movsd	(%rsi,%rax,8), %xmm0    	# t = b[j]</span><br><span class="line">	movsd	%xmm0, (%rdx,%rax,8)   	  # M[A+ni*8 + j*8] = t</span><br><span class="line">	addq	$1, %rax			            # j++</span><br><span class="line">	cmpq	%rcx, %rax		            # j:n</span><br><span class="line">	jne	.L3			                    # if !=, goto loop</span><br><span class="line">.L1:				      	              # done:</span><br><span class="line">	rep ; ret</span><br></pre></td></tr></table></figure></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/操作系统/cmu213/lec10/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec9/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -811,7 +919,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-04-14 16:43:27" itemprop="dateModified" datetime="2020-04-14T16:43:27+08:00">2020-04-14</time>
+                <time title="Modified: 2020-04-19 18:09:37" itemprop="dateModified" datetime="2020-04-19T18:09:37+08:00">2020-04-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1201,213 +1309,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/mq/rocketmq的Producer/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/mq/rocketmq的Producer/" class="post-title-link" itemprop="url">RocketMQ 的 Producer</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2020-03-22 09:59:00" itemprop="dateCreated datePublished" datetime="2020-03-22T09:59:00+08:00">2020-03-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-24 09:04:55" itemprop="dateModified" datetime="2020-03-24T09:04:55+08:00">2020-03-24</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mq/" itemprop="url" rel="index"><span itemprop="name">mq</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/mq/rocketmq的Producer/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/mq/rocketmq的Producer/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h1><ol>
-<li>设置 namespace</li>
-<li>设置 producerGroup</li>
-<li><p>实例化 defaultMQProducerImpl</p>
-<ul>
-<li>创建为ASYNC send所用的线程池，大小CPUS，60秒 keepalive。</li>
-</ul>
-</li>
-<li><p>start()</p>
-<ol>
-<li><p>检查producerGroup命名。</p>
-</li>
-<li><p>如果instanceName是DEFAULT，把 instanceName 改为 PID。</p>
-</li>
-<li><p>根据clientId（<code>&lt;ip&gt;@&lt;instanceName&gt;(@unitName)</code>）获得或创建MQClientInstance。</p>
-</li>
-<li><p>在MQClientInstance注册producer，在producerTable中存入group-&gt;producer的映射。</p>
-</li>
-<li><p>创建AUTO_CREATE_TOPIC_KEY_TOPIC主题。</p>
-</li>
-<li><p>启动MQClientInstance。<code>MQClientInstance#start()</code>。</p>
-<ul>
-<li>只有没有启动过才会真正启动。否则直接返回。</li>
-</ul>
-<ol>
-<li>如果配置中没有指明NameServer的地址，从指定的URL用HTTP GET获取。</li>
-<li>启动remotingClient。</li>
-<li>启动一些定时任务。都是在同一个单线程的newSingleThreadScheduledExecutor中。<ol>
-<li>如果配置中没有指明NameServer的地址，每120秒从指定的URL用HTTP GET获取。</li>
-<li>默认每30秒从NameServer更新路由。</li>
-<li>默认每30秒向所有Broker发送心跳。</li>
-<li>默认每5秒持久化Consumer的offset。</li>
-</ol>
-</li>
-<li>启动 pull message 线程（Consumer使用）。</li>
-<li>启动rebalance consumer线程（Consumer使用）。默认每20000秒rebalance一次。</li>
-</ol>
-</li>
-</ol>
-</li>
-</ol>
-<h1 id="异步发送流程"><a href="#异步发送流程" class="headerlink" title="异步发送流程"></a>异步发送流程</h1><ol>
-<li><code>send()</code> 提交任务给executor执行。<ul>
-<li>调用 <code>sendDefaultImpl()</code>。</li>
-<li>并用 <code>try catch{}</code> 包起来，把异常传给 <code>sendCallback.onException(e)</code>。</li>
-</ul>
-</li>
-<li><code>sendDefaultImpl()</code> 选择队列，交给下一步执行。SYNC模式会在这里重试。<ul>
-<li>检查 Producer 运行状态、消息的格式。</li>
-<li>获取topic路由信息。</li>
-<li>SYNC模式，以下最多重复RetryTimes次。其他模式，只执行一次。<ul>
-<li>选择一个queue。</li>
-<li>调用 <code>sendKernelImpl()</code>。</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>sendKernelImpl()</code> 设置要发往的地址、请求头部信息。<ul>
-<li>找到queue对应的broker的Addr。</li>
-<li>设置uniqID。</li>
-<li>设置Request的Header信息。</li>
-<li>调用 <code>MQClientAPIImpl#sendMessage()</code>。</li>
-</ul>
-</li>
-<li><code>MQClientAPIImpl#sendMessage()</code><ul>
-<li>设置Request的Body信息。</li>
-<li>调用 <code>MQClientAPIImpl#sendMessageAsync()</code>。</li>
-</ul>
-</li>
-<li><code>MQClientAPIImpl#sendMessageAsync()</code><ul>
-<li>调用 <code>NettyRemoteClient#invokeAsync()</code>。</li>
-<li>传入了一个回调函数 <code>invokeCallback</code>。<ul>
-<li>如果response不为空，即Broker在timeout前给了回复。<ul>
-<li>如果用户传入的<code>sendCallback</code>是null，则执行钩子函数后返回。</li>
-<li>否则，调用 <code>sendCallback.onSuccess(sendResult)</code>。</li>
-</ul>
-</li>
-<li>如果response为空，重新调用 <code>MQClientAPIImpl#sendMessageAsync()</code>。<ul>
-<li>这样每次失败，都在回调函数里再次调用，直到达到 RetryTimes后把异常传给<code>sendCallback.onException(e)</code>。</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><code>NettyRemoteClient#invokeAsync()</code><ul>
-<li>检查 channel<ul>
-<li>如果没有创建过，则连接这个broker。</li>
-<li>如果channel inactive了，关闭连接，抛出异常。</li>
-</ul>
-</li>
-<li>调用 <code>NettyRemoteClient#invokeAsyncImpl()</code>。</li>
-</ul>
-</li>
-<li><code>NettyRemoteClient#invokeAsyncImpl()</code><ul>
-<li>创建ResponseFuture，设置回调为第5步传入的回调函数<code>invokeCallback</code>。<ul>
-<li>在Broker返回消息的时候，会调用这个回调函数。</li>
-</ul>
-</li>
-<li>用 <code>channel.write()</code> 写入request，这里是异步的。</li>
-</ul>
-</li>
-</ol>
-<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
-<li>超时时间是否需要包含在 executor 的排队的时间？</li>
-<li>为什么 netty的EventLoopGroup线程数目只有一个，连接所有的broker、NameServer都用一个。</li>
-<li>encoder，没用netty的对象池</li>
-</ul>
-<h1 id="选择消息队列"><a href="#选择消息队列" class="headerlink" title="选择消息队列"></a>选择消息队列</h1><h2 id="默认机制"><a href="#默认机制" class="headerlink" title="默认机制"></a>默认机制</h2><p>sendLatencyFaultEnable=false，没有开启故障延迟。</p>
-<ul>
-<li>如果lastBrokerName为null，轮询下一个queue。</li>
-<li>否则，轮询时，避开lastBrokerName的queue。</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/mq/rocketmq的Producer/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1480,7 +1381,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">84</span>
+          <span class="site-state-item-count">85</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
