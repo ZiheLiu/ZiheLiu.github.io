@@ -30,10 +30,10 @@ Random-Access Memory 随机访问存储器
 
 根据存储单元实现方式来区分的。
 
-|      | 每个bit晶体管数量 | Access time | Needs refresh | Needs EDC | Cost | Applications                 |
-| ---- | ----------------- | ----------- | ------------- | --------- | ---- | ---------------------------- |
-| SRAM | 4 or 6            | 1X          | No            | Maybe     | 100X | Cache memories               |
-| DRAM | 1                 | 10X         | Yes           | Yes       | 1X   | Main memories, frame buffers |
+|      | Trans.per bit | Access time | Needs refresh | Needs EDC | Cost | Applications                 |
+| ---- | ------------- | ----------- | ------------- | --------- | ---- | ---------------------------- |
+| SRAM | 4 or 6        | 1X          | No            | Maybe     | 100X | Cache memories               |
+| DRAM | 1             | 10X         | Yes           | Yes       | 1X   | Main memories, frame buffers |
 
 表格解释：
 
