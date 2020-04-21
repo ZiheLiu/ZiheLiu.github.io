@@ -1,5 +1,5 @@
 ---
-title: CMU213 学习笔记-Lec10-The Memory Hierarchy
+title: CMU213 学习笔记-Lec11-The Memory Hierarchy
 date: 2020-04-21 15:45:00
 categories:
 	- 操作系统
