@@ -23,7 +23,7 @@
   <meta name="description" content="存储技术与趋势RAMRandom-Access Memory 随机访问存储器 特点 一般被打包成芯片。 多个 RAM 芯片 组成了主存。 最基本的存储单元成为 cell，一个 cell 存储一个 bit。  分类 SRAM（Static） DRAM（Dynamic）  根据存储单元实现方式来区分的。      每个bit晶体管数量 Access time Needs refresh Needs E">
 <meta name="keywords" content="操作系统,CMU213">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CMU213 学习笔记-Lec10-The Memory Hierarchy">
+<meta property="og:title" content="CMU213 学习笔记-Lec11-The Memory Hierarchy">
 <meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec11/index.html">
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:description" content="存储技术与趋势RAMRandom-Access Memory 随机访问存储器 特点 一般被打包成芯片。 多个 RAM 芯片 组成了主存。 最基本的存储单元成为 cell，一个 cell 存储一个 bit。  分类 SRAM（Static） DRAM（Dynamic）  根据存储单元实现方式来区分的。      每个bit晶体管数量 Access time Needs refresh Needs E">
@@ -36,9 +36,9 @@
 <meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-iobus.png">
 <meta property="og:image" content="http://ziheliu.github.io/images/cum213-lec11-memory-hierarchy.png">
 <meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-mem-hierarchy-cache.png">
-<meta property="og:updated_time" content="2020-04-21T13:42:27.781Z">
+<meta property="og:updated_time" content="2020-04-21T13:57:08.872Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CMU213 学习笔记-Lec10-The Memory Hierarchy">
+<meta name="twitter:title" content="CMU213 学习笔记-Lec11-The Memory Hierarchy">
 <meta name="twitter:description" content="存储技术与趋势RAMRandom-Access Memory 随机访问存储器 特点 一般被打包成芯片。 多个 RAM 芯片 组成了主存。 最基本的存储单元成为 cell，一个 cell 存储一个 bit。  分类 SRAM（Static） DRAM（Dynamic）  根据存储单元实现方式来区分的。      每个bit晶体管数量 Access time Needs refresh Needs E">
 <meta name="twitter:image" content="http://ziheliu.github.io/images/cmu213-lec11-bus.png">
 
@@ -54,7 +54,7 @@
   };
 </script>
 
-  <title>CMU213 学习笔记-Lec10-The Memory Hierarchy | ZiheLiu</title>
+  <title>CMU213 学习笔记-Lec11-The Memory Hierarchy | ZiheLiu</title>
   
 
 
@@ -209,7 +209,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          CMU213 学习笔记-Lec10-The Memory Hierarchy
+          CMU213 学习笔记-Lec11-The Memory Hierarchy
         </h1>
 
         <div class="post-meta">
@@ -220,7 +220,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2020-04-21 15:45:00 / Modified: 21:42:27" itemprop="dateCreated datePublished" datetime="2020-04-21T15:45:00+08:00">2020-04-21</time>
+              <time title="Created: 2020-04-21 15:45:00 / Modified: 21:57:08" itemprop="dateCreated datePublished" datetime="2020-04-21T15:45:00+08:00">2020-04-21</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -853,7 +853,7 @@ if (document.querySelectorAll('pre.mermaid').length) {
   var disqus_config = function() {
     this.page.url = "http://ziheliu.github.io/2020/操作系统/cmu213/lec11/";
     this.page.identifier = "2020/操作系统/cmu213/lec11/";
-    this.page.title = "CMU213 学习笔记-Lec10-The Memory Hierarchy";
+    this.page.title = "CMU213 学习笔记-Lec11-The Memory Hierarchy";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {
