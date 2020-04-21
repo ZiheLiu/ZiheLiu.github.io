@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="存储技术与趋势RAMRandom-Access Memory 随机访问存储器 特点 一般被打包成芯片。 多个 RAM 芯片 组成了主存。 最基本的存储单元成为 cell，一个 cell 存储一个 bit。  分类 SRAM（Static） DRAM（Dynamic）  根据存储单元实现方式来区分的。      每个bit晶体管数量 Access time Needs refresh Needs E">
+<meta name="keywords" content="操作系统,CMU213">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU213 学习笔记-Lec10-The Memory Hierarchy">
+<meta property="og:url" content="http://ziheliu.github.io/2020/操作系统/cmu213/lec11/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="存储技术与趋势RAMRandom-Access Memory 随机访问存储器 特点 一般被打包成芯片。 多个 RAM 芯片 组成了主存。 最基本的存储单元成为 cell，一个 cell 存储一个 bit。  分类 SRAM（Static） DRAM（Dynamic）  根据存储单元实现方式来区分的。      每个bit晶体管数量 Access time Needs refresh Needs E">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-bus.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-diskgeometry.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-diskgeometry2.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-diskarm.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-diskread.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-iobus.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cum213-lec11-memory-hierarchy.png">
+<meta property="og:image" content="http://ziheliu.github.io/images/cmu213-lec11-mem-hierarchy-cache.png">
+<meta property="og:updated_time" content="2020-04-21T13:42:27.781Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CMU213 学习笔记-Lec10-The Memory Hierarchy">
+<meta name="twitter:description" content="存储技术与趋势RAMRandom-Access Memory 随机访问存储器 特点 一般被打包成芯片。 多个 RAM 芯片 组成了主存。 最基本的存储单元成为 cell，一个 cell 存储一个 bit。  分类 SRAM（Static） DRAM（Dynamic）  根据存储单元实现方式来区分的。      每个bit晶体管数量 Access time Needs refresh Needs E">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/cmu213-lec11-bus.png">
+
+<link rel="canonical" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec11/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>CMU213 学习笔记-Lec10-The Memory Hierarchy | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+    <!-- right conrner fork me link -->
+    <a href="https://github.com/ZiheLiu/ZiheLiu.github.io" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">ZiheLiu</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>Tags</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>Categories</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>Archives</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="popup search-popup">
+    <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result"></div>
+
+</div>
+<div class="search-pop-overlay"></div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/操作系统/cmu213/lec11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CMU213 学习笔记-Lec10-The Memory Hierarchy
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-04-21 15:45:00 / Modified: 21:42:27" itemprop="dateCreated datePublished" datetime="2020-04-21T15:45:00+08:00">2020-04-21</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+                  , 
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/操作系统/CMU213/" itemprop="url" rel="index"><span itemprop="name">CMU213</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/操作系统/cmu213/lec11/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/操作系统/cmu213/lec11/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="存储技术与趋势"><a href="#存储技术与趋势" class="headerlink" title="存储技术与趋势"></a>存储技术与趋势</h1><h2 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h2><p>Random-Access Memory 随机访问存储器</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>一般被打包成芯片。</li>
+<li>多个 RAM 芯片 组成了主存。</li>
+<li>最基本的存储单元成为 cell，一个 cell 存储一个 bit。</li>
+</ul>
+<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ul>
+<li>SRAM（Static）</li>
+<li>DRAM（Dynamic）</li>
+</ul>
+<p>根据存储单元实现方式来区分的。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>每个bit晶体管数量</th>
+<th>Access time</th>
+<th>Needs refresh</th>
+<th>Needs EDC</th>
+<th>Cost</th>
+<th>Applications</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SRAM</td>
+<td>4 or 6</td>
+<td>1X</td>
+<td>No</td>
+<td>Maybe</td>
+<td>100X</td>
+<td>Cache memories</td>
+</tr>
+<tr>
+<td>DRAM</td>
+<td>1</td>
+<td>10X</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>1X</td>
+<td>Main memories, frame buffers</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表格解释：</p>
+<ul>
+<li><p>Trans.per bit：SRAM 实现一个 bit 用的晶体管更多。</p>
+</li>
+<li><p>Needs refresh：DRAM 使用电容存储电荷的原理来寄存信息，电容上的电荷一般只能维持1~2ms，因此即使电源不掉电，信息也会自动消失，需要在 2ms 内对其所有存储单元恢复一次原状态。</p>
+</li>
+<li><p>Needs EDC：SRAM 更可靠，不太需要进行错误检测和纠正 EDC（Error Detection and Correctoin）。</p>
+</li>
+</ul>
+<p>总结</p>
+<ul>
+<li><p>SRAM 内存容量小、速度快，用于高速缓存。</p>
+</li>
+<li><p>DRAM 被用于主存、图形显卡的帧缓存中。</p>
+</li>
+</ul>
+<h2 id="非易失性存储"><a href="#非易失性存储" class="headerlink" title="非易失性存储"></a>非易失性存储</h2><p>RAM 是易失性存储，断电后，信息会丢失。</p>
+<p>非易失性存储在断电后信息不会丢失。</p>
+<h3 id="分类-1"><a href="#分类-1" class="headerlink" title="分类"></a>分类</h3><ul>
+<li>ROM：Read-only memory。过去只能在芯片生产时被硬编码一次；现在可以重新编码。</li>
+<li>闪存：Flash memory。Electrically eraseable PROM (EEPROM)。提供擦除功能，在约 10 万次擦除后，会被磨损。 </li>
+</ul>
+<h3 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h3><ul>
+<li><p>Firmware programs stored in a ROM (BIOS, controllers for disks, network cards, graphics accelerators, security subsystems,…)</p>
+</li>
+<li><p>Solid state disks (replace rotating disks in thumb drives, smart phones, mp3 players, tablets, laptops,…)</p>
+</li>
+<li><p>Disk caches</p>
+</li>
+</ul>
+<h2 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h2><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="/images/cmu213-lec11-bus.png" alt="cmu213-lec11-bus"></p>
+<p>数据在内存和 CPU 芯片之间通过一系列并行的电线传输，称为总线（bus）。</p>
+<ul>
+<li><p>在指令需要访问内存时（执行 <code>mov</code> 指令），由总线接口（Bus interface）处理，它与 I/O 桥通过系统总线（System bus）连接。</p>
+</li>
+<li><p>I/O 桥是一个 CPU 之外的芯片集合，它与主存通过内存总线（Memory bus）连接。</p>
+</li>
+</ul>
+<p>上面只是总线系统的抽象，实际很复杂。</p>
+<h3 id="加载数据过程"><a href="#加载数据过程" class="headerlink" title="加载数据过程"></a>加载数据过程</h3><p>使用 <code>movq A, %rax</code> 加载数据时，</p>
+<ol>
+<li>CPU 将 A 地址放到内存总线上。</li>
+<li>主存从内存总线读到 A 地址，将主存中 A地址处的 8 bytes 内容放回总线。</li>
+<li>CPU 从总线读取到这些数据，放到寄存器 <code>%rax</code> 中。</li>
+</ol>
+<h3 id="写入数据过程"><a href="#写入数据过程" class="headerlink" title="写入数据过程"></a>写入数据过程</h3><p>使用 <code>movq %rax, A</code> 写入数据时，</p>
+<ol>
+<li>CPU 将 A 地址放到内存总线上。</li>
+<li>主存从内存总线读到 A 地址，等待数据到达总线。</li>
+<li>CPU 将 <code>%rax</code> 中的内容放到总线上。</li>
+<li>主存读取到这些数据，将其放到 A 地址处。</li>
+</ol>
+<p>对于内存的读写，由于要离开 CPU，大约需要 50 或 100 纳秒；寄存器之间的操作小于 1 纳秒。差了两个数量级。</p>
+<h2 id="磁盘"><a href="#磁盘" class="headerlink" title="磁盘"></a>磁盘</h2><p>磁盘中有一个磁盘控制器。</p>
+<h3 id="几何结构"><a href="#几何结构" class="headerlink" title="几何结构"></a>几何结构</h3><p><img src="/images/cmu213-lec11-diskgeometry.png" alt="cmu213-lec11-diskgeometry" width="50%" /></p>
+<ul>
+<li><p>磁盘（Disk）是由盘片（platter）组成的，每个盘片有上下两个表面（surface）。</p>
+</li>
+<li><p>每个盘面包含一系列同心圆，称为磁道（tracks）。</p>
+</li>
+<li><p>每个磁道包含很多扇区（sector），扇区存储着数据（一般一个扇区存储 512 bytes）。扇区之间存在空隙（gaps），空隙不存储数据。</p>
+</li>
+</ul>
+<p><img src="/images/cmu213-lec11-diskgeometry2.png" alt="cmu213-lec11-diskgeometry2" width="50%" /></p>
+<ul>
+<li><p>盘片在主轴（Spindle）上是彼此对齐的，因此在不同表面上，磁道也是对齐的。</p>
+</li>
+<li><p>同一条磁道的集合，形成了一个圆柱形，成为柱面（Cylinder）。</p>
+</li>
+</ul>
+<h3 id="容量"><a href="#容量" class="headerlink" title="容量"></a>容量</h3><p>磁盘的容量是它可以存储的 bit 数。</p>
+<p>由记录密度和磁道密度决定：</p>
+<ul>
+<li>记录密度：一个扇区可以存储多少 bit。</li>
+<li>磁道密度：可以将相邻的磁道放置得多近。</li>
+<li>面密度：记录密度 * 磁道密度。决定了整个磁盘的存储容量。</li>
+</ul>
+<h3 id="记录区"><a href="#记录区" class="headerlink" title="记录区"></a>记录区</h3><p>以前，每个磁道包含的扇区数量是相等的。这样会导致越靠近边缘的扇区间空隙会越大。</p>
+<p>所以现代磁盘，会把磁道划分为不同的子集，称为记录区。</p>
+<ul>
+<li><p>一个记录区里的每一条磁道都有相同数量的扇区。</p>
+</li>
+<li><p>不同记录区的每条磁道拥有的扇区数目不同。靠近外侧的记录区中每条磁道拥有更多的扇区数目。</p>
+</li>
+</ul>
+<p>在计算容量时，使用平均的每条磁道拥有的扇区数目。</p>
+<h3 id="磁臂"><a href="#磁臂" class="headerlink" title="磁臂"></a>磁臂</h3><p><img src="/images/cmu213-lec11-diskarm.png" alt="cmu213-lec11-diskarm" width="50%" /></p>
+<p>盘面以一个固定的频率在逆时针旋转（典型的速率是 7200转/分钟）。</p>
+<p>磁臂（arm）沿着半径轴前后移动，可以定位到任意一个磁道上。</p>
+<p>每个盘面有一个磁臂，注意一个盘片有两个磁臂。所有磁臂只能一起移动。</p>
+<h3 id="数据读取"><a href="#数据读取" class="headerlink" title="数据读取"></a>数据读取</h3><p><img src="/images/cmu213-lec11-diskread.png" alt="cmu213-lec11-diskread"></p>
+<ol>
+<li>将磁臂移动到红色扇区所在磁道。<ul>
+<li><strong>寻道时间</strong>。一般是 3 - 9 ms。</li>
+</ul>
+</li>
+<li><p>扇区旋转到读写头的下方。</p>
+<ul>
+<li><strong>旋转延迟</strong>。平均情况下就是磁盘旋转一圈所花费时间的一半。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>1/2 <em> (60s / 7200 RPM) </em> 1000 ms/sec = 4ms。</li>
+</ul>
+<ol>
+<li>当前读写头处于红色扇区的开始位置，红色扇区在读写头下旋转。它会检测这些 bit，将它们发送到控制器，控制器将它们传递给 CPU。<ul>
+<li><strong>传输时间</strong>。该磁道在读写头下通过的时间。</li>
+<li>60/7200 RPM <em> 1/400 secs/track </em> 1000 ms/sec = 0.02ms。</li>
+</ul>
+</li>
+</ol>
+<p>访问时间主要是寻道时间和旋转延迟。 </p>
+<h4 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h4><ul>
+<li>从 SRAM 读取一个 double，约 4ns。</li>
+<li>从 DRAM 读取一个 double，约 60ns。</li>
+<li>从磁盘读取一个 double，约 13 ms。</li>
+</ul>
+<h3 id="磁盘逻辑块"><a href="#磁盘逻辑块" class="headerlink" title="磁盘逻辑块"></a>磁盘逻辑块</h3><ul>
+<li><p>现代磁盘控制器将磁盘作为一系列逻辑块提供给 CPU。</p>
+<ul>
+<li>每个逻辑块是扇区大小的整数倍。</li>
+<li>块号从 0 编号，是一系列增长的数字。</li>
+</ul>
+</li>
+<li><p>磁盘控制器维护物理扇区与逻辑块之间的映射。</p>
+</li>
+<li><p>允许磁盘控制器将一些柱面保留为备用柱面。</p>
+<ul>
+<li><p>它们没有被映射为逻辑块。</p>
+</li>
+<li><p>如果有个柱面的一个扇区坏了，磁盘控制器可以将数据复制到备用柱面。磁盘可以继续正常工作。</p>
+<p>因此，磁盘的 fomatted 容量比实际容量小。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="I-O-总线"><a href="#I-O-总线" class="headerlink" title="I/O 总线"></a>I/O 总线</h2><h3 id="结构-1"><a href="#结构-1" class="headerlink" title="结构"></a>结构</h3><p><img src="/images/cmu213-lec11-iobus.png" alt="cmu213-lec11-iobus"></p>
+<p>之前的实现方式使 PCI 总线是广播总线，单一线路。</p>
+<ul>
+<li>如果总线上的任何设备更改了某个值，该总线上的每个设备都可以看到这些值。</li>
+</ul>
+<p>现代系统使用 PCI Express 总线，点对点的。</p>
+<ul>
+<li>设备通过一组点对点连接、开关仲裁进行连接。</li>
+</ul>
+<h3 id="加载数据过程-1"><a href="#加载数据过程-1" class="headerlink" title="加载数据过程"></a>加载数据过程</h3><p>读取磁盘扇区。假设一个逻辑块由一个扇区组成。</p>
+<p>CPU通过编写三元组来启动此读取行为。<code>read 逻辑块号 目的内存地址</code>。</p>
+<ol>
+<li>将读请求发送给磁盘控制器，CPU 可以执行其他指令。</li>
+<li>磁盘控制器获得总线的控制权。</li>
+<li>通过 I/O 桥将数据复制到 I/O 总线。</li>
+<li>直接复制到主存，不用通知 CPU。</li>
+<li>传输完成后，磁盘控制器通过中断机制通知 CPU。<ul>
+<li>实际上，CPU 芯片上有一个引脚，将引脚的值从 0 改为 1。</li>
+</ul>
+</li>
+</ol>
+<p>之所以分成两步（先传输、再通知），是因为从磁盘读取数据太慢了。</p>
+<h2 id="固态磁盘"><a href="#固态磁盘" class="headerlink" title="固态磁盘"></a>固态磁盘</h2><p>Solid State Disks（SSDs）。</p>
+<ul>
+<li><p>没有机械部件，完全由闪存构成。</p>
+</li>
+<li><p>与磁盘具有相同的物理接口。SSD 内部有一组固件，成为<strong>闪存翻译层</strong>，作用与磁盘的磁盘控制器相同。</p>
+</li>
+<li><p>可以以<strong>页</strong>为单位，从闪存读取和写入数据。页的大小取决于技术的不同，从 512KB 到 4 KB。</p>
+</li>
+<li><p>一系列的页组成<strong>块</strong>。从 32 页到 128 页。</p>
+</li>
+<li><p>一个页只能再所属的整个块都被擦除后，才能进行<strong>写入</strong>。在写入时，找到一个被擦除的块，将目标块的所有其他页面复制到新块中，再进行写入。</p>
+</li>
+<li>一个块被擦除 10 万次后会磨损，现代系统的闪存翻译层实现了很多<strong>算法</strong>，来延长 SSD 的寿命，例如缓存。所以在实践中，这不是一个问题。</li>
+</ul>
+<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><p>机械磁盘的读写速度在 40 或 50 MB/s。</p>
+<ul>
+<li>读取<ul>
+<li>顺序读取：550 MB/s</li>
+<li>随机读取：365 MB/s</li>
+</ul>
+</li>
+<li>写入<ul>
+<li>顺序写入：470 MB/s</li>
+<li>随机写入：303 MB/s</li>
+</ul>
+</li>
+</ul>
+<p>擦除一个块需要约 1ms。在早期的 SSD 中，读写操作的时间差距是巨大的。通过对闪存翻译层的优化，现在写入稍慢于读取。</p>
+<h1 id="引用的局部性"><a href="#引用的局部性" class="headerlink" title="引用的局部性"></a>引用的局部性</h1><p>CPU 与 内存/磁盘之间的性能差距越来越大，这样 CPU 性能的提升，并不能使程序变快。</p>
+<p><strong>程序的局部性</strong>是跨越 CPU 与内存之间差距的关键。</p>
+<h2 id="局部性原理"><a href="#局部性原理" class="headerlink" title="局部性原理"></a>局部性原理</h2><p>程序倾向于使用其地址接近或等于最近使用过的数据/指令的那些数据/指令。</p>
+<h3 id="两种局部性"><a href="#两种局部性" class="headerlink" title="两种局部性"></a>两种局部性</h3><p>时间局部性。</p>
+<ul>
+<li>最近引用的存储器位置可能在不久的将来再次被引用。</li>
+</ul>
+<p>空间局部性。</p>
+<ul>
+<li>引用临近存储器位置的倾向。</li>
+</ul>
+<h3 id="两种引用"><a href="#两种引用" class="headerlink" title="两种引用"></a>两种引用</h3><ul>
+<li><p>数据引用。</p>
+</li>
+<li><p>指令引用。</p>
+</li>
+</ul>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">	sum += a[i];</span><br><span class="line"><span class="keyword">return</span> sum;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>数据引用。<ul>
+<li><code>a[i]</code> 是空间局部性。</li>
+<li><code>sum</code> 是时间局部性。</li>
+</ul>
+</li>
+<li>指令引用。<ul>
+<li>空间局部性。循环中的每次迭代，引用的都是一系列相同的指令。</li>
+</ul>
+</li>
+</ul>
+<h1 id="存储器层次结构"><a href="#存储器层次结构" class="headerlink" title="存储器层次结构"></a>存储器层次结构</h1><h2 id="结构-2"><a href="#结构-2" class="headerlink" title="结构"></a>结构</h2><p><img src="/images/cum213-lec11-memory-hierarchy.png" alt="cum213-lec11-memory-hierarchy"></p>
+<p>容量数量级。</p>
+<ul>
+<li><p>寄存器有 16 个。</p>
+</li>
+<li><p>SRAM cache 大小有几 MB。</p>
+</li>
+<li><p>DRAM 主存大小有十几 GB。</p>
+</li>
+</ul>
+<p>每层都包含从下一层锁获取的数据。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><h3 id="缓存-1"><a href="#缓存-1" class="headerlink" title="缓存"></a>缓存</h3><ul>
+<li><p>一个更小、更快的存储设备（第 K 层），充当更大、更慢的设备（第 K+1 </p>
+<p>层）中数据的暂存区域。</p>
+</li>
+<li><p>例如，可以把主存看做磁盘的缓存。</p>
+</li>
+</ul>
+<h3 id="为什么缓存是有效的"><a href="#为什么缓存是有效的" class="headerlink" title="为什么缓存是有效的"></a>为什么缓存是有效的</h3><p>根据程序局部性原理，相比于第 K + 1 层数据，程序倾向于访问第 K 层的数据。在访问第 K + 1 层数据时，把它拷贝到第 K 层。</p>
+<p>因为我们不经常访问第 K + 1 层，可以使用更慢、更便宜的设备，以得到更大的容量。</p>
+<h3 id="主要思想"><a href="#主要思想" class="headerlink" title="主要思想"></a>主要思想</h3><p>存储器层次结构创建了一个大型存储池，其存储容量等于最底层存储设备的大小，却可以以最高层存储设备的速度来访问。</p>
+<h2 id="General-Cache-Concepts"><a href="#General-Cache-Concepts" class="headerlink" title="General Cache Concepts"></a>General Cache Concepts</h2><h3 id="缓存命中"><a href="#缓存命中" class="headerlink" title="缓存命中"></a>缓存命中</h3><ul>
+<li>要访问的块正位于缓存中。</li>
+</ul>
+<h3 id="缓存未命中"><a href="#缓存未命中" class="headerlink" title="缓存未命中"></a>缓存未命中</h3><ul>
+<li>冷未命中（强制未命中）。<ul>
+<li>缓存中没有任何数据。</li>
+</ul>
+</li>
+<li>容量未命中。<ul>
+<li>程序局部性需要用到的容量大于缓存容量。</li>
+</ul>
+</li>
+<li>冲突未命中。<ul>
+<li>缓存一般是硬件实现的，所以功能简单，限制了块可以被放置的位置。</li>
+<li>例如，第 <code>i</code> 块只能放在 <code>i % 缓存大小</code> 处。</li>
+<li>例如，缓存大小是 4，依次访问第 0、8、0、8 块，每次都会发生冲突未命中。</li>
+</ul>
+</li>
+</ul>
+<h2 id="存储器层次结构中的缓存"><a href="#存储器层次结构中的缓存" class="headerlink" title="存储器层次结构中的缓存"></a>存储器层次结构中的缓存</h2><p><img src="/images/cmu213-lec11-mem-hierarchy-cache.png" alt="cmu213-lec11-mem-hierarchy-cache"></p>
+<p>TLB（Translation Lookaside Buffer 后背缓冲），是在虚拟内存中使用的缓存。</p>
+<p>Buffer cache。操作系统保留一部分内存来存储已加载的文件。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+              <a href="/tags/CMU213/" rel="tag"># CMU213</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/操作系统/cmu213/lec10/" rel="prev" title="CMU213 学习笔记-Lec10-Program Optimization">
+      <i class="fa fa-chevron-left"></i> CMU213 学习笔记-Lec10-Program Optimization
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#存储技术与趋势"><span class="nav-number">1.</span> <span class="nav-text">存储技术与趋势</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RAM"><span class="nav-number">1.1.</span> <span class="nav-text">RAM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#特点"><span class="nav-number">1.1.1.</span> <span class="nav-text">特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分类"><span class="nav-number">1.1.2.</span> <span class="nav-text">分类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非易失性存储"><span class="nav-number">1.2.</span> <span class="nav-text">非易失性存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#分类-1"><span class="nav-number">1.2.1.</span> <span class="nav-text">分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用途"><span class="nav-number">1.2.2.</span> <span class="nav-text">用途</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总线"><span class="nav-number">1.3.</span> <span class="nav-text">总线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#结构"><span class="nav-number">1.3.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载数据过程"><span class="nav-number">1.3.2.</span> <span class="nav-text">加载数据过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写入数据过程"><span class="nav-number">1.3.3.</span> <span class="nav-text">写入数据过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#磁盘"><span class="nav-number">1.4.</span> <span class="nav-text">磁盘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#几何结构"><span class="nav-number">1.4.1.</span> <span class="nav-text">几何结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#容量"><span class="nav-number">1.4.2.</span> <span class="nav-text">容量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#记录区"><span class="nav-number">1.4.3.</span> <span class="nav-text">记录区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#磁臂"><span class="nav-number">1.4.4.</span> <span class="nav-text">磁臂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据读取"><span class="nav-number">1.4.5.</span> <span class="nav-text">数据读取</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#对比"><span class="nav-number">1.4.5.1.</span> <span class="nav-text">对比</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#磁盘逻辑块"><span class="nav-number">1.4.6.</span> <span class="nav-text">磁盘逻辑块</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-O-总线"><span class="nav-number">1.5.</span> <span class="nav-text">I/O 总线</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#结构-1"><span class="nav-number">1.5.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#加载数据过程-1"><span class="nav-number">1.5.2.</span> <span class="nav-text">加载数据过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#固态磁盘"><span class="nav-number">1.6.</span> <span class="nav-text">固态磁盘</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#性能"><span class="nav-number">1.6.1.</span> <span class="nav-text">性能</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#引用的局部性"><span class="nav-number">2.</span> <span class="nav-text">引用的局部性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#局部性原理"><span class="nav-number">2.1.</span> <span class="nav-text">局部性原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#两种局部性"><span class="nav-number">2.1.1.</span> <span class="nav-text">两种局部性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#两种引用"><span class="nav-number">2.1.2.</span> <span class="nav-text">两种引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#例子"><span class="nav-number">2.1.3.</span> <span class="nav-text">例子</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储器层次结构"><span class="nav-number">3.</span> <span class="nav-text">存储器层次结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#结构-2"><span class="nav-number">3.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#缓存"><span class="nav-number">3.2.</span> <span class="nav-text">缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么缓存是有效的"><span class="nav-number">3.2.2.</span> <span class="nav-text">为什么缓存是有效的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主要思想"><span class="nav-number">3.2.3.</span> <span class="nav-text">主要思想</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#General-Cache-Concepts"><span class="nav-number">3.3.</span> <span class="nav-text">General Cache Concepts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存命中"><span class="nav-number">3.3.1.</span> <span class="nav-text">缓存命中</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存未命中"><span class="nav-number">3.3.2.</span> <span class="nav-text">缓存未命中</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#存储器层次结构中的缓存"><span class="nav-number">3.4.</span> <span class="nav-text">存储器层次结构中的缓存</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">86</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https://github.com/ZiheLiu" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/pisces.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+  <script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script>
+if (document.querySelectorAll('pre.mermaid').length) {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mermaid@8/dist/mermaid.min.js', () => {
+    mermaid.initialize({
+      theme    : 'forest',
+      logLevel : 3,
+      flowchart: { curve     : 'linear' },
+      gantt    : { axisFormat: '%m/%d/%Y' },
+      sequence : { actorMargin: 50 }
+    });
+  }, window.mermaid);
+}
+</script>
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+<script>
+  function loadCount() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://https-ziheliu-github-io.disqus.com/count.js';
+    s.id = 'dsq-count-scr';
+    (d.head || d.body).appendChild(s);
+  }
+  // defer loading until the whole page loading is completed
+  window.addEventListener('load', loadCount, false);
+</script>
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://ziheliu.github.io/2020/操作系统/cmu213/lec11/";
+    this.page.identifier = "2020/操作系统/cmu213/lec11/";
+    this.page.title = "CMU213 学习笔记-Lec10-The Memory Hierarchy";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://https-ziheliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

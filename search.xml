@@ -1,6 +1,324 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CMU213 学习笔记-Lec10-The Memory Hierarchy</title>
+    <url>/2020/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/cmu213/lec11/</url>
+    <content><![CDATA[<h1 id="存储技术与趋势"><a href="#存储技术与趋势" class="headerlink" title="存储技术与趋势"></a>存储技术与趋势</h1><h2 id="RAM"><a href="#RAM" class="headerlink" title="RAM"></a>RAM</h2><p>Random-Access Memory 随机访问存储器</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><ul>
+<li>一般被打包成芯片。</li>
+<li>多个 RAM 芯片 组成了主存。</li>
+<li>最基本的存储单元成为 cell，一个 cell 存储一个 bit。</li>
+</ul>
+<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><ul>
+<li>SRAM（Static）</li>
+<li>DRAM（Dynamic）</li>
+</ul>
+<p>根据存储单元实现方式来区分的。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>每个bit晶体管数量</th>
+<th>Access time</th>
+<th>Needs refresh</th>
+<th>Needs EDC</th>
+<th>Cost</th>
+<th>Applications</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SRAM</td>
+<td>4 or 6</td>
+<td>1X</td>
+<td>No</td>
+<td>Maybe</td>
+<td>100X</td>
+<td>Cache memories</td>
+</tr>
+<tr>
+<td>DRAM</td>
+<td>1</td>
+<td>10X</td>
+<td>Yes</td>
+<td>Yes</td>
+<td>1X</td>
+<td>Main memories, frame buffers</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>表格解释：</p>
+<ul>
+<li><p>Trans.per bit：SRAM 实现一个 bit 用的晶体管更多。</p>
+</li>
+<li><p>Needs refresh：DRAM 使用电容存储电荷的原理来寄存信息，电容上的电荷一般只能维持1~2ms，因此即使电源不掉电，信息也会自动消失，需要在 2ms 内对其所有存储单元恢复一次原状态。</p>
+</li>
+<li><p>Needs EDC：SRAM 更可靠，不太需要进行错误检测和纠正 EDC（Error Detection and Correctoin）。</p>
+</li>
+</ul>
+<p>总结</p>
+<ul>
+<li><p>SRAM 内存容量小、速度快，用于高速缓存。</p>
+</li>
+<li><p>DRAM 被用于主存、图形显卡的帧缓存中。</p>
+</li>
+</ul>
+<h2 id="非易失性存储"><a href="#非易失性存储" class="headerlink" title="非易失性存储"></a>非易失性存储</h2><p>RAM 是易失性存储，断电后，信息会丢失。</p>
+<p>非易失性存储在断电后信息不会丢失。</p>
+<h3 id="分类-1"><a href="#分类-1" class="headerlink" title="分类"></a>分类</h3><ul>
+<li>ROM：Read-only memory。过去只能在芯片生产时被硬编码一次；现在可以重新编码。</li>
+<li>闪存：Flash memory。Electrically eraseable PROM (EEPROM)。提供擦除功能，在约 10 万次擦除后，会被磨损。 </li>
+</ul>
+<h3 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h3><ul>
+<li><p>Firmware programs stored in a ROM (BIOS, controllers for disks, network cards, graphics accelerators, security subsystems,…)</p>
+</li>
+<li><p>Solid state disks (replace rotating disks in thumb drives, smart phones, mp3 players, tablets, laptops,…)</p>
+</li>
+<li><p>Disk caches</p>
+</li>
+</ul>
+<h2 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h2><h3 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h3><p><img src="/images/cmu213-lec11-bus.png" alt="cmu213-lec11-bus"></p>
+<p>数据在内存和 CPU 芯片之间通过一系列并行的电线传输，称为总线（bus）。</p>
+<ul>
+<li><p>在指令需要访问内存时（执行 <code>mov</code> 指令），由总线接口（Bus interface）处理，它与 I/O 桥通过系统总线（System bus）连接。</p>
+</li>
+<li><p>I/O 桥是一个 CPU 之外的芯片集合，它与主存通过内存总线（Memory bus）连接。</p>
+</li>
+</ul>
+<p>上面只是总线系统的抽象，实际很复杂。</p>
+<h3 id="加载数据过程"><a href="#加载数据过程" class="headerlink" title="加载数据过程"></a>加载数据过程</h3><p>使用 <code>movq A, %rax</code> 加载数据时，</p>
+<ol>
+<li>CPU 将 A 地址放到内存总线上。</li>
+<li>主存从内存总线读到 A 地址，将主存中 A地址处的 8 bytes 内容放回总线。</li>
+<li>CPU 从总线读取到这些数据，放到寄存器 <code>%rax</code> 中。</li>
+</ol>
+<h3 id="写入数据过程"><a href="#写入数据过程" class="headerlink" title="写入数据过程"></a>写入数据过程</h3><p>使用 <code>movq %rax, A</code> 写入数据时，</p>
+<ol>
+<li>CPU 将 A 地址放到内存总线上。</li>
+<li>主存从内存总线读到 A 地址，等待数据到达总线。</li>
+<li>CPU 将 <code>%rax</code> 中的内容放到总线上。</li>
+<li>主存读取到这些数据，将其放到 A 地址处。</li>
+</ol>
+<p>对于内存的读写，由于要离开 CPU，大约需要 50 或 100 纳秒；寄存器之间的操作小于 1 纳秒。差了两个数量级。</p>
+<h2 id="磁盘"><a href="#磁盘" class="headerlink" title="磁盘"></a>磁盘</h2><p>磁盘中有一个磁盘控制器。</p>
+<h3 id="几何结构"><a href="#几何结构" class="headerlink" title="几何结构"></a>几何结构</h3><p><img src="/images/cmu213-lec11-diskgeometry.png" alt="cmu213-lec11-diskgeometry" width="50%" /></p>
+<ul>
+<li><p>磁盘（Disk）是由盘片（platter）组成的，每个盘片有上下两个表面（surface）。</p>
+</li>
+<li><p>每个盘面包含一系列同心圆，称为磁道（tracks）。</p>
+</li>
+<li><p>每个磁道包含很多扇区（sector），扇区存储着数据（一般一个扇区存储 512 bytes）。扇区之间存在空隙（gaps），空隙不存储数据。</p>
+</li>
+</ul>
+<p><img src="/images/cmu213-lec11-diskgeometry2.png" alt="cmu213-lec11-diskgeometry2" width="50%" /></p>
+<ul>
+<li><p>盘片在主轴（Spindle）上是彼此对齐的，因此在不同表面上，磁道也是对齐的。</p>
+</li>
+<li><p>同一条磁道的集合，形成了一个圆柱形，成为柱面（Cylinder）。</p>
+</li>
+</ul>
+<h3 id="容量"><a href="#容量" class="headerlink" title="容量"></a>容量</h3><p>磁盘的容量是它可以存储的 bit 数。</p>
+<p>由记录密度和磁道密度决定：</p>
+<ul>
+<li>记录密度：一个扇区可以存储多少 bit。</li>
+<li>磁道密度：可以将相邻的磁道放置得多近。</li>
+<li>面密度：记录密度 * 磁道密度。决定了整个磁盘的存储容量。</li>
+</ul>
+<h3 id="记录区"><a href="#记录区" class="headerlink" title="记录区"></a>记录区</h3><p>以前，每个磁道包含的扇区数量是相等的。这样会导致越靠近边缘的扇区间空隙会越大。</p>
+<p>所以现代磁盘，会把磁道划分为不同的子集，称为记录区。</p>
+<ul>
+<li><p>一个记录区里的每一条磁道都有相同数量的扇区。</p>
+</li>
+<li><p>不同记录区的每条磁道拥有的扇区数目不同。靠近外侧的记录区中每条磁道拥有更多的扇区数目。</p>
+</li>
+</ul>
+<p>在计算容量时，使用平均的每条磁道拥有的扇区数目。</p>
+<h3 id="磁臂"><a href="#磁臂" class="headerlink" title="磁臂"></a>磁臂</h3><p><img src="/images/cmu213-lec11-diskarm.png" alt="cmu213-lec11-diskarm" width="50%" /></p>
+<p>盘面以一个固定的频率在逆时针旋转（典型的速率是 7200转/分钟）。</p>
+<p>磁臂（arm）沿着半径轴前后移动，可以定位到任意一个磁道上。</p>
+<p>每个盘面有一个磁臂，注意一个盘片有两个磁臂。所有磁臂只能一起移动。</p>
+<h3 id="数据读取"><a href="#数据读取" class="headerlink" title="数据读取"></a>数据读取</h3><p><img src="/images/cmu213-lec11-diskread.png" alt="cmu213-lec11-diskread"></p>
+<ol>
+<li>将磁臂移动到红色扇区所在磁道。<ul>
+<li><strong>寻道时间</strong>。一般是 3 - 9 ms。</li>
+</ul>
+</li>
+<li><p>扇区旋转到读写头的下方。</p>
+<ul>
+<li><strong>旋转延迟</strong>。平均情况下就是磁盘旋转一圈所花费时间的一半。</li>
+</ul>
+</li>
+</ol>
+<ul>
+<li>1/2 <em> (60s / 7200 RPM) </em> 1000 ms/sec = 4ms。</li>
+</ul>
+<ol>
+<li>当前读写头处于红色扇区的开始位置，红色扇区在读写头下旋转。它会检测这些 bit，将它们发送到控制器，控制器将它们传递给 CPU。<ul>
+<li><strong>传输时间</strong>。该磁道在读写头下通过的时间。</li>
+<li>60/7200 RPM <em> 1/400 secs/track </em> 1000 ms/sec = 0.02ms。</li>
+</ul>
+</li>
+</ol>
+<p>访问时间主要是寻道时间和旋转延迟。 </p>
+<h4 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h4><ul>
+<li>从 SRAM 读取一个 double，约 4ns。</li>
+<li>从 DRAM 读取一个 double，约 60ns。</li>
+<li>从磁盘读取一个 double，约 13 ms。</li>
+</ul>
+<h3 id="磁盘逻辑块"><a href="#磁盘逻辑块" class="headerlink" title="磁盘逻辑块"></a>磁盘逻辑块</h3><ul>
+<li><p>现代磁盘控制器将磁盘作为一系列逻辑块提供给 CPU。</p>
+<ul>
+<li>每个逻辑块是扇区大小的整数倍。</li>
+<li>块号从 0 编号，是一系列增长的数字。</li>
+</ul>
+</li>
+<li><p>磁盘控制器维护物理扇区与逻辑块之间的映射。</p>
+</li>
+<li><p>允许磁盘控制器将一些柱面保留为备用柱面。</p>
+<ul>
+<li><p>它们没有被映射为逻辑块。</p>
+</li>
+<li><p>如果有个柱面的一个扇区坏了，磁盘控制器可以将数据复制到备用柱面。磁盘可以继续正常工作。</p>
+<p>因此，磁盘的 fomatted 容量比实际容量小。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="I-O-总线"><a href="#I-O-总线" class="headerlink" title="I/O 总线"></a>I/O 总线</h2><h3 id="结构-1"><a href="#结构-1" class="headerlink" title="结构"></a>结构</h3><p><img src="/images/cmu213-lec11-iobus.png" alt="cmu213-lec11-iobus"></p>
+<p>之前的实现方式使 PCI 总线是广播总线，单一线路。</p>
+<ul>
+<li>如果总线上的任何设备更改了某个值，该总线上的每个设备都可以看到这些值。</li>
+</ul>
+<p>现代系统使用 PCI Express 总线，点对点的。</p>
+<ul>
+<li>设备通过一组点对点连接、开关仲裁进行连接。</li>
+</ul>
+<h3 id="加载数据过程-1"><a href="#加载数据过程-1" class="headerlink" title="加载数据过程"></a>加载数据过程</h3><p>读取磁盘扇区。假设一个逻辑块由一个扇区组成。</p>
+<p>CPU通过编写三元组来启动此读取行为。<code>read 逻辑块号 目的内存地址</code>。</p>
+<ol>
+<li>将读请求发送给磁盘控制器，CPU 可以执行其他指令。</li>
+<li>磁盘控制器获得总线的控制权。</li>
+<li>通过 I/O 桥将数据复制到 I/O 总线。</li>
+<li>直接复制到主存，不用通知 CPU。</li>
+<li>传输完成后，磁盘控制器通过中断机制通知 CPU。<ul>
+<li>实际上，CPU 芯片上有一个引脚，将引脚的值从 0 改为 1。</li>
+</ul>
+</li>
+</ol>
+<p>之所以分成两步（先传输、再通知），是因为从磁盘读取数据太慢了。</p>
+<h2 id="固态磁盘"><a href="#固态磁盘" class="headerlink" title="固态磁盘"></a>固态磁盘</h2><p>Solid State Disks（SSDs）。</p>
+<ul>
+<li><p>没有机械部件，完全由闪存构成。</p>
+</li>
+<li><p>与磁盘具有相同的物理接口。SSD 内部有一组固件，成为<strong>闪存翻译层</strong>，作用与磁盘的磁盘控制器相同。</p>
+</li>
+<li><p>可以以<strong>页</strong>为单位，从闪存读取和写入数据。页的大小取决于技术的不同，从 512KB 到 4 KB。</p>
+</li>
+<li><p>一系列的页组成<strong>块</strong>。从 32 页到 128 页。</p>
+</li>
+<li><p>一个页只能再所属的整个块都被擦除后，才能进行<strong>写入</strong>。在写入时，找到一个被擦除的块，将目标块的所有其他页面复制到新块中，再进行写入。</p>
+</li>
+<li>一个块被擦除 10 万次后会磨损，现代系统的闪存翻译层实现了很多<strong>算法</strong>，来延长 SSD 的寿命，例如缓存。所以在实践中，这不是一个问题。</li>
+</ul>
+<h3 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h3><p>机械磁盘的读写速度在 40 或 50 MB/s。</p>
+<ul>
+<li>读取<ul>
+<li>顺序读取：550 MB/s</li>
+<li>随机读取：365 MB/s</li>
+</ul>
+</li>
+<li>写入<ul>
+<li>顺序写入：470 MB/s</li>
+<li>随机写入：303 MB/s</li>
+</ul>
+</li>
+</ul>
+<p>擦除一个块需要约 1ms。在早期的 SSD 中，读写操作的时间差距是巨大的。通过对闪存翻译层的优化，现在写入稍慢于读取。</p>
+<h1 id="引用的局部性"><a href="#引用的局部性" class="headerlink" title="引用的局部性"></a>引用的局部性</h1><p>CPU 与 内存/磁盘之间的性能差距越来越大，这样 CPU 性能的提升，并不能使程序变快。</p>
+<p><strong>程序的局部性</strong>是跨越 CPU 与内存之间差距的关键。</p>
+<h2 id="局部性原理"><a href="#局部性原理" class="headerlink" title="局部性原理"></a>局部性原理</h2><p>程序倾向于使用其地址接近或等于最近使用过的数据/指令的那些数据/指令。</p>
+<h3 id="两种局部性"><a href="#两种局部性" class="headerlink" title="两种局部性"></a>两种局部性</h3><p>时间局部性。</p>
+<ul>
+<li>最近引用的存储器位置可能在不久的将来再次被引用。</li>
+</ul>
+<p>空间局部性。</p>
+<ul>
+<li>引用临近存储器位置的倾向。</li>
+</ul>
+<h3 id="两种引用"><a href="#两种引用" class="headerlink" title="两种引用"></a>两种引用</h3><ul>
+<li><p>数据引用。</p>
+</li>
+<li><p>指令引用。</p>
+</li>
+</ul>
+<h3 id="例子"><a href="#例子" class="headerlink" title="例子"></a>例子</h3><figure class="highlight c"><table><tr><td class="code"><pre><span class="line">sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; i++)</span><br><span class="line">	sum += a[i];</span><br><span class="line"><span class="keyword">return</span> sum;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>数据引用。<ul>
+<li><code>a[i]</code> 是空间局部性。</li>
+<li><code>sum</code> 是时间局部性。</li>
+</ul>
+</li>
+<li>指令引用。<ul>
+<li>空间局部性。循环中的每次迭代，引用的都是一系列相同的指令。</li>
+</ul>
+</li>
+</ul>
+<h1 id="存储器层次结构"><a href="#存储器层次结构" class="headerlink" title="存储器层次结构"></a>存储器层次结构</h1><h2 id="结构-2"><a href="#结构-2" class="headerlink" title="结构"></a>结构</h2><p><img src="/images/cum213-lec11-memory-hierarchy.png" alt="cum213-lec11-memory-hierarchy"></p>
+<p>容量数量级。</p>
+<ul>
+<li><p>寄存器有 16 个。</p>
+</li>
+<li><p>SRAM cache 大小有几 MB。</p>
+</li>
+<li><p>DRAM 主存大小有十几 GB。</p>
+</li>
+</ul>
+<p>每层都包含从下一层锁获取的数据。</p>
+<h2 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h2><h3 id="缓存-1"><a href="#缓存-1" class="headerlink" title="缓存"></a>缓存</h3><ul>
+<li><p>一个更小、更快的存储设备（第 K 层），充当更大、更慢的设备（第 K+1 </p>
+<p>层）中数据的暂存区域。</p>
+</li>
+<li><p>例如，可以把主存看做磁盘的缓存。</p>
+</li>
+</ul>
+<h3 id="为什么缓存是有效的"><a href="#为什么缓存是有效的" class="headerlink" title="为什么缓存是有效的"></a>为什么缓存是有效的</h3><p>根据程序局部性原理，相比于第 K + 1 层数据，程序倾向于访问第 K 层的数据。在访问第 K + 1 层数据时，把它拷贝到第 K 层。</p>
+<p>因为我们不经常访问第 K + 1 层，可以使用更慢、更便宜的设备，以得到更大的容量。</p>
+<h3 id="主要思想"><a href="#主要思想" class="headerlink" title="主要思想"></a>主要思想</h3><p>存储器层次结构创建了一个大型存储池，其存储容量等于最底层存储设备的大小，却可以以最高层存储设备的速度来访问。</p>
+<h2 id="General-Cache-Concepts"><a href="#General-Cache-Concepts" class="headerlink" title="General Cache Concepts"></a>General Cache Concepts</h2><h3 id="缓存命中"><a href="#缓存命中" class="headerlink" title="缓存命中"></a>缓存命中</h3><ul>
+<li>要访问的块正位于缓存中。</li>
+</ul>
+<h3 id="缓存未命中"><a href="#缓存未命中" class="headerlink" title="缓存未命中"></a>缓存未命中</h3><ul>
+<li>冷未命中（强制未命中）。<ul>
+<li>缓存中没有任何数据。</li>
+</ul>
+</li>
+<li>容量未命中。<ul>
+<li>程序局部性需要用到的容量大于缓存容量。</li>
+</ul>
+</li>
+<li>冲突未命中。<ul>
+<li>缓存一般是硬件实现的，所以功能简单，限制了块可以被放置的位置。</li>
+<li>例如，第 <code>i</code> 块只能放在 <code>i % 缓存大小</code> 处。</li>
+<li>例如，缓存大小是 4，依次访问第 0、8、0、8 块，每次都会发生冲突未命中。</li>
+</ul>
+</li>
+</ul>
+<h2 id="存储器层次结构中的缓存"><a href="#存储器层次结构中的缓存" class="headerlink" title="存储器层次结构中的缓存"></a>存储器层次结构中的缓存</h2><p><img src="/images/cmu213-lec11-mem-hierarchy-cache.png" alt="cmu213-lec11-mem-hierarchy-cache"></p>
+<p>TLB（Translation Lookaside Buffer 后背缓冲），是在虚拟内存中使用的缓存。</p>
+<p>Buffer cache。操作系统保留一部分内存来存储已加载的文件。</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+        <category>CMU213</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
+        <tag>CMU213</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CMU213 学习笔记-Lec10-Program Optimization</title>
     <url>/2020/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/cmu213/lec10/</url>
     <content><![CDATA[<h1 id="编译器通用优化方式"><a href="#编译器通用优化方式" class="headerlink" title="编译器通用优化方式"></a>编译器通用优化方式</h1><p>如果编译器不确定某些优化的效果，就不会优化它。</p>
@@ -4196,6 +4514,21 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>排序</title>
+    <url>/2020/algorithm/%E6%8E%92%E5%BA%8F/</url>
+    <content><![CDATA[<blockquote>
+<p><a href="https://www.zhihu.com/question/51337272/answer/572455307">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
+</blockquote>
+<p><img src="/images/v2-f50f588e8c546bb649b78f8ccc20689c_1440w.jpg" alt="img"></p>
+]]></content>
+      <categories>
+        <category>algorithm</category>
+      </categories>
+      <tags>
+        <tag>algorithm</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>红黑树</title>
     <url>/2020/algorithm/%E7%BA%A2%E9%BB%91%E6%A0%91/</url>
     <content><![CDATA[<h1 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h1><ol>
@@ -4253,21 +4586,6 @@ class AbstractStringBuilder {
 <li><a href="https://zhuanlan.zhihu.com/p/22800206">数据结构：红黑树的删除</a></li>
 <li><a href="https://www.zhihu.com/question/19856999">红黑树比 AVL 树具体更高效在哪里？</a></li>
 </ol>
-]]></content>
-      <categories>
-        <category>algorithm</category>
-      </categories>
-      <tags>
-        <tag>algorithm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>排序</title>
-    <url>/2020/algorithm/%E6%8E%92%E5%BA%8F/</url>
-    <content><![CDATA[<blockquote>
-<p><a href="https://www.zhihu.com/question/51337272/answer/572455307">知乎-10大排序算法的时间复杂度、空间复杂度、稳定性</a></p>
-</blockquote>
-<p><img src="/images/v2-f50f588e8c546bb649b78f8ccc20689c_1440w.jpg" alt="img"></p>
 ]]></content>
       <categories>
         <category>algorithm</category>
@@ -4703,6 +5021,39 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>正向代理、反向代理、透明代理</title>
+    <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E4%BB%A3%E7%90%86/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/68560128">彻底理解正向代理、反向代理、透明代理</a></li>
+<li><a href="https://foofish.net/proxy-and-reverse-proxy.html">正向代理与反向代理</a></li>
+<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理">Shadowsocks原理详解</a></li>
+<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html">HTTP协议和SOCKS5协议</a></li>
+</ul>
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
+<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
+<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
+<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1><p>Shadowsocks的处理方式是将Socks 5客户端与Socks5服务器的连接提前，Socks5协议的交互完全是在本地进行的，在网络中传输的完全是利用加密算法加密后的密文，这就很好的进行了去特征化，使得传输的数据不是很容易的被特征识别，本人认为这是Shadowsocks的最大的创新了，具体的流程如下：</p>
+<pre class="mermaid">graph LR
+    subgraph client 
+        Socks5客户端 --> Socks5
+        Socks5 --> sslocal
+    end
+    subgraph server
+        sslocal -->|密文| ssserver
+        ssserver -->|正常请求| 目标主机
+    end</pre>
+
+<p>socks5本身只是个代理提供转发，不提供加密的功能，所以不提供安全性，安全性只能由客户端自己提供，比如如果客户端使用SSL, 那么该网络连接就有了安全性。？</p>
+]]></content>
+      <categories>
+        <category>network</category>
+      </categories>
+      <tags>
+        <tag>network</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>HTTP 协议</title>
     <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/http/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -4923,39 +5274,6 @@ class AbstractStringBuilder {
 </li>
 </ul>
 <h1 id="UDP最大长度"><a href="#UDP最大长度" class="headerlink" title="UDP最大长度"></a>UDP最大长度</h1><p>最好不超过链路层的MTU(最大传输单元) 1500字节</p>
-]]></content>
-      <categories>
-        <category>network</category>
-      </categories>
-      <tags>
-        <tag>network</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>正向代理、反向代理、透明代理</title>
-    <url>/2020/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E4%BB%A3%E7%90%86/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://zhuanlan.zhihu.com/p/68560128">彻底理解正向代理、反向代理、透明代理</a></li>
-<li><a href="https://foofish.net/proxy-and-reverse-proxy.html">正向代理与反向代理</a></li>
-<li><a href="http://peachey.blog/2017/12/28/py-shadowsocks/#2-Shadowsocks-Socks-5工作原理">Shadowsocks原理详解</a></li>
-<li><a href="https://www.cnblogs.com/yinzhengjie/p/7357860.html">HTTP协议和SOCKS5协议</a></li>
-</ul>
-<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>正向代理代理的是客户端，客户端把<strong>所有</strong>的请求都交给代理服务器，由代理服务器代替客户端去请求。服务端并不知道真正的客户端是谁，<strong>对server透明</strong>。例如shadowsocks使用socks5协议。</p>
-<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理代理的是服务端，对于<strong>某一种</strong>服务，客户端向代理服务器发送请求，由代理服务器代替客户端去请求。客户端并不知道后边真正是谁服务的，<strong>对client透明</strong>。例如nginx来负载均衡和代理转发。</p>
-<h1 id="透明代理"><a href="#透明代理" class="headerlink" title="透明代理"></a>透明代理</h1><p>透明代理的意思是客户端根本不需要知道有代理服务器的存在，它改编你的request fields（报文），并会传送真实IP。注意，加密的透明代理则是属于匿名代理，意思是不用设置使用代理了。</p>
-<p>透明代理实践的例子就是时下很多公司使用的行为管理软件</p>
-<h1 id="Socks5-协议"><a href="#Socks5-协议" class="headerlink" title="Socks5 协议"></a>Socks5 协议</h1><p>Shadowsocks的处理方式是将Socks 5客户端与Socks5服务器的连接提前，Socks5协议的交互完全是在本地进行的，在网络中传输的完全是利用加密算法加密后的密文，这就很好的进行了去特征化，使得传输的数据不是很容易的被特征识别，本人认为这是Shadowsocks的最大的创新了，具体的流程如下：</p>
-<pre class="mermaid">graph LR
-    subgraph client 
-        Socks5客户端 --> Socks5
-        Socks5 --> sslocal
-    end
-    subgraph server
-        sslocal -->|密文| ssserver
-        ssserver -->|正常请求| 目标主机
-    end</pre>
-
-<p>socks5本身只是个代理提供转发，不提供加密的功能，所以不提供安全性，安全性只能由客户端自己提供，比如如果客户端使用SSL, 那么该网络连接就有了安全性。？</p>
 ]]></content>
       <categories>
         <category>network</category>
@@ -5345,226 +5663,6 @@ class AbstractStringBuilder {
       <tags>
         <tag>java</tag>
         <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HashMap源码分析</title>
-    <url>/2020/java/basic/HashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://segmentfault.com/a/1190000015798586">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
-</ul>
-<h1 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>节点 <code>Node</code> 存储：</p>
-<ul>
-<li>基本：hash 值、key值、value值。</li>
-<li>多个值存在一个位置：链表 <code>next</code>。</li>
-</ul>
-<h2 id="table"><a href="#table" class="headerlink" title="table"></a>table</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
-<p>节点存储在 <code>Node</code> 数组中。</p>
-<h2 id="节点的-key-如何映射到-table-的下标"><a href="#节点的-key-如何映射到-table-的下标" class="headerlink" title="节点的 key 如何映射到 table 的下标"></a>节点的 key 如何映射到 table 的下标</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> index = hash(key) &amp; (table.length() - <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
-<ol>
-<li>使用 <code>hash()</code> 函数把 key 的hashCode 再进行hash。<ul>
-<li>将 hashCode 的高16位和低16位进行异或，充分利用高半位和低半位的信息, 对低位进行了扰动。使该hashCode 映射成数组下标时可以更均匀。</li>
-</ul>
-</li>
-<li>table.length() 为 2 的 m 次幂，把第一步的 hash 值取低 m 位，来作为数组的下标。</li>
-<li>key 可以是 null，这时 hash 值是 0。</li>
-</ol>
-<h2 id="对-key-的要求"><a href="#对-key-的要求" class="headerlink" title="对 key 的要求"></a>对 key 的要求</h2><ul>
-<li><p>哈希。用 <code>hashCode()</code> 方法加一些处理得到 hash 值。</p>
-</li>
-<li><p>相等。用 <code>equals()</code> 比较 hash 值相同的节点。</p>
-</li>
-<li><p>比较。对于红黑树。</p>
-<ul>
-<li><p>如果 key 继承自 <code>Compatable</code> 则用 <code>compareTo()</code> 比较。</p>
-</li>
-<li><p>否则用 <code>System.identityHashCode()</code> 比较。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">tieBreakOrder</span><span class="params">(Object a, Object b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span> || b == <span class="keyword">null</span> ||</span><br><span class="line">        (d = a.getClass().getName().</span><br><span class="line">         compareTo(b.getClass().getName())) == <span class="number">0</span>)</span><br><span class="line">        d = (System.identityHashCode(a) &lt;= System.identityHashCode(b) ?</span><br><span class="line">             -<span class="number">1</span> : <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-</ul>
-<h1 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal initial capacity: "</span> + initialCapacity);</span><br><span class="line">  <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">    initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">  <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal load factor: "</span> + loadFactor);</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">  <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR; <span class="comment">// all other fields defaulted</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li><p>构造函数中只指定了 <code>loadFactor</code> 和 初始容量。</p>
-</li>
-<li><p><code>threshold</code> 有两个作用。</p>
-<ul>
-<li>在创建存储 Node 的数组 <code>table</code> 没有创建时，存储<strong>初始</strong>容量，即随后 <code>table</code> 的长度。</li>
-<li>在 <code>table</code> 创建后，如果负载超过 <code>threshold</code>，进行 <code>resize</code> 扩容。阈值的初始值和变化请看 resize() 源码分析处。</li>
-</ul>
-</li>
-<li><code>table</code> 的长度为 2 的次幂。</li>
-</ul>
-<h2 id="tableSizeFor"><a href="#tableSizeFor" class="headerlink" title="tableSizeFor()"></a>tableSizeFor()</h2><p>如果构造函数指定了 <code>initialCapacity</code>，调用 <code>tableSizeFor</code> 转化为大于等于 <code>initialCapacity</code> 的最小的 2 的次幂。</p>
-<p><code>tableSizeFor</code> 思想是，把 cap 从最右边的 1 开始到最低位，都变为 1。再加 1，即为 2 的 次幂。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">tableSizeFor</span><span class="params">(<span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n = cap - <span class="number">1</span>; <span class="comment">// 如果 cap 本来就是 2 的次幂，不减 1，经过下面操作后，会变为 2 * cap。</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// n 的最右边至少有一个 1，例如 1XXXX。</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">1</span>;	<span class="comment">// 把 n 的前 2 位都变为 1，例如 11XXX。</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">2</span>; <span class="comment">// 把 n 的前 4 位都变为 1，例如 1111X。</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">4</span>; <span class="comment">// 类似</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">8</span>;	<span class="comment">// 类似</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">16</span>; <span class="comment">// 最高位 32 个 1。</span></span><br><span class="line">  <span class="comment">// 以上操作，把 n 转化为每位都是 1。</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// n + 1 后只有最高位为1，为 2 的次幂</span></span><br><span class="line">  <span class="keyword">return</span> (n &lt; <span class="number">0</span>) ? <span class="number">1</span> : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="putMapEntries"><a href="#putMapEntries" class="headerlink" title="putMapEntries()"></a>putMapEntries()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">  putMapEntries(m, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putMapEntries</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m, <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> s = m.size();</span><br><span class="line">    <span class="keyword">if</span> (s &gt; <span class="number">0</span>) &#123; </span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123; <span class="comment">// pre-size // 构造函数调用 putMapEntries，一定会进入这个分支。</span></span><br><span class="line">            <span class="keyword">float</span> ft = ((<span class="keyword">float</span>)s / loadFactor) + <span class="number">1.0F</span>;</span><br><span class="line">            <span class="keyword">int</span> t = ((ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY) ?</span><br><span class="line">                     (<span class="keyword">int</span>)ft : MAXIMUM_CAPACITY);</span><br><span class="line">            <span class="keyword">if</span> (t &gt; threshold)</span><br><span class="line">                threshold = tableSizeFor(t);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (s &gt; threshold) <span class="comment">// putAll 调用时，可能会进入这个分支。</span></span><br><span class="line">            resize();</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;? extends K, ? extends V&gt; e : m.entrySet()) &#123;</span><br><span class="line">            K key = e.getKey();</span><br><span class="line">            V value = e.getValue();</span><br><span class="line">            putVal(hash(key), key, value, <span class="keyword">false</span>, evict);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>除此之外，还有第 4 个构造函数，把给定 Map 的每个元素使用 <code>putVal()</code> 加入本 HashMap 中。</p>
-<p>构造函数调用 <code>putMapEntries</code>，只会进入第一个分支。把初始容量变为 <code>要加入元素个数 / loadFactor</code>。</p>
-<h1 id="resize"><a href="#resize" class="headerlink" title="resize()"></a>resize()</h1><h2 id="触发时机"><a href="#触发时机" class="headerlink" title="触发时机"></a>触发时机</h2><ul>
-<li>初始化<code>table</code> 时。</li>
-<li>元素个数超过 <code>threshold</code> 时进行扩容。</li>
-</ul>
-<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">    <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 已存在 table，是触发扩容进入 resize() 函数的。</span></span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span> oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">// table.length 加倍</span></span><br><span class="line">      	<span class="comment">// threshold 加倍</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                 oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 构造函数指定了 initialCapacity，存储在 threshold中，所以 &gt; 0。</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) </span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    <span class="comment">// 构造函数没有指定 initialCapacity。</span></span><br><span class="line">  	<span class="keyword">else</span> &#123;              </span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY; <span class="comment">// 1 &lt;&lt; 4</span></span><br><span class="line">        newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 从此，threshold 存储的是扩容的阈值。</span></span><br><span class="line">  	<span class="comment">// 初始大小为 table.length * loadFactor</span></span><br><span class="line">    <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                  (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr;</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"rawtypes"</span>,<span class="string">"unchecked"</span>&#125;)</span><br><span class="line">    Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">    table = newTab;</span><br><span class="line">    <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123; <span class="comment">// 把每个元素插入新的 table 中。</span></span><br><span class="line">            Node&lt;K,V&gt; e;</span><br><span class="line">            <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)	<span class="comment">// 如果存储桶里只有一个元素，直接插入对应位置。</span></span><br><span class="line">                    newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 如果存储桶里是红黑树，拆分树。TODO</span></span><br><span class="line">                    ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                <span class="keyword">else</span> &#123; <span class="comment">// 如果存储桶里是链表，拆分链表</span></span><br><span class="line">                    Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; next;</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        next = e.next;</span><br><span class="line">                        <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                                loHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                loTail.next = e;</span><br><span class="line">                            loTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                                hiHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hiTail.next = e;</span><br><span class="line">                            hiTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j] = loHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j + oldCap] = hiHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="第一部分-容量和阈值的变化"><a href="#第一部分-容量和阈值的变化" class="headerlink" title="第一部分 容量和阈值的变化"></a>第一部分 容量和阈值的变化</h3><p>容量指 <code>table</code> 数组的长度。</p>
-<p>阈值指 <code>threshold</code>。</p>
-<p>两种情况</p>
-<ul>
-<li>在 <code>table</code> 还没有创建时：<ul>
-<li>容量为构造函数传入的初始容量或默认值（16）。</li>
-<li>阈值为容量 * loadFactor。</li>
-</ul>
-</li>
-<li>在 <code>table</code> 还没有创建时：<ul>
-<li>容量为原容量的 2 倍。</li>
-<li>阈值为原阈值的 2 倍。</li>
-</ul>
-</li>
-</ul>
-<h3 id="第二部分-红黑树拆分"><a href="#第二部分-红黑树拆分" class="headerlink" title="第二部分 红黑树拆分"></a>第二部分 红黑树拆分</h3><p>拆成两棵红黑树。</p>
-<p>并检查每一棵红黑树的节点数，如果节点数少于阈值，转成树。</p>
-<h3 id="第三部分-链表拆分"><a href="#第三部分-链表拆分" class="headerlink" title="第三部分 链表拆分"></a>第三部分 链表拆分</h3><ul>
-<li><code>e.hash &amp; oldCap == 0</code> 的节点组成 low 链表，存入 <code>newTable[j]</code> 位置。</li>
-<li><code>e.hash &amp; oldCap != 0</code> 的节点组成 high 链表，存入 <code>newTable[j + oldCap]</code> 位置。</li>
-</ul>
-<p>原因如下。</p>
-<p>假设 <code>oldCap = 16 = 0b1_0000</code>，存储在 <code>j</code> 处的元素是 <code>j = e.hash &amp; 0b0_1111</code>。</p>
-<p>扩容后 <code>newCap = 16 * 2 = 0b10_0000</code>，节点的下标是 <code>e.hash &amp; 0b1_1111</code>。</p>
-<ul>
-<li>如果 <code>e.hash</code> 的第 5 位是 0，则 <code>e.hash &amp; 0b1_1111</code> 与 <code>e.hash &amp; 0b0_1111</code> 相等，所以还存储在 <code>j</code> 处。</li>
-<li>如果 <code>e.hash</code> 的第 5 位是1，则 <code>e.hash &amp; 0b1_1111</code> 与 <code>(e.hash &amp; 0b0_1111) + 0b1_0000</code>相等，所以存储在 <code>j + oldCap</code> 处。</li>
-</ul>
-<h1 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">  	<span class="comment">// 构造函数没有初始化 table。</span></span><br><span class="line">  	<span class="comment">// 因此，第一次 put，会在这里初始化 table。</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">  	<span class="comment">// 如果对应的桶里没有元素，直接加进去。</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">      </span><br><span class="line">      	<span class="comment">// 找这个桶里，与 key 相同的元素，赋值给 e。</span></span><br><span class="line">      	<span class="comment">// 没有找到，就创建一个节点，插入到桶的链表/红黑树里，e 为 null。</span></span><br><span class="line">      </span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp; <span class="comment">// 如果桶里只有一个元素，且 key 相同，找到 e 了。</span></span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 在红黑树里找。</span></span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// 在链表里找。</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123; <span class="comment">// 整个链表都没有找到，创建一个节点加入链表。</span></span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// 节点数目大于等于 8 个，扩容或变为红黑树。</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;	<span class="comment">// 在链表中找到 e 了。</span></span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// 如果找到了之前存在的节点，更新值。</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>) <span class="comment">// onlyIfAbsent 只有putIfAbsent调用时是true</span></span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e); <span class="comment">// 只有 LinkedHashMap 时有用，HashMap 中 afterNodeAccess 是空的。</span></span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 只有新建节点会到这里</span></span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold) <span class="comment">// 如果元素数目多于阈值，扩容。</span></span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict); <span class="comment">// 只有 LinkedHashMap 时有用</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">treeifyBin</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> hash)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n, index; Node&lt;K,V&gt; e;</span><br><span class="line">  <span class="keyword">if</span> (tab == <span class="keyword">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY) <span class="comment">// 如果 table 长度小于64，则扩容。</span></span><br><span class="line">    resize();</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> ((e = tab[index = (n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123; <span class="comment">// 否则桶中链表转化为树。</span></span><br><span class="line">    TreeNode&lt;K,V&gt; hd = <span class="keyword">null</span>, tl = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      TreeNode&lt;K,V&gt; p = replacementTreeNode(e, <span class="keyword">null</span>);</span><br><span class="line">      <span class="keyword">if</span> (tl == <span class="keyword">null</span>)</span><br><span class="line">        hd = p;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        p.prev = tl;</span><br><span class="line">        tl.next = p;</span><br><span class="line">      &#125;</span><br><span class="line">      tl = p;</span><br><span class="line">    &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">if</span> ((tab[index] = hd) != <span class="keyword">null</span>)</span><br><span class="line">      hd.treeify(tab);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_TREEIFY_CAPACITY = <span class="number">64</span>;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>第一次 put，会创建 table 数组。</li>
-<li>在桶的链表/红黑树里找节点，没找到，就创建一个，插入链表/红黑树中。</li>
-<li>如果链表插入节点后，链表长度多于 8 个，进行扩容或转化为红黑树。</li>
-<li>如果找到了节点，并且不是 <code>putIfAbsent()</code> 调用的，更新节点的值。</li>
-<li>如果是新增了节点，查看节点数目是否多于阈值，进行扩容。</li>
-</ul>
-<h1 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> Node&lt;K,V&gt; <span class="title">getNode</span><span class="params">(<span class="keyword">int</span> hash, Object key)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; <span class="keyword">int</span> n; K k;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) != <span class="keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="number">0</span> &amp;&amp; <span class="comment">// table 没有初始化，或对应桶是空的，返回。</span></span><br><span class="line">        (first = tab[(n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (first.hash == hash &amp;&amp; <span class="comment">// 桶中第一个节点是否是对应的key。</span></span><br><span class="line">            ((k = first.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            <span class="keyword">return</span> first;</span><br><span class="line">        <span class="keyword">if</span> ((e = first.next) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (first <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 如果是红黑树，在红黑树里找。第一个节点是红黑树的根节点。</span></span><br><span class="line">                <span class="keyword">return</span> ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">            <span class="keyword">do</span> &#123;	<span class="comment">// 在链表中找。</span></span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">return</span> e;</span><br><span class="line">            &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>table 没有初始化、或对应的桶是空的，返回。</li>
-<li>查看桶中第一个节点的key是否匹配。</li>
-<li>没有匹配，去桶的红黑树或链表中去找。</li>
-</ul>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>basic</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SPI 机制</title>
-    <url>/2020/java/jvm/SPI/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
-<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">Java SPI机制详解</a></li>
-<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
-</ul>
-<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
-<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
-<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
-</li>
-<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
-</li>
-</ul>
-<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
-<li><strong>服务</strong> 一般是系统定义好的接口，</li>
-<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
-<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
-<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
-</ul>
-</li>
-</ul>
-<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
-<p>例如 JDK 中定义了 <code>JDBC</code> 服务，而 MySQL、PostgreSQL 提供了具体的实现。<code>JDBC</code> 的服务接口定义在 <code>java.sql</code> 中，由引导类加载器进行的加载。而具体的服务实现类在 Classpath 下，应该由系统类加载器进行加载。显然，使用 JDBC 的引导类加载器是无法对这些具体服务进行加载的。</p>
-<p>因此，在 JDBC 4.0 以前，在连接数据库的时候，需要首先使用 <code>Class.forName(&quot;com.mysql.jdbc.Driver&quot;)</code> 来在服务使用者这里显式的加载服务实现者。</p>
-<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>为了解决这个问题，需要使<strong>父类</strong>加载器去<strong>请求子类</strong>加载器去执行类加载任务，这样就要破坏双亲委派类加载机制。</p>
-<p>因此，引入了<strong>线程上下文类加载器</strong>，线程的上下文类加载器默认都是系统类加载器。这样，服务定义者就可以使用这个线程上下文类加载器完成服务提供者的类加载。</p>
-<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p><code>java.util.ServiceLoader</code> 实现了上述的方案。</p>
-<p>在 <code>Classpath/resources/META-INF/services/MyService的接口全名</code> 文件中写入多个服务提供者的类全名（以行为单位），使用 <code>ServiceLoader</code> 就可以去加载这些服务提供者。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ServiceLoader&lt;MyService&gt; loader = ServiceLoader.load(MyService.class);</span><br><span class="line"><span class="keyword">for</span> (MyService serviceImpl : loader) &#123;</span><br><span class="line">  serviceImpl.func();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="JDBC-例子"><a href="#JDBC-例子" class="headerlink" title="JDBC 例子"></a>JDBC 例子</h2><h3 id="DriverManager"><a href="#DriverManager" class="headerlink" title="DriverManager"></a>DriverManager</h3><p>在 JDBC 中就使用了 <code>ServiceLoader</code> 去加载具体的驱动。</p>
-<p><code>DriverManager</code> 在类初始化时，使用 <code>ServiceLoader</code> 去加载了 <code>Driver.class</code> 的实现类。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DriverManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();</span><br><span class="line">        println(<span class="string">"JDBC DriverManager initialized"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadInitialDrivers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String drivers;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            drivers = AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;String&gt;() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> String <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> System.getProperty(<span class="string">"jdbc.drivers"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            drivers = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// If the driver is packaged as a Service Provider, load it.</span></span><br><span class="line">        <span class="comment">// Get all the drivers through the classloader</span></span><br><span class="line">        <span class="comment">// exposed as a java.sql.Driver.class service.</span></span><br><span class="line">        <span class="comment">// ServiceLoader.load() replaces the sun.misc.Providers()</span></span><br><span class="line"></span><br><span class="line">        AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">                Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">                        driversIterator.next();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">                <span class="comment">// Do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h3><p>在 <code>mysql-connector-java-5.1.45.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.mysql.jdbc.Driver</span><br><span class="line">com.mysql.fabric.jdbc.FabricMySQLDriver</span><br></pre></td></tr></table></figure>
-<p>在 <code>postgresql-42.2.2.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">org.postgresql.Driver</span><br></pre></td></tr></table></figure>
-<p>这样在使用 JDBC 的时候，直接获取连接就可以了，不需要额外加载对应的驱动类。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String url = <span class="string">"jdbc:mysql://localhost:3306/test"</span>;</span><br><span class="line">Connection conn = DriverManager.getConnection(url,username,password);</span><br></pre></td></tr></table></figure>
-<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><ul>
-<li><p>使用 <code>ServiceLoader.load(MyService.class)</code> 方法，会把当前线程的上下文类加载器存储在 <code>loader</code> 中。</p>
-</li>
-<li><p><code>ServiceLoader#iterator()</code> 返回一个内置的迭代器。</p>
-</li>
-<li><code>iterator#hasNext()</code> 会去读取所有 resources 文件夹中 META-INF/services/serviceName 文件。</li>
-<li><code>iterator#next()</code> 用 <code>loader</code> 去加载每一个 <code>hadNext()</code> 读取出来的类。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 默认使用上下文类加载器。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service)</span> </span>&#123;</span><br><span class="line">    ClassLoader cl = Thread.currentThread().getContextClassLoader();</span><br><span class="line">    <span class="keyword">return</span> ServiceLoader.load(service, cl);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service, ClassLoader loader)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ServiceLoader&lt;&gt;(service, loader);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">ServiceLoader</span><span class="params">(Class&lt;S&gt; svc, ClassLoader cl)</span> </span>&#123;</span><br><span class="line">    service = Objects.requireNonNull(svc, <span class="string">"Service interface cannot be null"</span>);</span><br><span class="line">    loader = (cl == <span class="keyword">null</span>) ? ClassLoader.getSystemClassLoader() : cl;</span><br><span class="line">    acc = (System.getSecurityManager() != <span class="keyword">null</span>) ? AccessController.getContext() : <span class="keyword">null</span>;</span><br><span class="line">    reload();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Iterator&lt;S&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX = <span class="string">"META-INF/services/"</span>;</span><br><span class="line"><span class="comment">// hasNext() 最终调用 hasNextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasNextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (nextName != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (configs == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String fullName = PREFIX + service.getName();</span><br><span class="line">            <span class="keyword">if</span> (loader == <span class="keyword">null</span>)</span><br><span class="line">              	<span class="comment">// 找到所有 resources 文件夹中 META-INF/services/serviceName 文件。</span></span><br><span class="line">                configs = ClassLoader.getSystemResources(fullName);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                configs = loader.getResources(fullName);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException x) &#123;</span><br><span class="line">            fail(service, <span class="string">"Error locating configuration files"</span>, x);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 遍历每一个 config 文件。</span></span><br><span class="line">    <span class="keyword">while</span> ((pending == <span class="keyword">null</span>) || !pending.hasNext()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!configs.hasMoreElements()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        pending = parse(service, configs.nextElement());</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 存储下一个要加载的类名。</span></span><br><span class="line">    nextName = pending.next();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// next() 最终调用 nextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> S <span class="title">nextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!hasNextService())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    String cn = nextName;</span><br><span class="line">    nextName = <span class="keyword">null</span>;</span><br><span class="line">    Class&lt;?&gt; c = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 使用构造函数传入的 loader，加载 nextName。</span></span><br><span class="line">        c = Class.forName(cn, <span class="keyword">false</span>, loader);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" not found"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!service.isAssignableFrom(c)) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn  + <span class="string">" not a subtype"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        S p = service.cast(c.newInstance());</span><br><span class="line">        providers.put(cn, p);</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" could not be instantiated"</span>,</span><br><span class="line">             x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Error();          <span class="comment">// This cannot happen</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>java</category>
-        <category>jvm</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Enum</title>
-    <url>/2020/java/basic/enum/</url>
-    <content><![CDATA[<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>使用 <code>enum</code>  关键字，类似于定义类的方式。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE,</span><br><span class="line">    BANANA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="自定义构造函数"><a href="#自定义构造函数" class="headerlink" title="自定义构造函数"></a>自定义构造函数</h2><p>可以自定义构造函数，传递额外的信息。注意 <code>Fruit</code> 类的第一个语句必须是枚举变量的定义。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE(<span class="number">10</span>),</span><br><span class="line">    BANANA(<span class="number">3</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">enum</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> price)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>编译器会把 <code>enum</code> 类转化为 <code>Enum&lt;E extends Enum&lt;E&gt;&gt;</code> 的子类。</p>
-<p>例如，上述的 <code>Fruit</code> 枚举类，反编译后如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> <span class="keyword">extends</span> <span class="title">Enum</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Fruit[] values()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> (Fruit[])$VALUES.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Fruit <span class="title">valueOf</span><span class="params">(String name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (Fruit)Enum.valueOf(Fruit, name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Fruit</span><span class="params">(String name, <span class="keyword">int</span> ordinal, <span class="keyword">int</span> price)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, ordinal);</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPrice</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit ORANGE;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit BANANA;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit $VALUES[];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> </span><br><span class="line">    &#123;</span><br><span class="line">        ORANGE = <span class="keyword">new</span> Fruit(<span class="string">"ORANGE"</span>, <span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line">        BANANA = <span class="keyword">new</span> Fruit(<span class="string">"BANANA"</span>, <span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line">        $VALUES = (<span class="keyword">new</span> Fruit[] &#123;</span><br><span class="line">            ORANGE, BANANA</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>主要进行的工作：</p>
-<ol>
-<li>在构造函数中添加 <code>name</code> 、<code>ordinal</code> 。</li>
-<li>每个枚举量是静态常量，会调用 1. 中的构造函数。其中 <code>name</code> 是枚举变量名、 <code>ordinal</code> 从0开始编号。</li>
-<li>枚举量列表存储在静态常量 <code>$VALUES</code> 中。</li>
-<li>为 <code>Fruit</code> 类添加 <code>final</code> 修饰符。</li>
-</ol>
-<h1 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h1><p>根据反编译后的类、超类 <code>Enum</code> ，可以发现如下的常用函数：</p>
-<ol>
-<li><code>static Fruit valueOf(String name)</code>  返回和传入 <code>name</code> 匹配的枚举量。如果不能匹配，抛出 <code>IllegalArgumentException</code> 。</li>
-<li><code>String name()</code> 、<code>String toString()</code>  返回 <code>name</code> 。</li>
-<li><code>int ordinal()</code>  返回 <code>ordinal</code> 。</li>
-<li><code>static Fruit[] values()</code>  返回 枚举量数组。</li>
-<li><code>int compareTo(Fruit other)</code>  返回 <code>ordinal - other.ordinal</code> 。</li>
-</ol>
-<p>比较两个枚举量是否相等，用 <code>==</code> 即可，即比较两个枚举常量的地址是否相同。<br>当然，用 <code>equals</code> 也可以，因为 <code>Enum</code> 的 <code>equals</code> 函数就是直接 <code>return this == other</code> 。</p>
-<h1 id="switch-中的枚举量"><a href="#switch-中的枚举量" class="headerlink" title="switch 中的枚举量"></a>switch 中的枚举量</h1><h2 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h2><p>可以在 <code>switch</code> 中使用枚举量。注意 <code>case</code> 中不需要写 <code>Fruit.XXXX</code> ，直接 <code>XXXX</code> 即可。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Fruit fruit = Fruit.BANANA;</span><br><span class="line"><span class="keyword">switch</span> (fruit) &#123;</span><br><span class="line">  <span class="keyword">case</span> BANANA:</span><br><span class="line">    System.out.println(<span class="string">"banana"</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> ORANGE:</span><br><span class="line">    System.out.println(<span class="string">"orange"</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>编译器会把代码进行转换，创建一个 SwitchMap 类 <code>Main$1</code> ，使用 <code>ordinal</code> 进行比较。</p>
-<p>反编译后如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Main$1.class</span></span><br><span class="line"><span class="comment">// $FF: synthetic class</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span>$1 </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// $FF: synthetic field</span></span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span>[] $SwitchMap$Fruit = <span class="keyword">new</span> <span class="keyword">int</span>[Fruit.values().length];</span><br><span class="line"></span><br><span class="line">   <span class="keyword">static</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         $SwitchMap$Fruit[Fruit.BANANA.ordinal()] = <span class="number">1</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (NoSuchFieldError var2) &#123;</span><br><span class="line">         ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         $SwitchMap$Fruit[Fruit.ORANGE.ordinal()] = <span class="number">2</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (NoSuchFieldError var1) &#123;</span><br><span class="line">         ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Main.class</span></span><br><span class="line"><span class="keyword">import</span> Main.1;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      Fruit fruit = Fruit.BANANA;</span><br><span class="line">      <span class="keyword">switch</span>(<span class="number">1</span>.$SwitchMap$Fruit[fruit.ordinal()]) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">         System.out.println(<span class="string">"banana"</span>);</span><br><span class="line">         <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">         System.out.println(<span class="string">"orange"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="枚举类的序列化"><a href="#枚举类的序列化" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
-<li><a href="https://github.com/hollischuang/toBeTopJavaer/blob/master/basics/java-basic/enum-serializable.md">枚举的序列化如何实现</a></li>
-</ul>
-<h2 id="类似枚举类的序列化问题"><a href="#类似枚举类的序列化问题" class="headerlink" title="类似枚举类的序列化问题"></a>类似枚举类的序列化问题</h2><p>在 Java 没有枚举类的时候，一般用如下的方法实现枚举类。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> ORANGE = <span class="keyword">new</span> Fruit(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BANANA = <span class="keyword">new</span> Fruit(<span class="number">1</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> value;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.value = value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>例子如下。在反序列化的时候，虽然构造函数是私有的，但是反序列化仍然会创造一个新的对象。<br>这个对象的 <code>value</code> 也是 0，但是没有办法使用 <code>==</code> 与 <code>Fruit.ORANGE</code> 进行比较了。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">objectOutputStream.write(Fruit.ORANGE);</span><br><span class="line">objectOutputStream.close();</span><br><span class="line">Fruit orange = (Fruit) objectInputStream.read();</span><br><span class="line">aseertt(orange == Fruit.ORANGE); <span class="comment">// Error</span></span><br></pre></td></tr></table></figure>
-<h2 id="枚举类的序列化-1"><a href="#枚举类的序列化-1" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h2><p>枚举类在序列化的时候，对于 <code>Enum</code> 子类的对象，只会把 <code>name</code> 属性输出。</p>
-<p>在反序列化的时候，会调用 <code>Enum valueof(String name)</code> 方法对读取的 <code>name</code> 进行查找，而不会创建新的 枚举对象。</p>
-<p>并且类 <code>Enum</code> 把 方法 <code>readObject</code> 和 <code>readObjectNoData</code> 都设为了私有，这样 <code>enum</code> 类无法自定义序列化过程。</p>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>basic</category>
-      </categories>
-      <tags>
-        <tag>java</tag>
       </tags>
   </entry>
   <entry>
@@ -6202,213 +6300,52 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
-    <title>1. Java内存区域</title>
-    <url>/2020/java/jvm/1Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li>《深入理解 Java 虚拟机 - 第三版》</li>
-</ul>
-<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
+    <title>Enum</title>
+    <url>/2020/java/basic/enum/</url>
+    <content><![CDATA[<h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p>使用 <code>enum</code>  关键字，类似于定义类的方式。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE,</span><br><span class="line">    BANANA;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="自定义构造函数"><a href="#自定义构造函数" class="headerlink" title="自定义构造函数"></a>自定义构造函数</h2><p>可以自定义构造函数，传递额外的信息。注意 <code>Fruit</code> 类的第一个语句必须是枚举变量的定义。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    ORANGE(<span class="number">10</span>),</span><br><span class="line">    BANANA(<span class="number">3</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">enum</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> price)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><p>编译器会把 <code>enum</code> 类转化为 <code>Enum&lt;E extends Enum&lt;E&gt;&gt;</code> 的子类。</p>
+<p>例如，上述的 <code>Fruit</code> 枚举类，反编译后如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> <span class="keyword">extends</span> <span class="title">Enum</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Fruit[] values()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> (Fruit[])$VALUES.clone();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Fruit <span class="title">valueOf</span><span class="params">(String name)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (Fruit)Enum.valueOf(Fruit, name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Fruit</span><span class="params">(String name, <span class="keyword">int</span> ordinal, <span class="keyword">int</span> price)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(name, ordinal);</span><br><span class="line">        <span class="keyword">this</span>.price = price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getPrice</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> price;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit ORANGE;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit BANANA;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Fruit $VALUES[];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> </span><br><span class="line">    &#123;</span><br><span class="line">        ORANGE = <span class="keyword">new</span> Fruit(<span class="string">"ORANGE"</span>, <span class="number">0</span>, <span class="number">10</span>);</span><br><span class="line">        BANANA = <span class="keyword">new</span> Fruit(<span class="string">"BANANA"</span>, <span class="number">1</span>, <span class="number">3</span>);</span><br><span class="line">        $VALUES = (<span class="keyword">new</span> Fruit[] &#123;</span><br><span class="line">            ORANGE, BANANA</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>主要进行的工作：</p>
 <ol>
-<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
-</li>
-<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
-</li>
+<li>在构造函数中添加 <code>name</code> 、<code>ordinal</code> 。</li>
+<li>每个枚举量是静态常量，会调用 1. 中的构造函数。其中 <code>name</code> 是枚举变量名、 <code>ordinal</code> 从0开始编号。</li>
+<li>枚举量列表存储在静态常量 <code>$VALUES</code> 中。</li>
+<li>为 <code>Fruit</code> 类添加 <code>final</code> 修饰符。</li>
 </ol>
-<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
-<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
-<p>较小的内存空间。</p>
-<ul>
-<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
-<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
-</ul>
-<h2 id="Java-虚拟机栈"><a href="#Java-虚拟机栈" class="headerlink" title="Java 虚拟机栈"></a>Java 虚拟机栈</h2><p>每个 Java 方法被执行时，JVM 会创建一个栈帧，存储局部变量表、操作数栈、动态连结、方法出口等信息。</p>
-<p>方法从被调用到执行完毕的过程，对应栈帧在虚拟机栈中从入栈到出栈的过程。</p>
-<h2 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h2><p>局部变量表存放了</p>
-<ul>
-<li>基本数据类型</li>
-<li>对象引用</li>
-<li>returnAddress 类型（指向一条字节码指令的地址）</li>
-</ul>
-<p>它的存储空间使用局部变量槽（Slot）来表示，64 位的 <code>long</code> <code>double</code> 占用两个变量槽。</p>
-<p>局部变量表所需的内存空间，在编译期间就完成了分配。</p>
-<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>分配的栈过多、或栈的内存使用太多，会导致新的栈帧内存无法分配时，HotSpot 虚拟机都会抛出 <code>StackOverflowError</code>。</p>
-<h2 id="JVM-参数"><a href="#JVM-参数" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
-<li>-Xss：栈容量。</li>
-<li>-Xoss：本地方法栈容量。HotSpot 虚拟机不区分两个栈，所以这个参数没有用。</li>
-</ul>
-<h1 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h1><p>与 Java 虚拟机栈类似，为虚拟机使用到的本地 native 方法服务。</p>
-<p>《Java 虚拟机规范》没有强制规定如何实现本地方法栈。HotSpot 虚拟机中，直接把 Java 虚拟机栈 和 本地方法栈合二为一。</p>
-<h1 id="Java-堆"><a href="#Java-堆" class="headerlink" title="Java 堆"></a>Java 堆</h1><p>唯一目的：存放对象实例。是垃圾收集器管理的内存区域。</p>
-<h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><ol>
-<li>执行字节码 <code>new</code> 指令。<ol>
-<li>类加载检查。<ol>
-<li>检查指令的参数能否在常量池中定位到类的符号引用。</li>
-<li>进行类的加载、解析、初始化。（如果没有进行的话）。</li>
+<h1 id="常用函数"><a href="#常用函数" class="headerlink" title="常用函数"></a>常用函数</h1><p>根据反编译后的类、超类 <code>Enum</code> ，可以发现如下的常用函数：</p>
+<ol>
+<li><code>static Fruit valueOf(String name)</code>  返回和传入 <code>name</code> 匹配的枚举量。如果不能匹配，抛出 <code>IllegalArgumentException</code> 。</li>
+<li><code>String name()</code> 、<code>String toString()</code>  返回 <code>name</code> 。</li>
+<li><code>int ordinal()</code>  返回 <code>ordinal</code> 。</li>
+<li><code>static Fruit[] values()</code>  返回 枚举量数组。</li>
+<li><code>int compareTo(Fruit other)</code>  返回 <code>ordinal - other.ordinal</code> 。</li>
 </ol>
-</li>
-<li>为对象分配内存。<ul>
-<li>大小在类加载完成后可以完全确定。</li>
-<li>如果保证多个对象分配的线程安全？<ul>
-<li>CAS + 重试保证原子性更新。</li>
-<li>本地线程分配缓冲（Thread local Allocation Buffer，TLAB）。每个线程在 Java 堆中预先分配一块内存。分配内存现在线程的 TLAB 上进行，只有用完了，才去锁定。</li>
+<p>比较两个枚举量是否相等，用 <code>==</code> 即可，即比较两个枚举常量的地址是否相同。<br>当然，用 <code>equals</code> 也可以，因为 <code>Enum</code> 的 <code>equals</code> 函数就是直接 <code>return this == other</code> 。</p>
+<h1 id="switch-中的枚举量"><a href="#switch-中的枚举量" class="headerlink" title="switch 中的枚举量"></a>switch 中的枚举量</h1><h2 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h2><p>可以在 <code>switch</code> 中使用枚举量。注意 <code>case</code> 中不需要写 <code>Fruit.XXXX</code> ，直接 <code>XXXX</code> 即可。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Fruit fruit = Fruit.BANANA;</span><br><span class="line"><span class="keyword">switch</span> (fruit) &#123;</span><br><span class="line">  <span class="keyword">case</span> BANANA:</span><br><span class="line">    System.out.println(<span class="string">"banana"</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">  <span class="keyword">case</span> ORANGE:</span><br><span class="line">    System.out.println(<span class="string">"orange"</span>);</span><br><span class="line">    <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h2><p>编译器会把代码进行转换，创建一个 SwitchMap 类 <code>Main$1</code> ，使用 <code>ordinal</code> 进行比较。</p>
+<p>反编译后如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// Main$1.class</span></span><br><span class="line"><span class="comment">// $FF: synthetic class</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span>$1 </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// $FF: synthetic field</span></span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span>[] $SwitchMap$Fruit = <span class="keyword">new</span> <span class="keyword">int</span>[Fruit.values().length];</span><br><span class="line"></span><br><span class="line">   <span class="keyword">static</span> &#123;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         $SwitchMap$Fruit[Fruit.BANANA.ordinal()] = <span class="number">1</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (NoSuchFieldError var2) &#123;</span><br><span class="line">         ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">         $SwitchMap$Fruit[Fruit.ORANGE.ordinal()] = <span class="number">2</span>;</span><br><span class="line">      &#125; <span class="keyword">catch</span> (NoSuchFieldError var1) &#123;</span><br><span class="line">         ;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Main.class</span></span><br><span class="line"><span class="keyword">import</span> Main.1;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      Fruit fruit = Fruit.BANANA;</span><br><span class="line">      <span class="keyword">switch</span>(<span class="number">1</span>.$SwitchMap$Fruit[fruit.ordinal()]) &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">         System.out.println(<span class="string">"banana"</span>);</span><br><span class="line">         <span class="keyword">break</span>;</span><br><span class="line">      <span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">         System.out.println(<span class="string">"orange"</span>);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="枚举类的序列化"><a href="#枚举类的序列化" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h1><h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><ul>
+<li><a href="https://github.com/hollischuang/toBeTopJavaer/blob/master/basics/java-basic/enum-serializable.md">枚举的序列化如何实现</a></li>
 </ul>
-</li>
-</ul>
-</li>
-<li>将分配来的内存空间（除了对象头）初始化为零。</li>
-<li>在对象头中设置必要的信息。</li>
-</ol>
-</li>
-<li>执行 <code>&lt;init&gt;()</code> 方法，即构造函数。</li>
-</ol>
-<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><ol>
-<li>对象头部信息。<ol>
-<li>Mark Word。对象自身运行时信息。对象哈希码、对象分代年龄、锁的信息。</li>
-<li>类型指针。指向它的元数据的指针。</li>
-<li>如果是 Java 数组，还需记录数组长度。</li>
-</ol>
-</li>
-<li>实例数据部分。</li>
-<li>对齐填充。<ol>
-<li>HotSpot 虚拟机要求对象起始地址必须是 8 字节的整数倍。</li>
-</ol>
-</li>
-</ol>
-<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p>两种主流方式。</p>
-<ul>
-<li>句柄。Java 堆中分出一块内存作为句柄池。reference 存储的是对象的句柄地址。句柄包含了对象实例数据的地址、类型数据的地址。<ul>
-<li>这种方式，不需要对象头存储类型指针。</li>
-</ul>
-</li>
-<li>直接指针。reference 直接指向对象实例数据的地址，类型数据的地址存储在对象头的类型指针中。HotSpot 使用这种方式。</li>
-</ul>
-<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code> 。</p>
-<h2 id="JVM-参数-1"><a href="#JVM-参数-1" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
-<li>堆的最小值：-Xms</li>
-<li>堆的最大值：-Xmx</li>
-</ul>
-<h1 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h1><p>存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。</p>
-<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>包含</p>
-<ul>
-<li>.class 文件中包含 编译时生成的字面量、符号引用。</li>
-<li>运行期间放入的新的常量，例如 <code>String.intern()</code>。</li>
-</ul>
-<h2 id="从永久代到元空间"><a href="#从永久代到元空间" class="headerlink" title="从永久代到元空间"></a>从永久代到元空间</h2><p>在 JDK 7 以前，HotSpot 虚拟机使用永久代来实现方法区。把收集器的分代设计扩展到了方法区。</p>
-<p>在 JDK 7 把字符串常量池、静态变量移到堆中。</p>
-<p>在 JDK 8 把剩余内容（主要是类型信息）移到本地 native 内存的元空间中。</p>
-<h2 id="异常-2"><a href="#异常-2" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code>。</p>
-<h2 id="JVM-参数-2"><a href="#JVM-参数-2" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><p>永久代大小（只对JDK 6、JDK 7中除字符串常量池、静态变量部分有效）</p>
-<ul>
-<li>-XX:PermSize 和 -XX:MaxPermSize。限制永久代的大小。</li>
-</ul>
-<p>元空间大小（只对JDK 8中类型信息）</p>
-<ul>
-<li>-XX:MaxMetaspaceSize。最大值。</li>
-<li>-XX:MinMetaspaceSize。最小值。</li>
-<li>-XX:MetaspaceSize。初始大小。</li>
-</ul>
-<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p>不是 《Java 虚拟机规范》 定义的内存区域。</p>
-<p>使用 native 函数 <code>unsafe.allocateMemory()</code> 分配的内存，直接在堆外分配。</p>
-<p>通过 Java 堆里的 <code>DirectByeteBuffer</code> 作为这块内存的引用进行操作。</p>
-<h2 id="异常-3"><a href="#异常-3" class="headerlink" title="异常"></a>异常</h2><ul>
-<li><p>使用  <code>ByeteBuffer.allocateDirect()</code> ，会抛出 <code>OutOfMemoryError:Direct buffer memory</code>。是在 Java 代码中，在向操作系统申请内存前，手动检查的。</p>
-</li>
-<li><p>使用 <code>unsafe.allocateMemory()</code>，会抛出 <code>java.lang.OutOfMemoryError\ n t sun.misc.Unsafe.allocateMemory(Native Method)</code>。是在操作系统申请内存时，抛出的。</p>
-</li>
-</ul>
-<h2 id="JVM-参数-3"><a href="#JVM-参数-3" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
-<li>-XX:MaxDirectMemorySize。只在 <code>ByeteBuffer.allocateDirect()</code> 手动检查时使用。<code>unsafe</code> 分配不受它的限制。</li>
-</ul>
+<h2 id="类似枚举类的序列化问题"><a href="#类似枚举类的序列化问题" class="headerlink" title="类似枚举类的序列化问题"></a>类似枚举类的序列化问题</h2><p>在 Java 没有枚举类的时候，一般用如下的方法实现枚举类。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> </span>&#123;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> ORANGE = <span class="keyword">new</span> Fruit(<span class="number">0</span>);</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> BANANA = <span class="keyword">new</span> Fruit(<span class="number">1</span>);</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">int</span> value;</span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">private</span> <span class="title">Fruit</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.value = value;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>例子如下。在反序列化的时候，虽然构造函数是私有的，但是反序列化仍然会创造一个新的对象。<br>这个对象的 <code>value</code> 也是 0，但是没有办法使用 <code>==</code> 与 <code>Fruit.ORANGE</code> 进行比较了。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">objectOutputStream.write(Fruit.ORANGE);</span><br><span class="line">objectOutputStream.close();</span><br><span class="line">Fruit orange = (Fruit) objectInputStream.read();</span><br><span class="line">aseertt(orange == Fruit.ORANGE); <span class="comment">// Error</span></span><br></pre></td></tr></table></figure>
+<h2 id="枚举类的序列化-1"><a href="#枚举类的序列化-1" class="headerlink" title="枚举类的序列化"></a>枚举类的序列化</h2><p>枚举类在序列化的时候，对于 <code>Enum</code> 子类的对象，只会把 <code>name</code> 属性输出。</p>
+<p>在反序列化的时候，会调用 <code>Enum valueof(String name)</code> 方法对读取的 <code>name</code> 进行查找，而不会创建新的 枚举对象。</p>
+<p>并且类 <code>Enum</code> 把 方法 <code>readObject</code> 和 <code>readObjectNoData</code> 都设为了私有，这样 <code>enum</code> 类无法自定义序列化过程。</p>
 ]]></content>
       <categories>
         <category>java</category>
-        <category>jvm</category>
+        <category>basic</category>
       </categories>
       <tags>
-        <tag>java</tag>
-        <tag>jvm</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>FileChannel与内存映射文件</title>
-    <url>/2020/java/io/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6/</url>
-    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76">jdk/src/share/native/java/io/io_util.c</a></li>
-<li><a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html">JNIFunctions</a></li>
-<li><a href="https://www.jianshu.com/p/a23ca155f949">Java文件NIO读取的本质——FileInputStream与FileChannel对比</a></li>
-<li><a href="https://www.zhihu.com/question/48161206/answer/110863886">Linux 中 mmap() 函数的内存映射问题理解？</a></li>
-<li><a href="https://blog.csdn.net/zhxdick/article/details/81130102">JDK核心JAVA源码解析（5） - JAVA File MMAP原理解析</a></li>
-<li><a href="https://blog.csdn.net/yangguosb/article/details/77891275">Linux零拷贝之mmap</a></li>
-<li><a href="https://zhuanlan.zhihu.com/p/91507035">Java网络编程与NIO详解8：浅析mmap和Direct Buffer</a></li>
-<li><a href="https://www.cnkirito.moe/file-io-best-practise/">文件 IO 操作的一些最佳实践</a></li>
-<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/">通过零拷贝实现有效数据传输</a></li>
-</ul>
-<h1 id="FileChannel-基本用法"><a href="#FileChannel-基本用法" class="headerlink" title="FileChannel 基本用法"></a>FileChannel 基本用法</h1><h2 id="创建-FileChannel"><a href="#创建-FileChannel" class="headerlink" title="创建 FileChannel"></a>创建 FileChannel</h2><p>使用 <code>FileChannel.open</code> 创建。</p>
-<p>其中 <code>OpenOption</code> 可以有：</p>
-<ul>
-<li>READ</li>
-<li>WRITE</li>
-<li>APPEND</li>
-<li>CREATE：如果文件不存在，则创建一个。</li>
-<li>CREATE_NEW：创建文件，如果存在抛出异常。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">FileChannel ch = FileChannel.open(Path path, OpenOption... options);</span><br></pre></td></tr></table></figure>
-<p>也可以从 <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 中通过 <code>getChannel()</code> 方法得到。<br>这种 channel 的文件描述符和  <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 使用的是同一个，文件指针位置也是共享的。</p>
-<h2 id="读写数据"><a href="#读写数据" class="headerlink" title="读写数据"></a>读写数据</h2><p>主要通过 <code>read()</code> 和 <code>write</code> 方法操作数据。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">read</span><span class="params">(ByteBuffer dst)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">write</span><span class="params">(ByteBuffer src)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
-<h2 id="mmap-读写数据"><a href="#mmap-读写数据" class="headerlink" title="mmap 读写数据"></a>mmap 读写数据</h2><p>可以通过 <code>ch.map()</code> 方法建立一个内存映射文件的 <code>DirectByteBuffer</code>。</p>
-<p>通过 <code>buffer.get()</code> 和 <code>buffer.put()</code> 方法操作 <code>ByteBuffer</code> 的方式来读写文件。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ByteBuffer buffer = ch.map(FileChannel.MapMode.READ_WRITE, <span class="number">0</span>, Integer.MAX_VALUE);</span><br><span class="line">buffer.put(<span class="number">1</span>);</span><br><span class="line">buffer.put(<span class="string">'h'</span>);</span><br><span class="line">buffer.put(<span class="string">"hello"</span>.getBytes(StandardCharset.UTF_8));</span><br></pre></td></tr></table></figure>
-<h2 id="Transform-数据"><a href="#Transform-数据" class="headerlink" title="Transform 数据"></a>Transform 数据</h2><p>通过 <code>transformFrom()</code> 和 <code>transformTo()</code> 把数据 从其他通道写入到该通道/从该通道写入到其他通道。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferFrom</span><span class="params">(ReadableByteChannel src,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">long</span> position, <span class="keyword">long</span> count)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">long</span> count,</span></span></span><br><span class="line"><span class="function"><span class="params">                                WritableByteChannel target)</span></span></span><br></pre></td></tr></table></figure>
-<h1 id="读取文件的拷贝次数"><a href="#读取文件的拷贝次数" class="headerlink" title="读取文件的拷贝次数"></a>读取文件的拷贝次数</h1><h2 id="内核的页缓冲"><a href="#内核的页缓冲" class="headerlink" title="内核的页缓冲"></a>内核的页缓冲</h2><p>正常的文件读写，需要使用系统调用 <code>read()</code> 和 <code>write()</code>。</p>
-<p>在内核有数据的页缓冲区。在读写数据时（以读数据为例），<code>read()</code> 系统调用首先到页缓冲区中看是否有足够的数据。</p>
-<ul>
-<li>如果没有，则去文件中，把数据拷贝到页缓冲区。</li>
-<li>如果有，则直接从页缓冲区拷贝用户空间。</li>
-</ul>
-<h2 id="堆外内存到堆内内存"><a href="#堆外内存到堆内内存" class="headerlink" title="堆外内存到堆内内存"></a>堆外内存到堆内内存</h2><p>在 Java 中读写数据时，因为系统调用 <code>read()</code> 和 <code>write</code>，需要提供要操作的内存地址。而 Java 的堆内内存的变量的内存地址是不固定的，在一次 GC 中，可能进行重排/复制等操作。所以读取数据，需要先创建一个临时的内存区域来加载数据，再从临时区域拷贝到堆内内存。</p>
-<p><code>FileInputStream.read()</code>  调用 native 的 <a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76">readBytes 方法</a>。可以看到，在 JNI 方法中，申请了一块 <code>buf</code> 字符数组，读取数据后，使用 <a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html">env.SetByteArrayRegion</a> 把 <code>buf</code> 内容拷贝 Java 的 byteArray中。</p>
-<p>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; JNI 临时内存 —&gt; Java 堆内内存。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">jint</span><br><span class="line">readBytes(JNIEnv *env, jobject <span class="keyword">this</span>, jbyteArray bytes,</span><br><span class="line">          jint off, jint len, jfieldID fid)</span><br><span class="line">&#123;</span><br><span class="line">    jint nread;</span><br><span class="line">    <span class="keyword">char</span> stackBuf[BUF_SIZE];</span><br><span class="line">    <span class="keyword">char</span> *buf = <span class="literal">NULL</span>;</span><br><span class="line">    FD fd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len &gt; BUF_SIZE) &#123;</span><br><span class="line">        buf = <span class="built_in">malloc</span>(len);</span><br><span class="line">        <span class="keyword">if</span> (buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="literal">NULL</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = stackBuf;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fd = GET_FD(<span class="keyword">this</span>, fid);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        JNU_ThrowIOException(env, <span class="string">"Stream Closed"</span>);</span><br><span class="line">        nread = <span class="number">-1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nread = (jint)IO_Read(fd, buf, len);</span><br><span class="line">        <span class="keyword">if</span> (nread &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            (*env)-&gt;SetByteArrayRegion(env, bytes, off, nread, (jbyte *)buf);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_ERR) &#123;</span><br><span class="line">            JNU_ThrowIOExceptionWithLastError(env, <span class="string">"Read error"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_INTR) &#123;</span><br><span class="line">            JNU_ThrowByName(env, <span class="string">"java/io/InterruptedIOException"</span>, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">/* EOF */</span></span><br><span class="line">            nread = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (buf != stackBuf) &#123;</span><br><span class="line">        <span class="built_in">free</span>(buf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>FileChannel.read()</code> 方法，会有两种情况。</p>
-<ul>
-<li><code>read</code> 传入的是 <code>DirectByteBuffer</code>，因为堆外内存一般不会 GC（什么时候GC？TODO），所以有固定的内存地址，不需要先复制到临时内存中。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存。</li>
-<li><code>read</code> 传入的是 <code>ByteBuffer</code>，需要先存储到临时的堆外内存，再拷贝到堆内内存。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存 —&gt; Java 堆外内存。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(FileDescriptor var0, ByteBuffer var1, <span class="keyword">long</span> var2, NativeDispatcher var4)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (var1.isReadOnly()) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Read-only buffer"</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (var1 <span class="keyword">instanceof</span> DirectBuffer) &#123; <span class="comment">// 如果是堆外内存，不需要申请暂时的内存区域</span></span><br><span class="line">    <span class="keyword">return</span> readIntoNativeBuffer(var0, var1, var2, var4);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> var7;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">int</span> var6 = readIntoNativeBuffer(var0, var5, var2, var4);</span><br><span class="line">      var5.flip();</span><br><span class="line">      <span class="keyword">if</span> (var6 &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        var1.put(var5);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      var7 = var6;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      Util.offerFirstTemporaryDirectBuffer(var5);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var7;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="mmap-原理"><a href="#mmap-原理" class="headerlink" title="mmap 原理"></a>mmap 原理</h1><h2 id="创建和读写过程"><a href="#创建和读写过程" class="headerlink" title="创建和读写过程"></a>创建和读写过程</h2><p><code>mmap</code> 系统调用，会建立一个 <code>vm_area_struct</code> 的数据结构，这个数据结构表示了进程虚拟地址空间中的一段，它把磁盘文件的区域和虚拟地址空间中的一段连接了起来。但是这时候物理内存中还是没有内容的，而 mmu 是在虚拟地址空间和物理内存地址之间建立映射的。</p>
-<p>在访问到这段虚拟地址空间时，由于只是建立了映射，而实际的页面还没有放置到页框中，所以会产生一个缺页中断陷入内核，然后会首先在硬盘的swap页面中寻找这个页面是否被交换出去，如果没有找到这个页面，那么会依照mmap建立的vm_area_struct这个数据结构把磁盘中的文件读到物理内存中，这样就可以访问了。</p>
-<p>所以，使用 <code>mmap</code> 经历的拷贝过程：磁盘 —&gt; Java 堆外内存。</p>
-<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><p><code>mmap</code> 创建的堆外内存，不会受 <code>-XX:MaxDirectMemorySize</code> 限制。</p>
-<p>这个参数只有在使用 <code>ByteBuffer.allocateDirect</code> 的时候，才会检查，而在使用 <code>allocateMemory</code> JNI 方法和 <code>mmap</code> 的时候，不会检查。</p>
-<p>但是 <code>mmap</code> 一次的大小不能超过 <code>Integer.MAX_INT</code> （约 2 G）。因为 <code>mmap</code> 最后会调用如下的 JNI 方法，其中的地址会被转为 int。猜测是因为 Java 为了跨平台，并不知道平台是 32 G 还是 64 G的。</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span>* <span class="title">addr_from_java</span><span class="params">(jlong addr)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// This assert fails in a variety of ways on 32-bit systems.</span></span><br><span class="line">  <span class="comment">// It is impossible to predict whether native code that converts</span></span><br><span class="line">  <span class="comment">// pointers to longs will sign-extend or zero-extend the addresses.</span></span><br><span class="line">  <span class="comment">//assert(addr == (uintptr_t)addr, "must not be odd high bits");</span></span><br><span class="line">  <span class="comment">//转换为int</span></span><br><span class="line">  <span class="keyword">return</span> (<span class="keyword">void</span>*)(<span class="keyword">uintptr_t</span>)addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1 id="文件拷贝与-FileChannel-transformTo"><a href="#文件拷贝与-FileChannel-transformTo" class="headerlink" title="文件拷贝与 FileChannel.transformTo"></a>文件拷贝与 FileChannel.transformTo</h1><ul>
-<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/">通过零拷贝实现有效数据传输</a></li>
-</ul>
-<p>把数据从一个文件拷贝到另外一个文件。</p>
-<p>传统的数据传输，需要先调用 <code>in.read()</code>，在调用 <code>out.write()</code>。需要 4 次拷贝、4 次内核/用户态切换。磁盘 —&gt; 读内核页缓冲区 —&gt; 用户空间 —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
-<p>传统方法的数据拷贝：</p>
-<p><img src="/images/传统-拷贝.gif" alt="传统-拷贝"></p>
-<p>传统方法的上下文切换：</p>
-<p><img src="/images/传统-上下文切换.gif" alt="传统-上下文切换"></p>
-<p>而 <code>FileChannel.transformTo</code> 可以无需 用户空间的接入，之即完成数据的传输。需要 3 次拷贝、2次切换：磁盘 —&gt; 读内核页缓冲区  —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
-<p>这个操作依赖底层操作系统对零拷贝的支持；在 UNIX 和各种 Linux 系统中，此调用被传递到 <code>sendfile()</code> 系统调用中。</p>
-<p>transformTo 的数据拷贝：</p>
-<p><img src="/images/transferTo-拷贝.gif" alt="transferTo-拷贝"></p>
-<p>transformTo 的上下文切换：</p>
-<p><img src="/images/transferTo-上下文切换.gif" alt="transferTo-上下文切换"></p>
-<p>如果底层网络接口卡支持<em>收集操作</em> 的话，那么我们就可以进一步减少内核的数据复制。在 Linux 内核 2.4 及后期版本中，套接字缓冲区描述符就做了相应调整，以满足该需求。需要2次拷贝、2次切换。</p>
-<p>transformTo + 收集 的数据拷贝：</p>
-<p><img src="/images/transferTo-拷贝2.gif" alt="transferTo-拷贝2"></p>
-]]></content>
-      <categories>
-        <category>java</category>
-        <category>io</category>
-      </categories>
-      <tags>
-        <tag>io</tag>
         <tag>java</tag>
       </tags>
   </entry>
@@ -6786,6 +6723,89 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>FileChannel与内存映射文件</title>
+    <url>/2020/java/io/%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76">jdk/src/share/native/java/io/io_util.c</a></li>
+<li><a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html">JNIFunctions</a></li>
+<li><a href="https://www.jianshu.com/p/a23ca155f949">Java文件NIO读取的本质——FileInputStream与FileChannel对比</a></li>
+<li><a href="https://www.zhihu.com/question/48161206/answer/110863886">Linux 中 mmap() 函数的内存映射问题理解？</a></li>
+<li><a href="https://blog.csdn.net/zhxdick/article/details/81130102">JDK核心JAVA源码解析（5） - JAVA File MMAP原理解析</a></li>
+<li><a href="https://blog.csdn.net/yangguosb/article/details/77891275">Linux零拷贝之mmap</a></li>
+<li><a href="https://zhuanlan.zhihu.com/p/91507035">Java网络编程与NIO详解8：浅析mmap和Direct Buffer</a></li>
+<li><a href="https://www.cnkirito.moe/file-io-best-practise/">文件 IO 操作的一些最佳实践</a></li>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/">通过零拷贝实现有效数据传输</a></li>
+</ul>
+<h1 id="FileChannel-基本用法"><a href="#FileChannel-基本用法" class="headerlink" title="FileChannel 基本用法"></a>FileChannel 基本用法</h1><h2 id="创建-FileChannel"><a href="#创建-FileChannel" class="headerlink" title="创建 FileChannel"></a>创建 FileChannel</h2><p>使用 <code>FileChannel.open</code> 创建。</p>
+<p>其中 <code>OpenOption</code> 可以有：</p>
+<ul>
+<li>READ</li>
+<li>WRITE</li>
+<li>APPEND</li>
+<li>CREATE：如果文件不存在，则创建一个。</li>
+<li>CREATE_NEW：创建文件，如果存在抛出异常。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">FileChannel ch = FileChannel.open(Path path, OpenOption... options);</span><br></pre></td></tr></table></figure>
+<p>也可以从 <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 中通过 <code>getChannel()</code> 方法得到。<br>这种 channel 的文件描述符和  <code>FileInputStream</code> 或 <code>RandomAccessFile</code> 使用的是同一个，文件指针位置也是共享的。</p>
+<h2 id="读写数据"><a href="#读写数据" class="headerlink" title="读写数据"></a>读写数据</h2><p>主要通过 <code>read()</code> 和 <code>write</code> 方法操作数据。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">read</span><span class="params">(ByteBuffer dst)</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">write</span><span class="params">(ByteBuffer src)</span> <span class="keyword">throws</span> IOException</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="mmap-读写数据"><a href="#mmap-读写数据" class="headerlink" title="mmap 读写数据"></a>mmap 读写数据</h2><p>可以通过 <code>ch.map()</code> 方法建立一个内存映射文件的 <code>DirectByteBuffer</code>。</p>
+<p>通过 <code>buffer.get()</code> 和 <code>buffer.put()</code> 方法操作 <code>ByteBuffer</code> 的方式来读写文件。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ByteBuffer buffer = ch.map(FileChannel.MapMode.READ_WRITE, <span class="number">0</span>, Integer.MAX_VALUE);</span><br><span class="line">buffer.put(<span class="number">1</span>);</span><br><span class="line">buffer.put(<span class="string">'h'</span>);</span><br><span class="line">buffer.put(<span class="string">"hello"</span>.getBytes(StandardCharset.UTF_8));</span><br></pre></td></tr></table></figure>
+<h2 id="Transform-数据"><a href="#Transform-数据" class="headerlink" title="Transform 数据"></a>Transform 数据</h2><p>通过 <code>transformFrom()</code> 和 <code>transformTo()</code> 把数据 从其他通道写入到该通道/从该通道写入到其他通道。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferFrom</span><span class="params">(ReadableByteChannel src,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">long</span> position, <span class="keyword">long</span> count)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">long</span> <span class="title">transferTo</span><span class="params">(<span class="keyword">long</span> position, <span class="keyword">long</span> count,</span></span></span><br><span class="line"><span class="function"><span class="params">                                WritableByteChannel target)</span></span></span><br></pre></td></tr></table></figure>
+<h1 id="读取文件的拷贝次数"><a href="#读取文件的拷贝次数" class="headerlink" title="读取文件的拷贝次数"></a>读取文件的拷贝次数</h1><h2 id="内核的页缓冲"><a href="#内核的页缓冲" class="headerlink" title="内核的页缓冲"></a>内核的页缓冲</h2><p>正常的文件读写，需要使用系统调用 <code>read()</code> 和 <code>write()</code>。</p>
+<p>在内核有数据的页缓冲区。在读写数据时（以读数据为例），<code>read()</code> 系统调用首先到页缓冲区中看是否有足够的数据。</p>
+<ul>
+<li>如果没有，则去文件中，把数据拷贝到页缓冲区。</li>
+<li>如果有，则直接从页缓冲区拷贝用户空间。</li>
+</ul>
+<h2 id="堆外内存到堆内内存"><a href="#堆外内存到堆内内存" class="headerlink" title="堆外内存到堆内内存"></a>堆外内存到堆内内存</h2><p>在 Java 中读写数据时，因为系统调用 <code>read()</code> 和 <code>write</code>，需要提供要操作的内存地址。而 Java 的堆内内存的变量的内存地址是不固定的，在一次 GC 中，可能进行重排/复制等操作。所以读取数据，需要先创建一个临时的内存区域来加载数据，再从临时区域拷贝到堆内内存。</p>
+<p><code>FileInputStream.read()</code>  调用 native 的 <a href="http://hg.openjdk.java.net/jdk7/jdk7/jdk/file/9b8c96f96a0f/src/share/native/java/io/io_util.c#l76">readBytes 方法</a>。可以看到，在 JNI 方法中，申请了一块 <code>buf</code> 字符数组，读取数据后，使用 <a href="http://jikesrvm.sourceforge.net/apidocs/latest/org/jikesrvm/jni/JNIFunctions.html">env.SetByteArrayRegion</a> 把 <code>buf</code> 内容拷贝 Java 的 byteArray中。</p>
+<p>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; JNI 临时内存 —&gt; Java 堆内内存。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">jint</span><br><span class="line">readBytes(JNIEnv *env, jobject <span class="keyword">this</span>, jbyteArray bytes,</span><br><span class="line">          jint off, jint len, jfieldID fid)</span><br><span class="line">&#123;</span><br><span class="line">    jint nread;</span><br><span class="line">    <span class="keyword">char</span> stackBuf[BUF_SIZE];</span><br><span class="line">    <span class="keyword">char</span> *buf = <span class="literal">NULL</span>;</span><br><span class="line">    FD fd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (len &gt; BUF_SIZE) &#123;</span><br><span class="line">        buf = <span class="built_in">malloc</span>(len);</span><br><span class="line">        <span class="keyword">if</span> (buf == <span class="literal">NULL</span>) &#123;</span><br><span class="line">            JNU_ThrowOutOfMemoryError(env, <span class="literal">NULL</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buf = stackBuf;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    fd = GET_FD(<span class="keyword">this</span>, fid);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        JNU_ThrowIOException(env, <span class="string">"Stream Closed"</span>);</span><br><span class="line">        nread = <span class="number">-1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        nread = (jint)IO_Read(fd, buf, len);</span><br><span class="line">        <span class="keyword">if</span> (nread &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            (*env)-&gt;SetByteArrayRegion(env, bytes, off, nread, (jbyte *)buf);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_ERR) &#123;</span><br><span class="line">            JNU_ThrowIOExceptionWithLastError(env, <span class="string">"Read error"</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (nread == JVM_IO_INTR) &#123;</span><br><span class="line">            JNU_ThrowByName(env, <span class="string">"java/io/InterruptedIOException"</span>, <span class="literal">NULL</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123; <span class="comment">/* EOF */</span></span><br><span class="line">            nread = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (buf != stackBuf) &#123;</span><br><span class="line">        <span class="built_in">free</span>(buf);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> nread;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>FileChannel.read()</code> 方法，会有两种情况。</p>
+<ul>
+<li><code>read</code> 传入的是 <code>DirectByteBuffer</code>，因为堆外内存一般不会 GC（什么时候GC？TODO），所以有固定的内存地址，不需要先复制到临时内存中。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存。</li>
+<li><code>read</code> 传入的是 <code>ByteBuffer</code>，需要先存储到临时的堆外内存，再拷贝到堆内内存。<br>经历的拷贝过程：磁盘 —&gt; 内核页缓冲 —&gt; Java 堆外内存 —&gt; Java 堆外内存。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">read</span><span class="params">(FileDescriptor var0, ByteBuffer var1, <span class="keyword">long</span> var2, NativeDispatcher var4)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (var1.isReadOnly()) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Read-only buffer"</span>);</span><br><span class="line">  &#125; <span class="keyword">else</span> <span class="keyword">if</span> (var1 <span class="keyword">instanceof</span> DirectBuffer) &#123; <span class="comment">// 如果是堆外内存，不需要申请暂时的内存区域</span></span><br><span class="line">    <span class="keyword">return</span> readIntoNativeBuffer(var0, var1, var2, var4);</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    ByteBuffer var5 = Util.getTemporaryDirectBuffer(var1.remaining());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> var7;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      <span class="keyword">int</span> var6 = readIntoNativeBuffer(var0, var5, var2, var4);</span><br><span class="line">      var5.flip();</span><br><span class="line">      <span class="keyword">if</span> (var6 &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        var1.put(var5);</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      var7 = var6;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">      Util.offerFirstTemporaryDirectBuffer(var5);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> var7;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="mmap-原理"><a href="#mmap-原理" class="headerlink" title="mmap 原理"></a>mmap 原理</h1><h2 id="创建和读写过程"><a href="#创建和读写过程" class="headerlink" title="创建和读写过程"></a>创建和读写过程</h2><p><code>mmap</code> 系统调用，会建立一个 <code>vm_area_struct</code> 的数据结构，这个数据结构表示了进程虚拟地址空间中的一段，它把磁盘文件的区域和虚拟地址空间中的一段连接了起来。但是这时候物理内存中还是没有内容的，而 mmu 是在虚拟地址空间和物理内存地址之间建立映射的。</p>
+<p>在访问到这段虚拟地址空间时，由于只是建立了映射，而实际的页面还没有放置到页框中，所以会产生一个缺页中断陷入内核，然后会首先在硬盘的swap页面中寻找这个页面是否被交换出去，如果没有找到这个页面，那么会依照mmap建立的vm_area_struct这个数据结构把磁盘中的文件读到物理内存中，这样就可以访问了。</p>
+<p>所以，使用 <code>mmap</code> 经历的拷贝过程：磁盘 —&gt; Java 堆外内存。</p>
+<h2 id="限制"><a href="#限制" class="headerlink" title="限制"></a>限制</h2><p><code>mmap</code> 创建的堆外内存，不会受 <code>-XX:MaxDirectMemorySize</code> 限制。</p>
+<p>这个参数只有在使用 <code>ByteBuffer.allocateDirect</code> 的时候，才会检查，而在使用 <code>allocateMemory</code> JNI 方法和 <code>mmap</code> 的时候，不会检查。</p>
+<p>但是 <code>mmap</code> 一次的大小不能超过 <code>Integer.MAX_INT</code> （约 2 G）。因为 <code>mmap</code> 最后会调用如下的 JNI 方法，其中的地址会被转为 int。猜测是因为 Java 为了跨平台，并不知道平台是 32 G 还是 64 G的。</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">inline</span> <span class="keyword">void</span>* <span class="title">addr_from_java</span><span class="params">(jlong addr)</span> </span>&#123;</span><br><span class="line">  <span class="comment">// This assert fails in a variety of ways on 32-bit systems.</span></span><br><span class="line">  <span class="comment">// It is impossible to predict whether native code that converts</span></span><br><span class="line">  <span class="comment">// pointers to longs will sign-extend or zero-extend the addresses.</span></span><br><span class="line">  <span class="comment">//assert(addr == (uintptr_t)addr, "must not be odd high bits");</span></span><br><span class="line">  <span class="comment">//转换为int</span></span><br><span class="line">  <span class="keyword">return</span> (<span class="keyword">void</span>*)(<span class="keyword">uintptr_t</span>)addr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="文件拷贝与-FileChannel-transformTo"><a href="#文件拷贝与-FileChannel-transformTo" class="headerlink" title="文件拷贝与 FileChannel.transformTo"></a>文件拷贝与 FileChannel.transformTo</h1><ul>
+<li><a href="https://www.ibm.com/developerworks/cn/java/j-zerocopy/">通过零拷贝实现有效数据传输</a></li>
+</ul>
+<p>把数据从一个文件拷贝到另外一个文件。</p>
+<p>传统的数据传输，需要先调用 <code>in.read()</code>，在调用 <code>out.write()</code>。需要 4 次拷贝、4 次内核/用户态切换。磁盘 —&gt; 读内核页缓冲区 —&gt; 用户空间 —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
+<p>传统方法的数据拷贝：</p>
+<p><img src="/images/传统-拷贝.gif" alt="传统-拷贝"></p>
+<p>传统方法的上下文切换：</p>
+<p><img src="/images/传统-上下文切换.gif" alt="传统-上下文切换"></p>
+<p>而 <code>FileChannel.transformTo</code> 可以无需 用户空间的接入，之即完成数据的传输。需要 3 次拷贝、2次切换：磁盘 —&gt; 读内核页缓冲区  —&gt; 写内核页缓冲区 —&gt; 写入磁盘。</p>
+<p>这个操作依赖底层操作系统对零拷贝的支持；在 UNIX 和各种 Linux 系统中，此调用被传递到 <code>sendfile()</code> 系统调用中。</p>
+<p>transformTo 的数据拷贝：</p>
+<p><img src="/images/transferTo-拷贝.gif" alt="transferTo-拷贝"></p>
+<p>transformTo 的上下文切换：</p>
+<p><img src="/images/transferTo-上下文切换.gif" alt="transferTo-上下文切换"></p>
+<p>如果底层网络接口卡支持<em>收集操作</em> 的话，那么我们就可以进一步减少内核的数据复制。在 Linux 内核 2.4 及后期版本中，套接字缓冲区描述符就做了相应调整，以满足该需求。需要2次拷贝、2次切换。</p>
+<p>transformTo + 收集 的数据拷贝：</p>
+<p><img src="/images/transferTo-拷贝2.gif" alt="transferTo-拷贝2"></p>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>io</category>
+      </categories>
+      <tags>
+        <tag>io</tag>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>I/O流相关类</title>
     <url>/2020/java/io/io%E6%B5%81/</url>
     <content><![CDATA[<h1 id="I-O-流相关类"><a href="#I-O-流相关类" class="headerlink" title="I/O 流相关类"></a>I/O 流相关类</h1><h2 id="0-引用"><a href="#0-引用" class="headerlink" title="0. 引用"></a>0. 引用</h2><ul>
@@ -6988,6 +7008,246 @@ class AbstractStringBuilder {
       </tags>
   </entry>
   <entry>
+    <title>1. Java内存区域</title>
+    <url>/2020/java/jvm/1Java%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li>《深入理解 Java 虚拟机 - 第三版》</li>
+</ul>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>JVM 在执行 Java 程序过程中，所管理的内存区域如下图，共有两类：</p>
+<ol>
+<li><p>由所有线程共享的数据区。随虚拟机进程的启动而一直存在。</p>
+</li>
+<li><p>线程隔离的数据区。依赖用户线程的启动和结束而建立和销毁。</p>
+</li>
+</ol>
+<p><img src="/images/JVM内存运行时数据区.svg" alt="JVM内存运行时数据区"></p>
+<h1 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h1><p>当前线程所执行的字节码指令的行号指示器。</p>
+<p>较小的内存空间。</p>
+<ul>
+<li>如果线程正在执行的是 Java 方法，它记录正在执行的虚拟机字节码指令的地址。</li>
+<li>如果线程正在执行的是本地 native 方法，它的值为空（undefined）。</li>
+</ul>
+<h2 id="Java-虚拟机栈"><a href="#Java-虚拟机栈" class="headerlink" title="Java 虚拟机栈"></a>Java 虚拟机栈</h2><p>每个 Java 方法被执行时，JVM 会创建一个栈帧，存储局部变量表、操作数栈、动态连结、方法出口等信息。</p>
+<p>方法从被调用到执行完毕的过程，对应栈帧在虚拟机栈中从入栈到出栈的过程。</p>
+<h2 id="局部变量表"><a href="#局部变量表" class="headerlink" title="局部变量表"></a>局部变量表</h2><p>局部变量表存放了</p>
+<ul>
+<li>基本数据类型</li>
+<li>对象引用</li>
+<li>returnAddress 类型（指向一条字节码指令的地址）</li>
+</ul>
+<p>它的存储空间使用局部变量槽（Slot）来表示，64 位的 <code>long</code> <code>double</code> 占用两个变量槽。</p>
+<p>局部变量表所需的内存空间，在编译期间就完成了分配。</p>
+<h2 id="异常"><a href="#异常" class="headerlink" title="异常"></a>异常</h2><p>分配的栈过多、或栈的内存使用太多，会导致新的栈帧内存无法分配时，HotSpot 虚拟机都会抛出 <code>StackOverflowError</code>。</p>
+<h2 id="JVM-参数"><a href="#JVM-参数" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
+<li>-Xss：栈容量。</li>
+<li>-Xoss：本地方法栈容量。HotSpot 虚拟机不区分两个栈，所以这个参数没有用。</li>
+</ul>
+<h1 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h1><p>与 Java 虚拟机栈类似，为虚拟机使用到的本地 native 方法服务。</p>
+<p>《Java 虚拟机规范》没有强制规定如何实现本地方法栈。HotSpot 虚拟机中，直接把 Java 虚拟机栈 和 本地方法栈合二为一。</p>
+<h1 id="Java-堆"><a href="#Java-堆" class="headerlink" title="Java 堆"></a>Java 堆</h1><p>唯一目的：存放对象实例。是垃圾收集器管理的内存区域。</p>
+<h2 id="对象的创建"><a href="#对象的创建" class="headerlink" title="对象的创建"></a>对象的创建</h2><ol>
+<li>执行字节码 <code>new</code> 指令。<ol>
+<li>类加载检查。<ol>
+<li>检查指令的参数能否在常量池中定位到类的符号引用。</li>
+<li>进行类的加载、解析、初始化。（如果没有进行的话）。</li>
+</ol>
+</li>
+<li>为对象分配内存。<ul>
+<li>大小在类加载完成后可以完全确定。</li>
+<li>如果保证多个对象分配的线程安全？<ul>
+<li>CAS + 重试保证原子性更新。</li>
+<li>本地线程分配缓冲（Thread local Allocation Buffer，TLAB）。每个线程在 Java 堆中预先分配一块内存。分配内存现在线程的 TLAB 上进行，只有用完了，才去锁定。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>将分配来的内存空间（除了对象头）初始化为零。</li>
+<li>在对象头中设置必要的信息。</li>
+</ol>
+</li>
+<li>执行 <code>&lt;init&gt;()</code> 方法，即构造函数。</li>
+</ol>
+<h2 id="对象的内存布局"><a href="#对象的内存布局" class="headerlink" title="对象的内存布局"></a>对象的内存布局</h2><ol>
+<li>对象头部信息。<ol>
+<li>Mark Word。对象自身运行时信息。对象哈希码、对象分代年龄、锁的信息。</li>
+<li>类型指针。指向它的元数据的指针。</li>
+<li>如果是 Java 数组，还需记录数组长度。</li>
+</ol>
+</li>
+<li>实例数据部分。</li>
+<li>对齐填充。<ol>
+<li>HotSpot 虚拟机要求对象起始地址必须是 8 字节的整数倍。</li>
+</ol>
+</li>
+</ol>
+<h2 id="对象的访问定位"><a href="#对象的访问定位" class="headerlink" title="对象的访问定位"></a>对象的访问定位</h2><p>两种主流方式。</p>
+<ul>
+<li>句柄。Java 堆中分出一块内存作为句柄池。reference 存储的是对象的句柄地址。句柄包含了对象实例数据的地址、类型数据的地址。<ul>
+<li>这种方式，不需要对象头存储类型指针。</li>
+</ul>
+</li>
+<li>直接指针。reference 直接指向对象实例数据的地址，类型数据的地址存储在对象头的类型指针中。HotSpot 使用这种方式。</li>
+</ul>
+<h2 id="异常-1"><a href="#异常-1" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code> 。</p>
+<h2 id="JVM-参数-1"><a href="#JVM-参数-1" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
+<li>堆的最小值：-Xms</li>
+<li>堆的最大值：-Xmx</li>
+</ul>
+<h1 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h1><p>存储被虚拟机加载的类型信息、常量、静态变量、即时编译器编译后的代码缓存等。</p>
+<h2 id="运行时常量池"><a href="#运行时常量池" class="headerlink" title="运行时常量池"></a>运行时常量池</h2><p>包含</p>
+<ul>
+<li>.class 文件中包含 编译时生成的字面量、符号引用。</li>
+<li>运行期间放入的新的常量，例如 <code>String.intern()</code>。</li>
+</ul>
+<h2 id="从永久代到元空间"><a href="#从永久代到元空间" class="headerlink" title="从永久代到元空间"></a>从永久代到元空间</h2><p>在 JDK 7 以前，HotSpot 虚拟机使用永久代来实现方法区。把收集器的分代设计扩展到了方法区。</p>
+<p>在 JDK 7 把字符串常量池、静态变量移到堆中。</p>
+<p>在 JDK 8 把剩余内容（主要是类型信息）移到本地 native 内存的元空间中。</p>
+<h2 id="异常-2"><a href="#异常-2" class="headerlink" title="异常"></a>异常</h2><p><code>OutOfMemoryError</code>。</p>
+<h2 id="JVM-参数-2"><a href="#JVM-参数-2" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><p>永久代大小（只对JDK 6、JDK 7中除字符串常量池、静态变量部分有效）</p>
+<ul>
+<li>-XX:PermSize 和 -XX:MaxPermSize。限制永久代的大小。</li>
+</ul>
+<p>元空间大小（只对JDK 8中类型信息）</p>
+<ul>
+<li>-XX:MaxMetaspaceSize。最大值。</li>
+<li>-XX:MinMetaspaceSize。最小值。</li>
+<li>-XX:MetaspaceSize。初始大小。</li>
+</ul>
+<h1 id="直接内存"><a href="#直接内存" class="headerlink" title="直接内存"></a>直接内存</h1><p>不是 《Java 虚拟机规范》 定义的内存区域。</p>
+<p>使用 native 函数 <code>unsafe.allocateMemory()</code> 分配的内存，直接在堆外分配。</p>
+<p>通过 Java 堆里的 <code>DirectByeteBuffer</code> 作为这块内存的引用进行操作。</p>
+<h2 id="异常-3"><a href="#异常-3" class="headerlink" title="异常"></a>异常</h2><ul>
+<li><p>使用  <code>ByeteBuffer.allocateDirect()</code> ，会抛出 <code>OutOfMemoryError:Direct buffer memory</code>。是在 Java 代码中，在向操作系统申请内存前，手动检查的。</p>
+</li>
+<li><p>使用 <code>unsafe.allocateMemory()</code>，会抛出 <code>java.lang.OutOfMemoryError\ n t sun.misc.Unsafe.allocateMemory(Native Method)</code>。是在操作系统申请内存时，抛出的。</p>
+</li>
+</ul>
+<h2 id="JVM-参数-3"><a href="#JVM-参数-3" class="headerlink" title="JVM 参数"></a>JVM 参数</h2><ul>
+<li>-XX:MaxDirectMemorySize。只在 <code>ByeteBuffer.allocateDirect()</code> 手动检查时使用。<code>unsafe</code> 分配不受它的限制。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>jvm</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>jvm</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HashMap源码分析</title>
+    <url>/2020/java/basic/HashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://segmentfault.com/a/1190000015798586">深入理解HashMap: 关键源码逐行分析之hash算法</a></li>
+</ul>
+<h1 id="组成"><a href="#组成" class="headerlink" title="组成"></a>组成</h1><h2 id="节点"><a href="#节点" class="headerlink" title="节点"></a>节点</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    V value;</span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>节点 <code>Node</code> 存储：</p>
+<ul>
+<li>基本：hash 值、key值、value值。</li>
+<li>多个值存在一个位置：链表 <code>next</code>。</li>
+</ul>
+<h2 id="table"><a href="#table" class="headerlink" title="table"></a>table</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">Node&lt;K,V&gt;[] table;</span><br></pre></td></tr></table></figure>
+<p>节点存储在 <code>Node</code> 数组中。</p>
+<h2 id="节点的-key-如何映射到-table-的下标"><a href="#节点的-key-如何映射到-table-的下标" class="headerlink" title="节点的 key 如何映射到 table 的下标"></a>节点的 key 如何映射到 table 的下标</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">hash</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="keyword">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> index = hash(key) &amp; (table.length() - <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
+<ol>
+<li>使用 <code>hash()</code> 函数把 key 的hashCode 再进行hash。<ul>
+<li>将 hashCode 的高16位和低16位进行异或，充分利用高半位和低半位的信息, 对低位进行了扰动。使该hashCode 映射成数组下标时可以更均匀。</li>
+</ul>
+</li>
+<li>table.length() 为 2 的 m 次幂，把第一步的 hash 值取低 m 位，来作为数组的下标。</li>
+<li>key 可以是 null，这时 hash 值是 0。</li>
+</ol>
+<h2 id="对-key-的要求"><a href="#对-key-的要求" class="headerlink" title="对 key 的要求"></a>对 key 的要求</h2><ul>
+<li><p>哈希。用 <code>hashCode()</code> 方法加一些处理得到 hash 值。</p>
+</li>
+<li><p>相等。用 <code>equals()</code> 比较 hash 值相同的节点。</p>
+</li>
+<li><p>比较。对于红黑树。</p>
+<ul>
+<li><p>如果 key 继承自 <code>Compatable</code> 则用 <code>compareTo()</code> 比较。</p>
+</li>
+<li><p>否则用 <code>System.identityHashCode()</code> 比较。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">tieBreakOrder</span><span class="params">(Object a, Object b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> d;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span> || b == <span class="keyword">null</span> ||</span><br><span class="line">        (d = a.getClass().getName().</span><br><span class="line">         compareTo(b.getClass().getName())) == <span class="number">0</span>)</span><br><span class="line">        d = (System.identityHashCode(a) &lt;= System.identityHashCode(b) ?</span><br><span class="line">             -<span class="number">1</span> : <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> d;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">float</span> DEFAULT_LOAD_FACTOR = <span class="number">0.75f</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAXIMUM_CAPACITY = <span class="number">1</span> &lt;&lt; <span class="number">30</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">if</span> (initialCapacity &lt; <span class="number">0</span>)</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal initial capacity: "</span> + initialCapacity);</span><br><span class="line">  <span class="keyword">if</span> (initialCapacity &gt; MAXIMUM_CAPACITY)</span><br><span class="line">    initialCapacity = MAXIMUM_CAPACITY;</span><br><span class="line">  <span class="keyword">if</span> (loadFactor &lt;= <span class="number">0</span> || Float.isNaN(loadFactor))</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">"Illegal load factor: "</span> + loadFactor);</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = loadFactor;</span><br><span class="line">  <span class="keyword">this</span>.threshold = tableSizeFor(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>(initialCapacity, DEFAULT_LOAD_FACTOR);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">()</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR; <span class="comment">// all other fields defaulted</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>构造函数中只指定了 <code>loadFactor</code> 和 初始容量。</p>
+</li>
+<li><p><code>threshold</code> 有两个作用。</p>
+<ul>
+<li>在创建存储 Node 的数组 <code>table</code> 没有创建时，存储<strong>初始</strong>容量，即随后 <code>table</code> 的长度。</li>
+<li>在 <code>table</code> 创建后，如果负载超过 <code>threshold</code>，进行 <code>resize</code> 扩容。阈值的初始值和变化请看 resize() 源码分析处。</li>
+</ul>
+</li>
+<li><code>table</code> 的长度为 2 的次幂。</li>
+</ul>
+<h2 id="tableSizeFor"><a href="#tableSizeFor" class="headerlink" title="tableSizeFor()"></a>tableSizeFor()</h2><p>如果构造函数指定了 <code>initialCapacity</code>，调用 <code>tableSizeFor</code> 转化为大于等于 <code>initialCapacity</code> 的最小的 2 的次幂。</p>
+<p><code>tableSizeFor</code> 思想是，把 cap 从最右边的 1 开始到最低位，都变为 1。再加 1，即为 2 的 次幂。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">tableSizeFor</span><span class="params">(<span class="keyword">int</span> cap)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n = cap - <span class="number">1</span>; <span class="comment">// 如果 cap 本来就是 2 的次幂，不减 1，经过下面操作后，会变为 2 * cap。</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// n 的最右边至少有一个 1，例如 1XXXX。</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">1</span>;	<span class="comment">// 把 n 的前 2 位都变为 1，例如 11XXX。</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">2</span>; <span class="comment">// 把 n 的前 4 位都变为 1，例如 1111X。</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">4</span>; <span class="comment">// 类似</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">8</span>;	<span class="comment">// 类似</span></span><br><span class="line">  n |= n &gt;&gt;&gt; <span class="number">16</span>; <span class="comment">// 最高位 32 个 1。</span></span><br><span class="line">  <span class="comment">// 以上操作，把 n 转化为每位都是 1。</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// n + 1 后只有最高位为1，为 2 的次幂</span></span><br><span class="line">  <span class="keyword">return</span> (n &lt; <span class="number">0</span>) ? <span class="number">1</span> : (n &gt;= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="putMapEntries"><a href="#putMapEntries" class="headerlink" title="putMapEntries()"></a>putMapEntries()</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">  putMapEntries(m, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">putMapEntries</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m, <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> s = m.size();</span><br><span class="line">    <span class="keyword">if</span> (s &gt; <span class="number">0</span>) &#123; </span><br><span class="line">        <span class="keyword">if</span> (table == <span class="keyword">null</span>) &#123; <span class="comment">// pre-size // 构造函数调用 putMapEntries，一定会进入这个分支。</span></span><br><span class="line">            <span class="keyword">float</span> ft = ((<span class="keyword">float</span>)s / loadFactor) + <span class="number">1.0F</span>;</span><br><span class="line">            <span class="keyword">int</span> t = ((ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY) ?</span><br><span class="line">                     (<span class="keyword">int</span>)ft : MAXIMUM_CAPACITY);</span><br><span class="line">            <span class="keyword">if</span> (t &gt; threshold)</span><br><span class="line">                threshold = tableSizeFor(t);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (s &gt; threshold) <span class="comment">// putAll 调用时，可能会进入这个分支。</span></span><br><span class="line">            resize();</span><br><span class="line">        <span class="keyword">for</span> (Map.Entry&lt;? extends K, ? extends V&gt; e : m.entrySet()) &#123;</span><br><span class="line">            K key = e.getKey();</span><br><span class="line">            V value = e.getValue();</span><br><span class="line">            putVal(hash(key), key, value, <span class="keyword">false</span>, evict);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>除此之外，还有第 4 个构造函数，把给定 Map 的每个元素使用 <code>putVal()</code> 加入本 HashMap 中。</p>
+<p>构造函数调用 <code>putMapEntries</code>，只会进入第一个分支。把初始容量变为 <code>要加入元素个数 / loadFactor</code>。</p>
+<h1 id="resize"><a href="#resize" class="headerlink" title="resize()"></a>resize()</h1><h2 id="触发时机"><a href="#触发时机" class="headerlink" title="触发时机"></a>触发时机</h2><ul>
+<li>初始化<code>table</code> 时。</li>
+<li>元素个数超过 <code>threshold</code> 时进行扩容。</li>
+</ul>
+<h2 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">    <span class="keyword">int</span> oldCap = (oldTab == <span class="keyword">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">    <span class="keyword">int</span> oldThr = threshold;</span><br><span class="line">    <span class="keyword">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 已存在 table，是触发扩容进入 resize() 函数的。</span></span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">            threshold = Integer.MAX_VALUE;</span><br><span class="line">            <span class="keyword">return</span> oldTab;</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">// table.length 加倍</span></span><br><span class="line">      	<span class="comment">// threshold 加倍</span></span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">                 oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">            newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 构造函数指定了 initialCapacity，存储在 threshold中，所以 &gt; 0。</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) </span><br><span class="line">        newCap = oldThr;</span><br><span class="line">    <span class="comment">// 构造函数没有指定 initialCapacity。</span></span><br><span class="line">  	<span class="keyword">else</span> &#123;              </span><br><span class="line">        newCap = DEFAULT_INITIAL_CAPACITY; <span class="comment">// 1 &lt;&lt; 4</span></span><br><span class="line">        newThr = (<span class="keyword">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 从此，threshold 存储的是扩容的阈值。</span></span><br><span class="line">  	<span class="comment">// 初始大小为 table.length * loadFactor</span></span><br><span class="line">    <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">float</span> ft = (<span class="keyword">float</span>)newCap * loadFactor;</span><br><span class="line">        newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="keyword">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">                  (<span class="keyword">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">    &#125;</span><br><span class="line">    threshold = newThr;</span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">    <span class="meta">@SuppressWarnings</span>(&#123;<span class="string">"rawtypes"</span>,<span class="string">"unchecked"</span>&#125;)</span><br><span class="line">    Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> Node[newCap];</span><br><span class="line">    table = newTab;</span><br><span class="line">    <span class="keyword">if</span> (oldTab != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; oldCap; ++j) &#123; <span class="comment">// 把每个元素插入新的 table 中。</span></span><br><span class="line">            Node&lt;K,V&gt; e;</span><br><span class="line">            <span class="keyword">if</span> ((e = oldTab[j]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                oldTab[j] = <span class="keyword">null</span>;</span><br><span class="line">                <span class="keyword">if</span> (e.next == <span class="keyword">null</span>)	<span class="comment">// 如果存储桶里只有一个元素，直接插入对应位置。</span></span><br><span class="line">                    newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 如果存储桶里是红黑树，拆分树。TODO</span></span><br><span class="line">                    ((TreeNode&lt;K,V&gt;)e).split(<span class="keyword">this</span>, newTab, j, oldCap);</span><br><span class="line">                <span class="keyword">else</span> &#123; <span class="comment">// 如果存储桶里是链表，拆分链表</span></span><br><span class="line">                    Node&lt;K,V&gt; loHead = <span class="keyword">null</span>, loTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; hiHead = <span class="keyword">null</span>, hiTail = <span class="keyword">null</span>;</span><br><span class="line">                    Node&lt;K,V&gt; next;</span><br><span class="line">                    <span class="keyword">do</span> &#123;</span><br><span class="line">                        next = e.next;</span><br><span class="line">                        <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (loTail == <span class="keyword">null</span>)</span><br><span class="line">                                loHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                loTail.next = e;</span><br><span class="line">                            loTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">else</span> &#123;</span><br><span class="line">                            <span class="keyword">if</span> (hiTail == <span class="keyword">null</span>)</span><br><span class="line">                                hiHead = e;</span><br><span class="line">                            <span class="keyword">else</span></span><br><span class="line">                                hiTail.next = e;</span><br><span class="line">                            hiTail = e;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125; <span class="keyword">while</span> ((e = next) != <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (loTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        loTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j] = loHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (hiTail != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        hiTail.next = <span class="keyword">null</span>;</span><br><span class="line">                        newTab[j + oldCap] = hiHead;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第一部分-容量和阈值的变化"><a href="#第一部分-容量和阈值的变化" class="headerlink" title="第一部分 容量和阈值的变化"></a>第一部分 容量和阈值的变化</h3><p>容量指 <code>table</code> 数组的长度。</p>
+<p>阈值指 <code>threshold</code>。</p>
+<p>两种情况</p>
+<ul>
+<li>在 <code>table</code> 还没有创建时：<ul>
+<li>容量为构造函数传入的初始容量或默认值（16）。</li>
+<li>阈值为容量 * loadFactor。</li>
+</ul>
+</li>
+<li>在 <code>table</code> 还没有创建时：<ul>
+<li>容量为原容量的 2 倍。</li>
+<li>阈值为原阈值的 2 倍。</li>
+</ul>
+</li>
+</ul>
+<h3 id="第二部分-红黑树拆分"><a href="#第二部分-红黑树拆分" class="headerlink" title="第二部分 红黑树拆分"></a>第二部分 红黑树拆分</h3><p>拆成两棵红黑树。</p>
+<p>并检查每一棵红黑树的节点数，如果节点数少于阈值，转成树。</p>
+<h3 id="第三部分-链表拆分"><a href="#第三部分-链表拆分" class="headerlink" title="第三部分 链表拆分"></a>第三部分 链表拆分</h3><ul>
+<li><code>e.hash &amp; oldCap == 0</code> 的节点组成 low 链表，存入 <code>newTable[j]</code> 位置。</li>
+<li><code>e.hash &amp; oldCap != 0</code> 的节点组成 high 链表，存入 <code>newTable[j + oldCap]</code> 位置。</li>
+</ul>
+<p>原因如下。</p>
+<p>假设 <code>oldCap = 16 = 0b1_0000</code>，存储在 <code>j</code> 处的元素是 <code>j = e.hash &amp; 0b0_1111</code>。</p>
+<p>扩容后 <code>newCap = 16 * 2 = 0b10_0000</code>，节点的下标是 <code>e.hash &amp; 0b1_1111</code>。</p>
+<ul>
+<li>如果 <code>e.hash</code> 的第 5 位是 0，则 <code>e.hash &amp; 0b1_1111</code> 与 <code>e.hash &amp; 0b0_1111</code> 相等，所以还存储在 <code>j</code> 处。</li>
+<li>如果 <code>e.hash</code> 的第 5 位是1，则 <code>e.hash &amp; 0b1_1111</code> 与 <code>(e.hash &amp; 0b0_1111) + 0b1_0000</code>相等，所以存储在 <code>j + oldCap</code> 处。</li>
+</ul>
+<h1 id="put"><a href="#put" class="headerlink" title="put()"></a>put()</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">put</span><span class="params">(K key, V value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">  	<span class="comment">// 构造函数没有初始化 table。</span></span><br><span class="line">  	<span class="comment">// 因此，第一次 put，会在这里初始化 table。</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">  	<span class="comment">// 如果对应的桶里没有元素，直接加进去。</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">      </span><br><span class="line">      	<span class="comment">// 找这个桶里，与 key 相同的元素，赋值给 e。</span></span><br><span class="line">      	<span class="comment">// 没有找到，就创建一个节点，插入到桶的链表/红黑树里，e 为 null。</span></span><br><span class="line">      </span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp; <span class="comment">// 如果桶里只有一个元素，且 key 相同，找到 e 了。</span></span><br><span class="line">            ((k = p.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 在红黑树里找。</span></span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="keyword">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// 在链表里找。</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> binCount = <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="keyword">null</span>) &#123; <span class="comment">// 整个链表都没有找到，创建一个节点加入链表。</span></span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// 节点数目大于等于 8 个，扩容或变为红黑树。</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;	<span class="comment">// 在链表中找到 e 了。</span></span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      </span><br><span class="line">        <span class="keyword">if</span> (e != <span class="keyword">null</span>) &#123; <span class="comment">// 如果找到了之前存在的节点，更新值。</span></span><br><span class="line">            V oldValue = e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="keyword">null</span>) <span class="comment">// onlyIfAbsent 只有putIfAbsent调用时是true</span></span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e); <span class="comment">// 只有 LinkedHashMap 时有用，HashMap 中 afterNodeAccess 是空的。</span></span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  </span><br><span class="line">  	<span class="comment">// 只有新建节点会到这里</span></span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold) <span class="comment">// 如果元素数目多于阈值，扩容。</span></span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict); <span class="comment">// 只有 LinkedHashMap 时有用</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">treeifyBin</span><span class="params">(Node&lt;K,V&gt;[] tab, <span class="keyword">int</span> hash)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> n, index; Node&lt;K,V&gt; e;</span><br><span class="line">  <span class="keyword">if</span> (tab == <span class="keyword">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY) <span class="comment">// 如果 table 长度小于64，则扩容。</span></span><br><span class="line">    resize();</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> ((e = tab[index = (n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123; <span class="comment">// 否则桶中链表转化为树。</span></span><br><span class="line">    TreeNode&lt;K,V&gt; hd = <span class="keyword">null</span>, tl = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">      TreeNode&lt;K,V&gt; p = replacementTreeNode(e, <span class="keyword">null</span>);</span><br><span class="line">      <span class="keyword">if</span> (tl == <span class="keyword">null</span>)</span><br><span class="line">        hd = p;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        p.prev = tl;</span><br><span class="line">        tl.next = p;</span><br><span class="line">      &#125;</span><br><span class="line">      tl = p;</span><br><span class="line">    &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">if</span> ((tab[index] = hd) != <span class="keyword">null</span>)</span><br><span class="line">      hd.treeify(tab);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MIN_TREEIFY_CAPACITY = <span class="number">64</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>第一次 put，会创建 table 数组。</li>
+<li>在桶的链表/红黑树里找节点，没找到，就创建一个，插入链表/红黑树中。</li>
+<li>如果链表插入节点后，链表长度多于 8 个，进行扩容或转化为红黑树。</li>
+<li>如果找到了节点，并且不是 <code>putIfAbsent()</code> 调用的，更新节点的值。</li>
+<li>如果是新增了节点，查看节点数目是否多于阈值，进行扩容。</li>
+</ul>
+<h1 id="get"><a href="#get" class="headerlink" title="get()"></a>get()</h1><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> V <span class="title">get</span><span class="params">(Object key)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt; e;</span><br><span class="line">    <span class="keyword">return</span> (e = getNode(hash(key), key)) == <span class="keyword">null</span> ? <span class="keyword">null</span> : e.value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> Node&lt;K,V&gt; <span class="title">getNode</span><span class="params">(<span class="keyword">int</span> hash, Object key)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; first, e; <span class="keyword">int</span> n; K k;</span><br><span class="line">    <span class="keyword">if</span> ((tab = table) != <span class="keyword">null</span> &amp;&amp; (n = tab.length) &gt; <span class="number">0</span> &amp;&amp; <span class="comment">// table 没有初始化，或对应桶是空的，返回。</span></span><br><span class="line">        (first = tab[(n - <span class="number">1</span>) &amp; hash]) != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (first.hash == hash &amp;&amp; <span class="comment">// 桶中第一个节点是否是对应的key。</span></span><br><span class="line">            ((k = first.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            <span class="keyword">return</span> first;</span><br><span class="line">        <span class="keyword">if</span> ((e = first.next) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (first <span class="keyword">instanceof</span> TreeNode) <span class="comment">// 如果是红黑树，在红黑树里找。第一个节点是红黑树的根节点。</span></span><br><span class="line">                <span class="keyword">return</span> ((TreeNode&lt;K,V&gt;)first).getTreeNode(hash, key);</span><br><span class="line">            <span class="keyword">do</span> &#123;	<span class="comment">// 在链表中找。</span></span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="keyword">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">return</span> e;</span><br><span class="line">            &#125; <span class="keyword">while</span> ((e = e.next) != <span class="keyword">null</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>table 没有初始化、或对应的桶是空的，返回。</li>
+<li>查看桶中第一个节点的key是否匹配。</li>
+<li>没有匹配，去桶的红黑树或链表中去找。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>java</category>
+        <category>basic</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>LinkedHashMap 源码分析</title>
     <url>/2020/java/basic/LinkedHashMap%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</url>
     <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
@@ -7025,6 +7285,64 @@ class AbstractStringBuilder {
       </categories>
       <tags>
         <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SPI 机制</title>
+    <url>/2020/java/jvm/SPI/</url>
+    <content><![CDATA[<h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://juejin.im/post/5d2db85d6fb9a07ea7134408">Java SPI机制：ServiceLoader实现原理及应用剖析</a></li>
+<li><a href="https://juejin.im/post/5af952fdf265da0b9e652de3">Java SPI机制详解</a></li>
+<li><a href="https://juejin.im/post/5c959901e51d456d8054c635#heading-2">从Dubbo内核-SPI聊聊双亲委派机制</a></li>
+</ul>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p>Service Provider Interfaces (SPI)，即服务提供接口。是 JDK 内置的<strong>服务发现和管理</strong>的机制。</p>
+<h2 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h2><ul>
+<li><p>它可以<strong>动态</strong>的为某个接口<strong>寻找服务实现</strong>，有点类似 IOC(Inversion of Control) 的思想，将装配的控制权移到<strong>程序之外</strong>，在模块化设计中这个机制尤其重要。</p>
+</li>
+<li><p>解耦 服务具体实现 和服务使用，使程序的<strong>可扩展性</strong>大大增强，甚至可插拔。</p>
+</li>
+</ul>
+<h2 id="服务、服务提供方、服务使用方"><a href="#服务、服务提供方、服务使用方" class="headerlink" title="服务、服务提供方、服务使用方"></a>服务、服务提供方、服务使用方</h2><ul>
+<li><strong>服务</strong> 一般是系统定义好的接口，</li>
+<li><strong>服务提供方</strong>提供具体的服务实现、并向系统注册服务，</li>
+<li><strong>服务使用方</strong>通过查找发现服务、而不是直接引用导入具体的服务，达到与服务提供方的分离。<ul>
+<li>这样可以把想使用的服务提供方写在配置文件中，不需要修改代码就可以完成服务提供方的更改。</li>
+</ul>
+</li>
+</ul>
+<h1 id="实现难点"><a href="#实现难点" class="headerlink" title="实现难点"></a>实现难点</h1><p>由于服务<strong>提供者</strong>没有被服务<strong>使用者</strong>引用，因此对服务<strong>提供者</strong>进行类加载的任务需要服务<strong>定义者</strong>来完成。但是服务定义者的类加载器一般是服务提供者类加载器的祖先，默认的<strong>双亲委派</strong>类加载机制使得服务定义者无法完成对服务提供者的类加载。</p>
+<p>例如 JDK 中定义了 <code>JDBC</code> 服务，而 MySQL、PostgreSQL 提供了具体的实现。<code>JDBC</code> 的服务接口定义在 <code>java.sql</code> 中，由引导类加载器进行的加载。而具体的服务实现类在 Classpath 下，应该由系统类加载器进行加载。显然，使用 JDBC 的引导类加载器是无法对这些具体服务进行加载的。</p>
+<p>因此，在 JDBC 4.0 以前，在连接数据库的时候，需要首先使用 <code>Class.forName(&quot;com.mysql.jdbc.Driver&quot;)</code> 来在服务使用者这里显式的加载服务实现者。</p>
+<h1 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h1><p>为了解决这个问题，需要使<strong>父类</strong>加载器去<strong>请求子类</strong>加载器去执行类加载任务，这样就要破坏双亲委派类加载机制。</p>
+<p>因此，引入了<strong>线程上下文类加载器</strong>，线程的上下文类加载器默认都是系统类加载器。这样，服务定义者就可以使用这个线程上下文类加载器完成服务提供者的类加载。</p>
+<h1 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h1><p><code>java.util.ServiceLoader</code> 实现了上述的方案。</p>
+<p>在 <code>Classpath/resources/META-INF/services/MyService的接口全名</code> 文件中写入多个服务提供者的类全名（以行为单位），使用 <code>ServiceLoader</code> 就可以去加载这些服务提供者。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ServiceLoader&lt;MyService&gt; loader = ServiceLoader.load(MyService.class);</span><br><span class="line"><span class="keyword">for</span> (MyService serviceImpl : loader) &#123;</span><br><span class="line">  serviceImpl.func();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="JDBC-例子"><a href="#JDBC-例子" class="headerlink" title="JDBC 例子"></a>JDBC 例子</h2><h3 id="DriverManager"><a href="#DriverManager" class="headerlink" title="DriverManager"></a>DriverManager</h3><p>在 JDBC 中就使用了 <code>ServiceLoader</code> 去加载具体的驱动。</p>
+<p><code>DriverManager</code> 在类初始化时，使用 <code>ServiceLoader</code> 去加载了 <code>Driver.class</code> 的实现类。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DriverManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        loadInitialDrivers();</span><br><span class="line">        println(<span class="string">"JDBC DriverManager initialized"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loadInitialDrivers</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String drivers;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            drivers = AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;String&gt;() &#123;</span><br><span class="line">                <span class="function"><span class="keyword">public</span> String <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    <span class="keyword">return</span> System.getProperty(<span class="string">"jdbc.drivers"</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">            drivers = <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// If the driver is packaged as a Service Provider, load it.</span></span><br><span class="line">        <span class="comment">// Get all the drivers through the classloader</span></span><br><span class="line">        <span class="comment">// exposed as a java.sql.Driver.class service.</span></span><br><span class="line">        <span class="comment">// ServiceLoader.load() replaces the sun.misc.Providers()</span></span><br><span class="line"></span><br><span class="line">        AccessController.doPrivileged(<span class="keyword">new</span> PrivilegedAction&lt;Void&gt;() &#123;</span><br><span class="line">            <span class="function"><span class="keyword">public</span> Void <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">                ServiceLoader&lt;Driver&gt; loadedDrivers = ServiceLoader.load(Driver.class);</span><br><span class="line">                Iterator&lt;Driver&gt; driversIterator = loadedDrivers.iterator();</span><br><span class="line"></span><br><span class="line">                <span class="keyword">try</span>&#123;</span><br><span class="line">                    <span class="keyword">while</span>(driversIterator.hasNext()) &#123;</span><br><span class="line">                        driversIterator.next();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">catch</span>(Throwable t) &#123;</span><br><span class="line">                <span class="comment">// Do nothing</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h3><p>在 <code>mysql-connector-java-5.1.45.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">com.mysql.jdbc.Driver</span><br><span class="line">com.mysql.fabric.jdbc.FabricMySQLDriver</span><br></pre></td></tr></table></figure>
+<p>在 <code>postgresql-42.2.2.jar</code> 中，META-INF/services目录下会有一个名字为java.sql.Driver的文件：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">org.postgresql.Driver</span><br></pre></td></tr></table></figure>
+<p>这样在使用 JDBC 的时候，直接获取连接就可以了，不需要额外加载对应的驱动类。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String url = <span class="string">"jdbc:mysql://localhost:3306/test"</span>;</span><br><span class="line">Connection conn = DriverManager.getConnection(url,username,password);</span><br></pre></td></tr></table></figure>
+<h1 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h1><ul>
+<li><p>使用 <code>ServiceLoader.load(MyService.class)</code> 方法，会把当前线程的上下文类加载器存储在 <code>loader</code> 中。</p>
+</li>
+<li><p><code>ServiceLoader#iterator()</code> 返回一个内置的迭代器。</p>
+</li>
+<li><code>iterator#hasNext()</code> 会去读取所有 resources 文件夹中 META-INF/services/serviceName 文件。</li>
+<li><code>iterator#next()</code> 用 <code>loader</code> 去加载每一个 <code>hadNext()</code> 读取出来的类。</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 默认使用上下文类加载器。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service)</span> </span>&#123;</span><br><span class="line">    ClassLoader cl = Thread.currentThread().getContextClassLoader();</span><br><span class="line">    <span class="keyword">return</span> ServiceLoader.load(service, cl);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;S&gt; <span class="function">ServiceLoader&lt;S&gt; <span class="title">load</span><span class="params">(Class&lt;S&gt; service, ClassLoader loader)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ServiceLoader&lt;&gt;(service, loader);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">ServiceLoader</span><span class="params">(Class&lt;S&gt; svc, ClassLoader cl)</span> </span>&#123;</span><br><span class="line">    service = Objects.requireNonNull(svc, <span class="string">"Service interface cannot be null"</span>);</span><br><span class="line">    loader = (cl == <span class="keyword">null</span>) ? ClassLoader.getSystemClassLoader() : cl;</span><br><span class="line">    acc = (System.getSecurityManager() != <span class="keyword">null</span>) ? AccessController.getContext() : <span class="keyword">null</span>;</span><br><span class="line">    reload();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Iterator&lt;S&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX = <span class="string">"META-INF/services/"</span>;</span><br><span class="line"><span class="comment">// hasNext() 最终调用 hasNextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">hasNextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (nextName != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (configs == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            String fullName = PREFIX + service.getName();</span><br><span class="line">            <span class="keyword">if</span> (loader == <span class="keyword">null</span>)</span><br><span class="line">              	<span class="comment">// 找到所有 resources 文件夹中 META-INF/services/serviceName 文件。</span></span><br><span class="line">                configs = ClassLoader.getSystemResources(fullName);</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                configs = loader.getResources(fullName);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException x) &#123;</span><br><span class="line">            fail(service, <span class="string">"Error locating configuration files"</span>, x);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 遍历每一个 config 文件。</span></span><br><span class="line">    <span class="keyword">while</span> ((pending == <span class="keyword">null</span>) || !pending.hasNext()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!configs.hasMoreElements()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        pending = parse(service, configs.nextElement());</span><br><span class="line">    &#125;</span><br><span class="line">  	<span class="comment">// 存储下一个要加载的类名。</span></span><br><span class="line">    nextName = pending.next();</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// next() 最终调用 nextService()</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> S <span class="title">nextService</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!hasNextService())</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">    String cn = nextName;</span><br><span class="line">    nextName = <span class="keyword">null</span>;</span><br><span class="line">    Class&lt;?&gt; c = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">      	<span class="comment">// 使用构造函数传入的 loader，加载 nextName。</span></span><br><span class="line">        c = Class.forName(cn, <span class="keyword">false</span>, loader);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassNotFoundException x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" not found"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!service.isAssignableFrom(c)) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn  + <span class="string">" not a subtype"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        S p = service.cast(c.newInstance());</span><br><span class="line">        providers.put(cn, p);</span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable x) &#123;</span><br><span class="line">        fail(service,</span><br><span class="line">             <span class="string">"Provider "</span> + cn + <span class="string">" could not be instantiated"</span>,</span><br><span class="line">             x);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Error();          <span class="comment">// This cannot happen</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>java</category>
+        <category>jvm</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>jvm</tag>
       </tags>
   </entry>
   <entry>

@@ -182,6 +182,129 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/netty构建连接流程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/netty/netty构建连接流程/" class="post-title-link" itemprop="url">Netty 构建连接流程</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-09 20:21:00" itemprop="dateCreated datePublished" datetime="2020-03-09T20:21:00+08:00">2020-03-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-03-10 18:29:07" itemprop="dateModified" datetime="2020-03-10T18:29:07+08:00">2020-03-10</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/netty/" itemprop="url" rel="index"><span itemprop="name">netty</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Disqus: </span>
+    
+    <a title="disqus" href="/2020/netty/netty构建连接流程/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/netty/netty构建连接流程/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://time.geekbang.org/course/detail/237-158156">源码剖析：构建连接</a></li>
+</ul>
+<h1 id="主线"><a href="#主线" class="headerlink" title="主线"></a>主线</h1><ul>
+<li><p>boss thread</p>
+<ul>
+<li>NioEventLoop 中的 selector 轮询监听连接事件 <code>OP_ACCEPT</code>。</li>
+<li>创建 socket channel。</li>
+<li>初始化 socket channel、并从 <code>workerEventLoopGroup</code> 中选择一个 <code>EventLoop</code>。</li>
+</ul>
+</li>
+<li><p>worker thread</p>
+<ul>
+<li>将 socket channel 注册到选择的 NioEventLoop 的 selector。</li>
+<li>注册读事件 <code>OP_READ</code> 到 selector 上。</li>
+</ul>
+</li>
+</ul>
+<h1 id="创建-SocketChannel"><a href="#创建-SocketChannel" class="headerlink" title="创建 SocketChannel"></a>创建 SocketChannel</h1><p>NioEventLoop 的 <code>select(timeout)</code> 调用中，接收到 <code>OP_ACCEPT</code> 事件被唤醒。</p>
+<p>调用 <code>unsafe.read()</code>，也就是 <code>NioServerSocketChannel.NioMessageUnsafe#read()</code>，来处理连接事件。</p>
+<p>最终调用 <code>serverSocketChannel.accept()</code> 得到 <code>socketChannel</code>。</p>
+<ul>
+<li><code>unsafe.read()</code> 有两种<ul>
+<li><code>NioMessageUnsafe#read()</code> 处理 OP_ACCEPT 事件。这里是调用这个。</li>
+<li><code>NioByteUnsafe#read()</code> 处理 OP_READ 事件。</li>
+</ul>
+</li>
+</ul>
+<h1 id="注册-SocketChannel"><a href="#注册-SocketChannel" class="headerlink" title="注册 SocketChannel"></a>注册 SocketChannel</h1>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/netty/netty构建连接流程/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
     <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/netty/Recycler对象池/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1131,95 +1254,6 @@
   
   
 
-        
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/golang/golang记录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
-      <meta itemprop="name" content="Zihe Liu">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="ZiheLiu">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/golang/golang记录/" class="post-title-link" itemprop="url">Golang 记录</a>
-        </h1>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2020-03-05 20:36:00 / Modified: 20:38:24" itemprop="dateCreated datePublished" datetime="2020-03-05T20:36:00+08:00">2020-03-05</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/golang/" itemprop="url" rel="index"><span itemprop="name">golang</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="fa fa-comment-o"></i>
-      </span>
-      <span class="post-meta-item-text">Disqus: </span>
-    
-    <a title="disqus" href="/2020/golang/golang记录/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/golang/golang记录/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Channel-原理"><a href="#Channel-原理" class="headerlink" title="Channel 原理"></a>Channel 原理</h1><blockquote>
-<p><a href="https://draveness.me/golang/docs/part3-runtime/ch06-concurrency/golang-channel/">Go 语言设计与实现 Channel</a></p>
-</blockquote>
-<p>阻塞队列</p>
-<h1 id="Goroutine"><a href="#Goroutine" class="headerlink" title="Goroutine"></a>Goroutine</h1><blockquote>
-<p><a href="https://www.zhihu.com/question/20862617">Golang 的 goroutine 是如何实现的？</a></p>
-</blockquote>
-<p>用户级线程</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
   </div>
 
   
@@ -1292,7 +1326,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">85</span>
+          <span class="site-state-item-count">86</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
