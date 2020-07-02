@@ -79,6 +79,8 @@ typora-root-url: ../../../
 
 ### 类何时被卸载
 
+> [Java类的卸载机制](https://blog.csdn.net/xorxos/article/details/80490240)
+
 由Java虚拟机自带的类加载器所加载的类，在虚拟机的生命周期中，始终不会被卸载。
 
 包括：根类加载器、扩展类加载器和系统类加载器。
