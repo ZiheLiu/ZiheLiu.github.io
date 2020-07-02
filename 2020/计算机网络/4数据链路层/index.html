@@ -20,20 +20,22 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="引用 搞懂 Java LinkedHashMap 源码  与 HashMap 的关系 LinkedHashMap 继承自 HashMap，复用了 HashMap 的所有结构、操作和机制。  使用双向链表，记录节点的访问顺序。  在 accessOrder 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。  在 accessOrder 为 true 时，只要访问/更新元素，就会把访问">
-<meta name="keywords" content="java">
+  <meta name="description" content="引用 【计算机网络】你真的理解数据链路层吗？  理解字节填充和零比特填充  TCP/IP详解—数据链路层 &amp;amp; 以太网帧格式  滑动窗口协议（数据链路层）  数据链路层的连续ARQ协议和TCP都采用“滑动窗口”，有什么区别呢  链路层寻址和ARP   功能 寻址 将网络层的 IP 转化为 MAC 地址。   链路管理，帧同步 屏蔽不同物理介质。 数据组帧，使网络层针对帧而不是比特。   流量">
+<meta name="keywords" content="network">
 <meta property="og:type" content="article">
-<meta property="og:title" content="LinkedHashMap 源码分析">
-<meta property="og:url" content="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/index.html">
+<meta property="og:title" content="4. 数据链路层">
+<meta property="og:url" content="http://ziheliu.github.io/2020/计算机网络/4数据链路层/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="引用 搞懂 Java LinkedHashMap 源码  与 HashMap 的关系 LinkedHashMap 继承自 HashMap，复用了 HashMap 的所有结构、操作和机制。  使用双向链表，记录节点的访问顺序。  在 accessOrder 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。  在 accessOrder 为 true 时，只要访问/更新元素，就会把访问">
+<meta property="og:description" content="引用 【计算机网络】你真的理解数据链路层吗？  理解字节填充和零比特填充  TCP/IP详解—数据链路层 &amp;amp; 以太网帧格式  滑动窗口协议（数据链路层）  数据链路层的连续ARQ协议和TCP都采用“滑动窗口”，有什么区别呢  链路层寻址和ARP   功能 寻址 将网络层的 IP 转化为 MAC 地址。   链路管理，帧同步 屏蔽不同物理介质。 数据组帧，使网络层针对帧而不是比特。   流量">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-06T01:48:35.310Z">
+<meta property="og:image" content="http://ziheliu.github.io/images/数据链路层-帧格式.png">
+<meta property="og:updated_time" content="2020-07-02T13:14:23.545Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="LinkedHashMap 源码分析">
-<meta name="twitter:description" content="引用 搞懂 Java LinkedHashMap 源码  与 HashMap 的关系 LinkedHashMap 继承自 HashMap，复用了 HashMap 的所有结构、操作和机制。  使用双向链表，记录节点的访问顺序。  在 accessOrder 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。  在 accessOrder 为 true 时，只要访问/更新元素，就会把访问">
+<meta name="twitter:title" content="4. 数据链路层">
+<meta name="twitter:description" content="引用 【计算机网络】你真的理解数据链路层吗？  理解字节填充和零比特填充  TCP/IP详解—数据链路层 &amp;amp; 以太网帧格式  滑动窗口协议（数据链路层）  数据链路层的连续ARQ协议和TCP都采用“滑动窗口”，有什么区别呢  链路层寻址和ARP   功能 寻址 将网络层的 IP 转化为 MAC 地址。   链路管理，帧同步 屏蔽不同物理介质。 数据组帧，使网络层针对帧而不是比特。   流量">
+<meta name="twitter:image" content="http://ziheliu.github.io/images/数据链路层-帧格式.png">
 
-<link rel="canonical" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+<link rel="canonical" href="http://ziheliu.github.io/2020/计算机网络/4数据链路层/">
 
 
 <script id="page-configurations">
@@ -45,7 +47,7 @@
   };
 </script>
 
-  <title>LinkedHashMap 源码分析 | ZiheLiu</title>
+  <title>4. 数据链路层 | ZiheLiu</title>
   
 
 
@@ -187,7 +189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="default">
-    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2020/计算机网络/4数据链路层/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
@@ -200,7 +202,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          LinkedHashMap 源码分析
+          4. 数据链路层
         </h1>
 
         <div class="post-meta">
@@ -210,14 +212,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2020-03-04 14:48:52" itemprop="dateCreated datePublished" datetime="2020-03-04T14:48:52+08:00">2020-03-04</time>
+              <time title="Created: 2020-03-05 19:02:00" itemprop="dateCreated datePublished" datetime="2020-03-05T19:02:00+08:00">2020-03-05</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-06 09:48:35" itemprop="dateModified" datetime="2020-03-06T09:48:35+08:00">2020-03-06</time>
+                <time title="Modified: 2020-07-02 21:14:23" itemprop="dateModified" datetime="2020-07-02T21:14:23+08:00">2020-07-02</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -225,11 +227,7 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
-                </span>
-                  , 
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/basic/" itemprop="url" rel="index"><span itemprop="name">basic</span></a>
+                  <a href="/categories/network/" itemprop="url" rel="index"><span itemprop="name">network</span></a>
                 </span>
             </span>
 
@@ -242,8 +240,8 @@
       </span>
       <span class="post-meta-item-text">Disqus: </span>
     
-    <a title="disqus" href="/2020/java/basic/LinkedHashMap源码分析/#disqus_thread" itemprop="discussionUrl">
-      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/java/basic/LinkedHashMap源码分析/" itemprop="commentCount"></span>
+    <a title="disqus" href="/2020/计算机网络/4数据链路层/#disqus_thread" itemprop="discussionUrl">
+      <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2020/计算机网络/4数据链路层/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -259,33 +257,88 @@
 
       
         <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
-<li><a href="https://juejin.im/post/5ace2bde6fb9a028e25deca8">搞懂 Java LinkedHashMap 源码</a></li>
-</ul>
-<h1 id="与-HashMap-的关系"><a href="#与-HashMap-的关系" class="headerlink" title="与 HashMap 的关系"></a>与 HashMap 的关系</h1><ul>
-<li><p><code>LinkedHashMap</code> 继承自 <code>HashMap</code>，复用了 <code>HashMap</code> 的所有结构、操作和机制。</p>
+<li><p><a href="https://zhuanlan.zhihu.com/p/69554474">【计算机网络】你真的理解数据链路层吗？</a></p>
 </li>
-<li><p>使用双向链表，记录节点的访问顺序。</p>
+<li><p><a href="https://juejin.im/post/5e64c6136fb9a07cc97daade">理解字节填充和零比特填充</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/yusiguyuan/article/details/22785927">TCP/IP详解—数据链路层 &amp; 以太网帧格式</a></p>
+</li>
+<li><p><a href="https://blog.csdn.net/ao__ao/article/details/85094401">滑动窗口协议（数据链路层）</a></p>
+</li>
+<li><p><a href="https://sstompkins.wordpress.com/2010/07/09/数据链路层的连续arq协议和tcp都采用“滑动窗口”，/">数据链路层的连续ARQ协议和TCP都采用“滑动窗口”，有什么区别呢</a></p>
+</li>
+<li><p><a href="https://www.jianshu.com/p/d51c27ed6803">链路层寻址和ARP</a></p>
+</li>
+</ul>
+<h1 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h1><ol>
+<li>寻址<ul>
+<li>将网络层的 IP 转化为 MAC 地址。</li>
+</ul>
+</li>
+<li>链路管理，帧同步<ul>
+<li>屏蔽不同物理介质。</li>
+<li>数据组帧，使网络层针对帧而不是比特。</li>
+</ul>
+</li>
+<li>流量控制</li>
+<li>差错控制<ul>
+<li>纠错码：每个传输的分组带上足够的冗余信息，接收端能发现并自动纠正差错。</li>
+<li>检测吗：分组包含能够发现差错的冗余信息，接收端能够发现差错。</li>
+</ul>
+</li>
+<li>透明传输<ul>
+<li>帧与帧之间使用特殊字符 <code>0X7E</code> 界定。</li>
+<li>帧内部出现 <code>0X7E</code> 需要转义。<ul>
+<li>字节填充。<ul>
+<li><code>0X7E</code> -&gt; <code>(0x7D，0x5E)</code> </li>
+<li><code>0x7D</code> -&gt; <code>(0x7D，0x5D)</code></li>
+</ul>
+</li>
+<li>零比特填充<ul>
+<li><code>0x7E</code> 的二进制表示是 <code>01111110</code>，因此在每出现5个1时插入一个0。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<h1 id="帧格式"><a href="#帧格式" class="headerlink" title="帧格式"></a>帧格式</h1><p><img src="/images/数据链路层-帧格式.png" alt="数据链路层-帧格式"></p>
 <ul>
-<li><p>在 <code>accessOrder</code> 为 false 时，只有插入元素时，会把访问的节点放在链表结尾。</p>
+<li>帧首部<ul>
+<li>目的地址、原地址、类型</li>
+</ul>
 </li>
-<li><p>在 <code>accessOrder</code> 为 true 时，只要访问/更新元素，就会把访问的节点挪到链表结尾。</p>
+<li>帧尾部<ul>
+<li>CRC</li>
+</ul>
 </li>
+<li>中间数据部分<ul>
+<li>MTU（最大传输大院）：最大长度为 1500 字节。</li>
 </ul>
 </li>
 </ul>
-<h1 id="实现方式"><a href="#实现方式" class="headerlink" title="实现方式"></a>实现方式</h1><h2 id="扩展节点"><a href="#扩展节点" class="headerlink" title="扩展节点"></a>扩展节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">   Entry&lt;K,V&gt; before, after;</span><br><span class="line">   Entry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">       <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>在节点中，添加 before 和 after，来实现双向链表。</p>
-<h2 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// LinkedHashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        <span class="keyword">new</span> LinkedHashMap.Entry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// HashMap</span></span><br><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next)</span> </span>&#123;</span><br><span class="line">  	<span class="keyword">return</span> <span class="keyword">new</span> Node&lt;&gt;(hash, key, value, next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>相比 <code>HashMap</code>，在创建节点后，会把节点加入到链表尾部。</p>
-<h2 id="双向链表操作"><a href="#双向链表操作" class="headerlink" title="双向链表操作"></a>双向链表操作</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// unlink</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">        (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">        head = a;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span>)</span><br><span class="line">        tail = b;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        a.before = b;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeInsertion</span><span class="params">(<span class="keyword">boolean</span> evict)</span> </span>&#123; <span class="comment">// possibly remove eldest</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; first;</span><br><span class="line">    <span class="keyword">if</span> (evict &amp;&amp; (first = head) != <span class="keyword">null</span> &amp;&amp; removeEldestEntry(first)) &#123;</span><br><span class="line">        K key = first.key;</span><br><span class="line">        removeNode(hash(key), key, <span class="keyword">null</span>, <span class="keyword">false</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">    LinkedHashMap.Entry&lt;K,V&gt; last;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">        LinkedHashMap.Entry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMap.Entry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">        p.after = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">            head = a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            b.after = a;</span><br><span class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">            a.before = b;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            last = b;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="滑动窗口"><a href="#滑动窗口" class="headerlink" title="滑动窗口"></a>滑动窗口</h1><p>数据链路层的连续 ARQ 协议使用滑动窗口。</p>
+<p>ARQ（Automatic Repeat reQquest），自动请求重传。又称Go-back-N ARQ，意思是当出现差错必须重传时，要回走N个帧，然后在重传。</p>
+<h2 id="1-位窗口协议"><a href="#1-位窗口协议" class="headerlink" title="1 位窗口协议"></a>1 位窗口协议</h2><p>由于发送方在发出一帧后必须等待前一帧的确认到来才能发送下一帧，所以这样的协议使用了停-等式办法。</p>
+<h2 id="回退-N-协议"><a href="#回退-N-协议" class="headerlink" title="回退 N 协议"></a>回退 N 协议</h2><p>允许发送方在阻塞之前发送 w 个帧，而不是一个帧，通过选择合适的 w 值，发送方就可以连续发送帧。</p>
+<p><strong>问题</strong>：当其中一个帧丢失/损坏后，接收方如何处理后续的帧呢？</p>
 <ul>
-<li>在调用 <code>remove()</code> 时，使用 <code>afterNodeRemoval()</code> 把节点从链表删除。</li>
-<li>在调用 <code>get()</code>、<code>put</code> 更新已经存在的节点，使用 <code>afterNodeAccess()</code> 把节点挪到链表尾部。</li>
-<li>在插入新的节点后，调用 <code>afterNodeInsertion()</code>，如果 <code>removeEldestEntry()</code> 为 true，则删除头结点（最旧的节点）。<ul>
-<li>LinkedHashMap 中 <code>removeEldestEntry()</code> 会返回 false，这个功能是给子类用的。</li>
+<li>有两种方法。</li>
+</ul>
+<h3 id="回退-n"><a href="#回退-n" class="headerlink" title="回退 n"></a>回退 n</h3><p>接收方只需要简单丢弃所有到达的后续帧，而且针对这些丢弃的帧不必返回确认。</p>
+<h3 id="选择重传"><a href="#选择重传" class="headerlink" title="选择重传"></a>选择重传</h3><p>接收方将收到的坏帧丢弃，但接受并缓存帧后面的所有好帧。</p>
+<p>当发送方超时时，它只重传那个最早的未被确认的帧。如果该重传的帧正确到达接收方，接收方就可按序将它缓存的所有帧递交给网络层。</p>
+<p>选择重传对应的接收方窗口大于 1，如果窗口很大，则这种方法对数据链路层的内存需求很大。</p>
+<h2 id="与-TCP-滑动窗口的区别"><a href="#与-TCP-滑动窗口的区别" class="headerlink" title="与 TCP 滑动窗口的区别"></a>与 TCP 滑动窗口的区别</h2><h3 id="数据链路层采用了可靠的-ARQ-可以重传，为什么在TCP又有可靠传输这一说法"><a href="#数据链路层采用了可靠的-ARQ-可以重传，为什么在TCP又有可靠传输这一说法" class="headerlink" title="数据链路层采用了可靠的 ARQ 可以重传，为什么在TCP又有可靠传输这一说法"></a>数据链路层采用了可靠的 ARQ 可以重传，为什么在TCP又有可靠传输这一说法</h3><ul>
+<li>有些链路层协议可能没有实现 ARQ。</li>
+<li>ARQ 只能保证数据在数据链路层是可靠的。<ul>
+<li>例如数据链路 A =&gt; B，ARQ 可以保证数据帧从 A 传到 B，但是如果B是路由器的话，当 B 负载太大的话，也许它就在网络层把数据报丢掉了。</li>
+<li>对于 A 来说，它已经通过链路层可靠的将数据报发到 B 上，但当网络拥塞的时候，当这个数据包在 B 的等待队列是时候，有可能被 B 丢掉。这时就要靠传输层 TCP 的可靠传输了。</li>
 </ul>
 </li>
 </ul>
+<h3 id="这两个协议采用的滑动窗口有啥区别"><a href="#这两个协议采用的滑动窗口有啥区别" class="headerlink" title="这两个协议采用的滑动窗口有啥区别"></a>这两个协议采用的滑动窗口有啥区别</h3><p>数据链路层的滑动窗口是“个数固定”的。而 TCP 的滑动窗口是“个数可变”的，可以由接收端设置WIN字段来修改。</p>
 
     </div>
 
@@ -295,7 +348,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/java/" rel="tag"># java</a>
+              <a href="/tags/network/" rel="tag"># network</a>
           </div>
 
         
@@ -304,12 +357,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/java/jvm/SPI/" rel="prev" title="SPI 机制">
-      <i class="fa fa-chevron-left"></i> SPI 机制
+    <a href="/2020/计算机网络/3网络层/" rel="prev" title="3. 网络层">
+      <i class="fa fa-chevron-left"></i> 3. 网络层
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/java/io/io流/" rel="next" title="I/O流相关类">
-      I/O流相关类 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/计算机网络/四种io/" rel="next" title="同步/异步IO与阻塞/非阻塞IO">
+      同步/异步IO与阻塞/非阻塞IO <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -377,7 +430,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#与-HashMap-的关系"><span class="nav-number">2.</span> <span class="nav-text">与 HashMap 的关系</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现方式"><span class="nav-number">3.</span> <span class="nav-text">实现方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展节点"><span class="nav-number">3.1.</span> <span class="nav-text">扩展节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建节点"><span class="nav-number">3.2.</span> <span class="nav-text">创建节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#双向链表操作"><span class="nav-number">3.3.</span> <span class="nav-text">双向链表操作</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#功能"><span class="nav-number">2.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#帧格式"><span class="nav-number">3.</span> <span class="nav-text">帧格式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#滑动窗口"><span class="nav-number">4.</span> <span class="nav-text">滑动窗口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-位窗口协议"><span class="nav-number">4.1.</span> <span class="nav-text">1 位窗口协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#回退-N-协议"><span class="nav-number">4.2.</span> <span class="nav-text">回退 N 协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#回退-n"><span class="nav-number">4.2.1.</span> <span class="nav-text">回退 n</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#选择重传"><span class="nav-number">4.2.2.</span> <span class="nav-text">选择重传</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#与-TCP-滑动窗口的区别"><span class="nav-number">4.3.</span> <span class="nav-text">与 TCP 滑动窗口的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据链路层采用了可靠的-ARQ-可以重传，为什么在TCP又有可靠传输这一说法"><span class="nav-number">4.3.1.</span> <span class="nav-text">数据链路层采用了可靠的 ARQ 可以重传，为什么在TCP又有可靠传输这一说法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#这两个协议采用的滑动窗口有啥区别"><span class="nav-number">4.3.2.</span> <span class="nav-text">这两个协议采用的滑动窗口有啥区别</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -520,9 +573,9 @@ if (document.querySelectorAll('pre.mermaid').length) {
 </script>
 <script>
   var disqus_config = function() {
-    this.page.url = "http://ziheliu.github.io/2020/java/basic/LinkedHashMap源码分析/";
-    this.page.identifier = "2020/java/basic/LinkedHashMap源码分析/";
-    this.page.title = "LinkedHashMap 源码分析";
+    this.page.url = "http://ziheliu.github.io/2020/计算机网络/4数据链路层/";
+    this.page.identifier = "2020/计算机网络/4数据链路层/";
+    this.page.title = "4. 数据链路层";
     };
   NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
     if (window.DISQUS) {

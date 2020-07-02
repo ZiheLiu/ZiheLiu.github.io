@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"ziheliu.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="IP协议首部的部分字段 源地址 目标地址 标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。 片偏移：单位为8个字节，在需要分片时和标识一起使用。  IP地址IP地址共4个字节， IP地址 = &amp;lt;网络号&amp;gt; &amp;lt;主机号&amp;gt;，分为：  A类地址：0开头，网络号8位，主机号24位 B类地址：10开头，网络号16位，主机号16位 C类地址：110开头，网络号24位，">
+  <meta name="description" content="引用 数据帧，数据报，数据包相互关系包含关系的理解  IP协议首部的部分字段 源地址 目标地址 标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。 片偏移：单位为8个字节，在需要分片时和标识一起使用。  IP 数据分片如果要传输的数据包大小超过 1500B，需要 IP 层把数据包分片，使得每一片都小于 1500B。 但是正常情况下要避免在网络层分片：  原因是IP层是没有超时重">
 <meta name="keywords" content="network">
 <meta property="og:type" content="article">
 <meta property="og:title" content="3. 网络层">
 <meta property="og:url" content="http://ziheliu.github.io/2020/计算机网络/3网络层/index.html">
 <meta property="og:site_name" content="ZiheLiu">
-<meta property="og:description" content="IP协议首部的部分字段 源地址 目标地址 标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。 片偏移：单位为8个字节，在需要分片时和标识一起使用。  IP地址IP地址共4个字节， IP地址 = &amp;lt;网络号&amp;gt; &amp;lt;主机号&amp;gt;，分为：  A类地址：0开头，网络号8位，主机号24位 B类地址：10开头，网络号16位，主机号16位 C类地址：110开头，网络号24位，">
+<meta property="og:description" content="引用 数据帧，数据报，数据包相互关系包含关系的理解  IP协议首部的部分字段 源地址 目标地址 标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。 片偏移：单位为8个字节，在需要分片时和标识一起使用。  IP 数据分片如果要传输的数据包大小超过 1500B，需要 IP 层把数据包分片，使得每一片都小于 1500B。 但是正常情况下要避免在网络层分片：  原因是IP层是没有超时重">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-05T11:24:16.430Z">
+<meta property="og:updated_time" content="2020-07-02T13:34:42.585Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="3. 网络层">
-<meta name="twitter:description" content="IP协议首部的部分字段 源地址 目标地址 标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。 片偏移：单位为8个字节，在需要分片时和标识一起使用。  IP地址IP地址共4个字节， IP地址 = &amp;lt;网络号&amp;gt; &amp;lt;主机号&amp;gt;，分为：  A类地址：0开头，网络号8位，主机号24位 B类地址：10开头，网络号16位，主机号16位 C类地址：110开头，网络号24位，">
+<meta name="twitter:description" content="引用 数据帧，数据报，数据包相互关系包含关系的理解  IP协议首部的部分字段 源地址 目标地址 标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。 片偏移：单位为8个字节，在需要分片时和标识一起使用。  IP 数据分片如果要传输的数据包大小超过 1500B，需要 IP 层把数据包分片，使得每一片都小于 1500B。 但是正常情况下要避免在网络层分片：  原因是IP层是没有超时重">
 
 <link rel="canonical" href="http://ziheliu.github.io/2020/计算机网络/3网络层/">
 
@@ -209,10 +209,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-05 19:01:00 / Modified: 19:24:16" itemprop="dateCreated datePublished" datetime="2020-03-05T19:01:00+08:00">2020-03-05</time>
+              <time title="Created: 2020-03-05 19:01:00" itemprop="dateCreated datePublished" datetime="2020-03-05T19:01:00+08:00">2020-03-05</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-02 21:34:42" itemprop="dateModified" datetime="2020-07-02T21:34:42+08:00">2020-07-02</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -248,12 +254,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="IP协议首部的部分字段"><a href="#IP协议首部的部分字段" class="headerlink" title="IP协议首部的部分字段"></a>IP协议首部的部分字段</h1><ol>
+        <h1 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h1><ul>
+<li><a href="https://zhuanlan.zhihu.com/p/62104550">数据帧，数据报，数据包相互关系包含关系的理解</a></li>
+</ul>
+<h1 id="IP协议首部的部分字段"><a href="#IP协议首部的部分字段" class="headerlink" title="IP协议首部的部分字段"></a>IP协议首部的部分字段</h1><ol>
 <li>源地址</li>
 <li>目标地址</li>
 <li>标识：在数据报长度过长时，要进行分片，相同数据报的不同分片的标识相同。</li>
 <li>片偏移：单位为8个字节，在需要分片时和标识一起使用。</li>
 </ol>
+<h1 id="IP-数据分片"><a href="#IP-数据分片" class="headerlink" title="IP 数据分片"></a>IP 数据分片</h1><p>如果要传输的数据包大小超过 1500B，需要 IP 层把数据包分片，使得每一片都小于 1500B。</p>
+<p>但是正常情况下要避免在网络层分片：</p>
+<ul>
+<li>原因是IP层是没有超时重传机制的，如果IP层对一个数据包进行了分片，只要有一个分片丢失了，只能依赖于传输层进行重传，结果是所有的分片都要重传一遍，这个代价有点大。</li>
+</ul>
+<p>所以UDP：对于UDP包，我们需要<strong>在应用层</strong>去限制每个包的大小，一般不要超过1472字节，即 <code>以太网MTU - UDP首部 - IP首部</code> = <code>1500 - 8 - 20</code>。</p>
+<p>TCP：对于TCP数据，<strong>应用层就不需要考虑</strong>这个问题了，因为传输层已经帮我们做了。在建立连接的三次握手的过程中，连接双方会相互通告 MSS（Maximum Segment Size，最大报文段长度），MSS 一般是 <code>MTU - IP首部 - TCP首部</code> = <code>1500 - 20 - 20</code>。每次发送的TCP数据都不会超过双方 MSS 的最小值，所以就保证了 IP 数据报不会超过 MTU，避免了 IP 分片</p>
 <h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><p>IP地址共4个字节，</p>
 <p>IP地址 = <code>&lt;网络号&gt; &lt;主机号&gt;</code>，分为：</p>
 <ul>
@@ -291,8 +307,8 @@
       <i class="fa fa-chevron-left"></i> 2. 传输层
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/计算机网络/四种io/" rel="next" title="同步/异步IO与阻塞/非阻塞IO">
-      同步/异步IO与阻塞/非阻塞IO <i class="fa fa-chevron-right"></i>
+    <a href="/2020/计算机网络/4数据链路层/" rel="next" title="4. 数据链路层">
+      4. 数据链路层 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -360,7 +376,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#IP协议首部的部分字段"><span class="nav-number">1.</span> <span class="nav-text">IP协议首部的部分字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP地址"><span class="nav-number">2.</span> <span class="nav-text">IP地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#子网划分"><span class="nav-number">3.</span> <span class="nav-text">子网划分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NAT"><span class="nav-number">4.</span> <span class="nav-text">NAT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NAPT"><span class="nav-number">5.</span> <span class="nav-text">NAPT</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引用"><span class="nav-number">1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP协议首部的部分字段"><span class="nav-number">2.</span> <span class="nav-text">IP协议首部的部分字段</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP-数据分片"><span class="nav-number">3.</span> <span class="nav-text">IP 数据分片</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IP地址"><span class="nav-number">4.</span> <span class="nav-text">IP地址</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#子网划分"><span class="nav-number">5.</span> <span class="nav-text">子网划分</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NAT"><span class="nav-number">6.</span> <span class="nav-text">NAT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#NAPT"><span class="nav-number">7.</span> <span class="nav-text">NAPT</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -376,7 +392,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">87</span>
+          <span class="site-state-item-count">88</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
