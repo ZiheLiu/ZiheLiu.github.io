@@ -56,27 +56,86 @@ int index = hash(key) & (table.length() - 1);
 
 ## 对 key 的要求
 
-- 哈希。用 `hashCode()` 方法加一些处理得到 hash 值。
-
+- 哈希。用 `hashCode()` 方法调用 `HashMap#hash()` 得到 hash 值。
 - 相等。用 `equals()` 比较 hash 值相同的节点。
+- 比较。在红黑树时，会用到比较。
 
-- 比较。对于红黑树。
+### 红黑树比较节点流程
 
-  - 如果 key 继承自 `Compatable` 则用 `compareTo()` 比较。
+在插入/更新元素到 map 时，需要找到红黑树中对应的节点。那么如何比较节点呢？
 
-  - 否则用 `System.identityHashCode()` 比较。
+- 使用 `HashMap#hash(key.hashCode())` 比较 key。
+  - 如果不同，找到了节点的大小关系。
+  - 如果相同，使用 `equals()` 比较 key。
+    - 如果相等，找到了需要更新的节点。
+    - 如果不同。看 key 是否实现了 `Comparable`，
+      - 如果实现了、且两个节点的 key 不等，找到了节点的大小关系。
+      - 如果没有实现，或者两个节点的 key 相等，使用`System.identityHashCode()` 比较。
 
-    ```java
-    static int tieBreakOrder(Object a, Object b) {
-        int d;
-        if (a == null || b == null ||
-            (d = a.getClass().getName().
-             compareTo(b.getClass().getName())) == 0)
-            d = (System.identityHashCode(a) <= System.identityHashCode(b) ?
-                 -1 : 1);
-        return d;
+也就是说，依次使用如下函数比较：
+
+- `HashMap#hash(key.hashCode())` 
+- `equals()`
+- `Comparable#compareTo()`，如果 key 实现了 `Comparable`。
+- `System.identityHashCode()` ,即 `Object#hashCode()` ，在 该类没有覆盖 `hashCode()` 前应该返回的值。
+
+```java
+final TreeNode<K,V> putTreeVal(HashMap<K,V> map, Node<K,V>[] tab,
+                               int h, K k, V v) {
+  Class<?> kc = null;
+  boolean searched = false;
+  TreeNode<K,V> root = (parent != null) ? root() : this;
+  for (TreeNode<K,V> p = root;;) {
+    int dir, ph; K pk;
+    if ((ph = p.hash) > h)
+      dir = -1;
+    else if (ph < h)
+      dir = 1;
+    else if ((pk = p.key) == k || (k != null && k.equals(pk)))
+      return p;
+    else if ((kc == null &&
+              (kc = comparableClassFor(k)) == null) ||
+             (dir = compareComparables(kc, k, pk)) == 0) {
+      if (!searched) {
+        TreeNode<K,V> q, ch;
+        searched = true;
+        if (((ch = p.left) != null &&
+             (q = ch.find(h, k, kc)) != null) ||
+            ((ch = p.right) != null &&
+             (q = ch.find(h, k, kc)) != null))
+          return q;
+      }
+      dir = tieBreakOrder(k, pk);
     }
-    ```
+
+    TreeNode<K,V> xp = p;
+    if ((p = (dir <= 0) ? p.left : p.right) == null) {
+      Node<K,V> xpn = xp.next;
+      TreeNode<K,V> x = map.newTreeNode(h, k, v, xpn);
+      if (dir <= 0)
+        xp.left = x;
+      else
+        xp.right = x;
+      xp.next = x;
+      x.parent = x.prev = xp;
+      if (xpn != null)
+        ((TreeNode<K,V>)xpn).prev = x;
+      moveRootToFront(tab, balanceInsertion(root, x));
+      return null;
+    }
+  }
+}
+
+static int tieBreakOrder(Object a, Object b) {
+  int d;
+  if (a == null || b == null ||
+      (d = a.getClass().getName().
+       compareTo(b.getClass().getName())) == 0)
+    d = (System.identityHashCode(a) <= System.identityHashCode(b) ?
+         -1 : 1);
+  return d;
+}
+```
 
 # 构造函数
 
