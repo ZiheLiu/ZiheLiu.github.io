@@ -1163,7 +1163,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #e78cff;
+  background: #1bb8ff;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -2608,6 +2608,10 @@ mjx-container + br {
 }
 .post-body a {
   color: #fa8c16;
+}
+.links-of-blogroll {
+  border-top: 1px solid #eee;
+  padding-top: 10px;
 }
 @media (min-width: 768px) and (max-width: 991px) {
   .content-wrap {

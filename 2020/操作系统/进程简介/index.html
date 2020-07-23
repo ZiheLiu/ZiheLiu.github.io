@@ -28,7 +28,7 @@
 <meta property="og:site_name" content="ZiheLiu">
 <meta property="og:description" content="进程间通信引用 进程间通信的7种方式你都了解吗-知乎  定义每个进程各自有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到。 所以进程之间要交换数据必须通过内核，在内核中开辟一块缓冲区，进程 A 把数据从用户空间拷到内核缓冲区，进程 B 再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信。 七种方式 PIPE：匿名管道。只能在父子进程、或兄弟进程间。实现原理，在内核中开辟了">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-03-19T11:23:31.550Z">
+<meta property="og:updated_time" content="2020-07-11T15:27:14.047Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="进程简介">
 <meta name="twitter:description" content="进程间通信引用 进程间通信的7种方式你都了解吗-知乎  定义每个进程各自有不同的用户地址空间，任何一个进程的全局变量在另一个进程中都看不到。 所以进程之间要交换数据必须通过内核，在内核中开辟一块缓冲区，进程 A 把数据从用户空间拷到内核缓冲区，进程 B 再从内核缓冲区把数据读走，内核提供的这种机制称为进程间通信。 七种方式 PIPE：匿名管道。只能在父子进程、或兄弟进程间。实现原理，在内核中开辟了">
@@ -217,7 +217,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-19 19:23:31" itemprop="dateModified" datetime="2020-03-19T19:23:31+08:00">2020-03-19</time>
+                <time title="Modified: 2020-07-11 23:27:14" itemprop="dateModified" datetime="2020-07-11T23:27:14+08:00">2020-07-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -329,6 +329,48 @@
 <li>线程可以看做轻量级的进程，同一类线程<strong>共享代码和数据空间</strong>，每个线程都有自己独立的运行栈和程序计数器（PC）。</li>
 <li>线程之间切换的开销小。</li>
 </ul>
+<h1 id="进程、线程、携程切换"><a href="#进程、线程、携程切换" class="headerlink" title="进程、线程、携程切换"></a>进程、线程、携程切换</h1><blockquote>
+<ul>
+<li><a href="https://blog.csdn.net/zdy0_2004/article/details/54956787">进程切换分析（2）：TLB处理</a></li>
+<li><a href="https://www.cnblogs.com/wuchanming/p/4807416.html">linux内核学习之四：进程切换简述</a></li>
+<li>《深入理解Linux内核》第 4 章</li>
+</ul>
+</blockquote>
+<h2 id="进程切换"><a href="#进程切换" class="headerlink" title="进程切换"></a>进程切换</h2><ol>
+<li><p>进程 A 切换到 A 的内核态。</p>
+<ul>
+<li>保存用户寄存器到内核栈中；</li>
+<li>从用户栈切换到内核栈（也是通过 <code>%esp</code> 寄存器与内存的读取写入实现的）。</li>
+<li>进行特权级的切换，硬件的特权级保护机制和各种检查。</li>
+</ul>
+</li>
+<li><p>A 的内核态到 B 的内核态。</p>
+<ul>
+<li>页表的切换。<ul>
+<li>TLB（将部分的页表内容缓存到了Translation lookasid buffer中）的切换。</li>
+<li>如果 B 是内核进程，不用进行 TLB 的切换。</li>
+</ul>
+</li>
+<li>硬件上下文的切换。<ul>
+<li>把当前A的各种硬件相关寄存器保存到 内存中（一个thread结构体中）。</li>
+</ul>
+</li>
+<li>内核栈的切换。</li>
+</ul>
+</li>
+<li>B 的内核态 到 B进程。<ul>
+<li>与 1过程相反。</li>
+</ul>
+</li>
+</ol>
+<h2 id="线程切换"><a href="#线程切换" class="headerlink" title="线程切换"></a>线程切换</h2><p>也要通过内核态进行切换。</p>
+<p>与进程切换的差别是，不用进行页表的切换，但是硬件上下文也要切换。</p>
+<h2 id="协程的切换"><a href="#协程的切换" class="headerlink" title="协程的切换"></a>协程的切换</h2><p>相当于用户态线程，不用陷入内核态：</p>
+<ul>
+<li>省去了内核堆栈的切换</li>
+<li>省去了各种进行特权级的切换，硬件的特权级保护机制和各种检查。</li>
+</ul>
+<p>不用进行硬件上下文的切换，需要保存的寄存器数量少一些。</p>
 <h1 id="进程的状态"><a href="#进程的状态" class="headerlink" title="进程的状态"></a>进程的状态</h1><h2 id="引用-2"><a href="#引用-2" class="headerlink" title="引用"></a>引用</h2><ul>
 <li><a href="https://zhuanlan.zhihu.com/p/96098130">进程状态与僵尸进程、孤儿进程</a> </li>
 </ul>
@@ -511,7 +553,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#进程间通信"><span class="nav-number">1.</span> <span class="nav-text">进程间通信</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">1.1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.2.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七种方式"><span class="nav-number">1.3.</span> <span class="nav-text">七种方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#信号"><span class="nav-number">1.4.</span> <span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#信号的状态"><span class="nav-number">1.4.1.</span> <span class="nav-text">信号的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对信号的操作"><span class="nav-number">1.4.2.</span> <span class="nav-text">对信号的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞信号"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">阻塞信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#屏蔽信号"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">屏蔽信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#取消信号"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">取消信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SIGKILL-和-SIGSTOP-信号"><span class="nav-number">1.4.2.4.</span> <span class="nav-text">SIGKILL 和 SIGSTOP 信号</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内核与信号"><span class="nav-number">1.4.3.</span> <span class="nav-text">内核与信号</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程的内存分布"><span class="nav-number">2.</span> <span class="nav-text">进程的内存分布</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#堆栈段"><span class="nav-number">2.1.</span> <span class="nav-text">堆栈段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据段"><span class="nav-number">2.2.</span> <span class="nav-text">数据段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BSS段"><span class="nav-number">2.3.</span> <span class="nav-text">BSS段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码段"><span class="nav-number">2.4.</span> <span class="nav-text">代码段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程和线程"><span class="nav-number">3.</span> <span class="nav-text">进程和线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用-1"><span class="nav-number">3.1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#根本区别"><span class="nav-number">3.2.</span> <span class="nav-text">根本区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">3.3.</span> <span class="nav-text">对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程的状态"><span class="nav-number">4.</span> <span class="nav-text">进程的状态</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用-2"><span class="nav-number">4.1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态种类"><span class="nav-number">4.2.</span> <span class="nav-text">状态种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概念上进程的状态"><span class="nav-number">4.2.1.</span> <span class="nav-text">概念上进程的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-中进程的状态"><span class="nav-number">4.2.2.</span> <span class="nav-text">Linux 中进程的状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#僵死进程"><span class="nav-number">4.3.</span> <span class="nav-text">僵死进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#孤儿进程"><span class="nav-number">4.4.</span> <span class="nav-text">孤儿进程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软中断"><span class="nav-number">5.</span> <span class="nav-text">软中断</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#fork-vfork-clone"><span class="nav-number">6.</span> <span class="nav-text">fork/vfork/clone</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#exec"><span class="nav-number">6.1.</span> <span class="nav-text">exec()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#会话与进程组"><span class="nav-number">7.</span> <span class="nav-text">会话与进程组</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程组"><span class="nav-number">7.1.</span> <span class="nav-text">进程组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话-session"><span class="nav-number">7.2.</span> <span class="nav-text">会话 session</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#终端关闭"><span class="nav-number">7.3.</span> <span class="nav-text">终端关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nohup"><span class="nav-number">7.4.</span> <span class="nav-text">nohup</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#进程间通信"><span class="nav-number">1.</span> <span class="nav-text">进程间通信</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用"><span class="nav-number">1.1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.2.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七种方式"><span class="nav-number">1.3.</span> <span class="nav-text">七种方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#信号"><span class="nav-number">1.4.</span> <span class="nav-text">信号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#信号的状态"><span class="nav-number">1.4.1.</span> <span class="nav-text">信号的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#对信号的操作"><span class="nav-number">1.4.2.</span> <span class="nav-text">对信号的操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#阻塞信号"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">阻塞信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#屏蔽信号"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">屏蔽信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#取消信号"><span class="nav-number">1.4.2.3.</span> <span class="nav-text">取消信号</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SIGKILL-和-SIGSTOP-信号"><span class="nav-number">1.4.2.4.</span> <span class="nav-text">SIGKILL 和 SIGSTOP 信号</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内核与信号"><span class="nav-number">1.4.3.</span> <span class="nav-text">内核与信号</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程的内存分布"><span class="nav-number">2.</span> <span class="nav-text">进程的内存分布</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#堆栈段"><span class="nav-number">2.1.</span> <span class="nav-text">堆栈段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据段"><span class="nav-number">2.2.</span> <span class="nav-text">数据段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BSS段"><span class="nav-number">2.3.</span> <span class="nav-text">BSS段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码段"><span class="nav-number">2.4.</span> <span class="nav-text">代码段</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程和线程"><span class="nav-number">3.</span> <span class="nav-text">进程和线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用-1"><span class="nav-number">3.1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#根本区别"><span class="nav-number">3.2.</span> <span class="nav-text">根本区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对比"><span class="nav-number">3.3.</span> <span class="nav-text">对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程、线程、携程切换"><span class="nav-number">4.</span> <span class="nav-text">进程、线程、携程切换</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程切换"><span class="nav-number">4.1.</span> <span class="nav-text">进程切换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程切换"><span class="nav-number">4.2.</span> <span class="nav-text">线程切换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#协程的切换"><span class="nav-number">4.3.</span> <span class="nav-text">协程的切换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#进程的状态"><span class="nav-number">5.</span> <span class="nav-text">进程的状态</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#引用-2"><span class="nav-number">5.1.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#状态种类"><span class="nav-number">5.2.</span> <span class="nav-text">状态种类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#概念上进程的状态"><span class="nav-number">5.2.1.</span> <span class="nav-text">概念上进程的状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux-中进程的状态"><span class="nav-number">5.2.2.</span> <span class="nav-text">Linux 中进程的状态</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#僵死进程"><span class="nav-number">5.3.</span> <span class="nav-text">僵死进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#孤儿进程"><span class="nav-number">5.4.</span> <span class="nav-text">孤儿进程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#软中断"><span class="nav-number">6.</span> <span class="nav-text">软中断</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#fork-vfork-clone"><span class="nav-number">7.</span> <span class="nav-text">fork/vfork/clone</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#exec"><span class="nav-number">7.1.</span> <span class="nav-text">exec()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#会话与进程组"><span class="nav-number">8.</span> <span class="nav-text">会话与进程组</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程组"><span class="nav-number">8.1.</span> <span class="nav-text">进程组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#会话-session"><span class="nav-number">8.2.</span> <span class="nav-text">会话 session</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#终端关闭"><span class="nav-number">8.3.</span> <span class="nav-text">终端关闭</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nohup"><span class="nav-number">8.4.</span> <span class="nav-text">nohup</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -527,20 +569,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">88</span>
+          <span class="site-state-item-count">89</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-count">23</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -552,6 +594,17 @@
   </div>
 
 
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title">
+      <i class="fa fa-fw fa-link"></i>
+      友链
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://kalasearch.cn/" title="https://kalasearch.cn/" rel="noopener" target="_blank">卡拉搜索</a>
+        </li>
+    </ul>
+  </div>
 
       </div>
 
