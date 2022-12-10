@@ -1,5 +1,5 @@
 ---
-title: All tags
-date: 2018-09-29 00:08:18
+title: tags
+date: 2022-12-10 15:49:41
 type: "tags"
 ---

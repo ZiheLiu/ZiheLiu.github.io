@@ -18,3 +18,6 @@ $ hexo generate
 $ hexo deploy
 ```
 
+### 修改样式
+修改的样式在文件 `themes/next/source/css/_common/components/post/post-body.styl` 中。
+
