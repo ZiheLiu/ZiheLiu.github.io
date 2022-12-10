@@ -112,7 +112,7 @@ accessibility:
   select_lang: Select language
 
 symbols_count_time:
-  count: Word count in article
+  count: Word count
   count_total: Word count total
   time: Reading time
   time_total: Reading time total
