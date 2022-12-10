@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Hexo 使用记录</title>
+    <url>/2022/12/hexo-use/</url>
+    <content><![CDATA[<h1 id="简介">简介</h1>
+<p>工作一年多，很久没有系统学习了，重新收拾一下博客。 重新使用 Hexo 和
+NexT 主题，发现很多功能都忘记了，所以再次记录一下。</p>
+<h1 id="运行">运行</h1>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在更改 hexo 的配置、CSS、JS 文件后，需要清理缓存，重新运行才能生效</span></span><br><span class="line">hexo clean</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在本地启动临时服务</span></span><br><span class="line">hexo server</span><br><span class="line"></span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+<h1 id="语法技巧">语法技巧</h1>
+<h2 id="公式">公式</h2>
+<blockquote>
+<p>见<a
+href="https://theme-next.js.org/docs/third-party-services/math-equations.html">官方文档</a></p>
+</blockquote>
+<p>块公式需要以<code>$$\begin&#123;equation&#125; \end&#123;equation&#125;$$</code> 包裹。
+行内公式以 <code>$$</code> 包裹。</p>
+<p>可以使用 Latex 的所有公式语法，包括公式编号 <code>\label&#123;eq1&#125;</code>
+和对其的引用 <code>\eqref&#123;eq1&#125;</code>。举个例子</p>
+<figure class="highlight latex"><table><tr><td class="code"><pre><span class="line"><span class="built_in">$</span><span class="built_in">$</span><span class="keyword">\begin</span>&#123;equation&#125; <span class="keyword">\label</span>&#123;eq1&#125;</span><br><span class="line">e=mc<span class="built_in">^</span>2</span><br><span class="line"><span class="keyword">\end</span>&#123;equation&#125;<span class="built_in">$</span><span class="built_in">$</span></span><br></pre></td></tr></table></figure>
+<p>上述代码会生成如下的公式，并且可以使用 <code>$\eqref&#123;eq1&#125;$</code>
+对其进行引用 <span class="math inline">\(\eqref{eq1}\)</span>。 <span
+class="math display">\[\begin{equation} \label{eq1}
+e=mc^2
+\end{equation}\]</span></p>
+<h2 id="链接站内文章">链接站内文章</h2>
+<blockquote>
+<p>参考 <a
+href="https://github.com/iissnan/hexo-theme-next/issues/978">[GitHub]
+next 或者 hexo 链接站内文章的方法</a></p>
+</blockquote>
+<p>对于链接站内文章有两种方式：</p>
+<ul>
+<li>不链接页内锚点 Hexo 语法支持 <code>&#123;% post_link <file-name> <text> %&#125;</code>。例如
+<code>&#123;% post_link hexo-use Hexo 使用记录 %&#125;</code> ⇨ <a href="/2022/12/hexo-use/" title="Hexo 使用记录">Hexo 使用记录</a>。</li>
+<li>链接页内锚点 Hexo 语法不支持这种方式，只能自己手写链接了。例如
+<code>[2022/12/hexo-use/#运行](/2022/12/hexo-use/#运行)</code> ⇨ <a
+href="/2022/12/hexo-use/#运行">2022/12/hexo-use/#运行</a>。</li>
+</ul>
+]]></content>
+      <categories>
+        <category>others</category>
+      </categories>
+      <tags>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+</search>
