@@ -48,7 +48,14 @@ e=mc^2
 
 对于链接站内文章有两种方式：
 
-- 不链接页内锚点
-  Hexo 语法支持 `{% post_link <file-name> <text> %}`。例如 `{% post_link hexo-use Hexo 使用记录 %}` ⇨ {% post_link hexo-use Hexo 使用记录 %}。
-- 链接页内锚点
+- 不链接页内锚点    
+  Hexo 语法支持 `{% post_link &lt;file-name&gt; &lt;text&gt; %}`。例如 `{% post_link hexo-use Hexo 使用记录 %}` ⇨ {% post_link hexo-use Hexo 使用记录 %}。
+- 链接页内锚点    
   Hexo 语法不支持这种方式，只能自己手写链接了。例如 `[2022/12/hexo-use/#运行](/2022/12/hexo-use/#运行)` ⇨ [2022/12/hexo-use/#运行](/2022/12/hexo-use/#运行)。
+
+## 大于号和小于号
+
+Hexo 渲染大于号和小于号时，如果二者成对出现，会被识别为一个 HTML 标签，所以需要使用转义字符：
+
+- `&lt;` ⇨ &lt; 
+- `&gt;` ⇨ &gt;

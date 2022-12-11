@@ -70,7 +70,3 @@ updated
 
 
 
-## 布局
-
-scheme: Gemini
-
