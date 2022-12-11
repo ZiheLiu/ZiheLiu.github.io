@@ -27,7 +27,7 @@
 <meta property="og:description" content="简介 工作一年多，很久没有系统学习了，重新收拾一下博客。 重新使用 Hexo 和 NexT 主题，发现很多功能都忘记了，所以再次记录一下。 运行">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-12-10T09:03:18.000Z">
-<meta property="article:modified_time" content="2022-12-10T09:58:34.053Z">
+<meta property="article:modified_time" content="2022-12-11T10:17:23.387Z">
 <meta property="article:author" content="Zihe Liu">
 <meta property="article:tag" content="hexo">
 <meta name="twitter:card" content="summary">
@@ -141,7 +141,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">2.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E6%8A%80%E5%B7%A7"><span class="nav-number">3.</span> <span class="nav-text">语法技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E7%AB%99%E5%86%85%E6%96%87%E7%AB%A0"><span class="nav-number">3.2.</span> <span class="nav-text">链接站内文章</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C"><span class="nav-number">2.</span> <span class="nav-text">运行</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95%E6%8A%80%E5%B7%A7"><span class="nav-number">3.</span> <span class="nav-text">语法技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AC%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">公式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%93%BE%E6%8E%A5%E7%AB%99%E5%86%85%E6%96%87%E7%AB%A0"><span class="nav-number">3.2.</span> <span class="nav-text">链接站内文章</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%A7%E4%BA%8E%E5%8F%B7%E5%92%8C%E5%B0%8F%E4%BA%8E%E5%8F%B7"><span class="nav-number">3.3.</span> <span class="nav-text">大于号和小于号</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -227,9 +227,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2022-12-10 17:03:18 / Modified: 17:58:34" itemprop="dateCreated datePublished" datetime="2022-12-10T17:03:18+08:00">2022-12-10</time>
+      <time title="Created: 2022-12-10 17:03:18" itemprop="dateCreated datePublished" datetime="2022-12-10T17:03:18+08:00">2022-12-10</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2022-12-11 18:17:23" itemprop="dateModified" datetime="2022-12-11T18:17:23+08:00">2022-12-11</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -269,7 +275,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count: </span>
-      <span>314</span>
+      <span>368</span>
     </span>
     <span class="post-meta-item" title="Reading time">
       <span class="post-meta-item-icon">
@@ -316,11 +322,20 @@ next 或者 hexo 链接站内文章的方法</a></p>
 </blockquote>
 <p>对于链接站内文章有两种方式：</p>
 <ul>
-<li>不链接页内锚点 Hexo 语法支持 <code>&#123;% post_link <file-name> <text> %&#125;</code>。例如
+<li>不链接页内锚点<br />
+Hexo 语法支持 <code>&#123;% post_link &lt;file-name&gt; &lt;text&gt; %&#125;</code>。例如
 <code>&#123;% post_link hexo-use Hexo 使用记录 %&#125;</code> ⇨ <a href="/2022/12/hexo-use/" title="Hexo 使用记录">Hexo 使用记录</a>。</li>
-<li>链接页内锚点 Hexo 语法不支持这种方式，只能自己手写链接了。例如
+<li>链接页内锚点<br />
+Hexo 语法不支持这种方式，只能自己手写链接了。例如
 <code>[2022/12/hexo-use/#运行](/2022/12/hexo-use/#运行)</code> ⇨ <a
 href="/2022/12/hexo-use/#运行">2022/12/hexo-use/#运行</a>。</li>
+</ul>
+<h2 id="大于号和小于号">大于号和小于号</h2>
+<p>Hexo 渲染大于号和小于号时，如果二者成对出现，会被识别为一个 HTML
+标签，所以需要使用转义字符：</p>
+<ul>
+<li><code>&amp;lt;</code> ⇨ &lt; </li>
+<li><code>&amp;gt;</code> ⇨ &gt;</li>
 </ul>
 
     </div>

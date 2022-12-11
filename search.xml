@@ -32,11 +32,20 @@ next 或者 hexo 链接站内文章的方法</a></p>
 </blockquote>
 <p>对于链接站内文章有两种方式：</p>
 <ul>
-<li>不链接页内锚点 Hexo 语法支持 <code>&#123;% post_link <file-name> <text> %&#125;</code>。例如
+<li>不链接页内锚点<br />
+Hexo 语法支持 <code>&#123;% post_link &lt;file-name&gt; &lt;text&gt; %&#125;</code>。例如
 <code>&#123;% post_link hexo-use Hexo 使用记录 %&#125;</code> ⇨ <a href="/2022/12/hexo-use/" title="Hexo 使用记录">Hexo 使用记录</a>。</li>
-<li>链接页内锚点 Hexo 语法不支持这种方式，只能自己手写链接了。例如
+<li>链接页内锚点<br />
+Hexo 语法不支持这种方式，只能自己手写链接了。例如
 <code>[2022/12/hexo-use/#运行](/2022/12/hexo-use/#运行)</code> ⇨ <a
 href="/2022/12/hexo-use/#运行">2022/12/hexo-use/#运行</a>。</li>
+</ul>
+<h2 id="大于号和小于号">大于号和小于号</h2>
+<p>Hexo 渲染大于号和小于号时，如果二者成对出现，会被识别为一个 HTML
+标签，所以需要使用转义字符：</p>
+<ul>
+<li><code>&amp;lt;</code> ⇨ &lt; </li>
+<li><code>&amp;gt;</code> ⇨ &gt;</li>
 </ul>
 ]]></content>
       <categories>
