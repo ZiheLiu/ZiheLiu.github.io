@@ -291,10 +291,10 @@ delete 操作符</h4>
 <figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Func</span><span class="params">(<span class="type">char</span> a[<span class="number">100</span>])</span> </span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="built_in">sizeof</span>(a)	&lt;&lt; endl;	<span class="comment">// 4B 而不是 100B</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 ]]></content>
       <categories>
-        <category>C++</category>
+        <category>CPP</category>
       </categories>
       <tags>
-        <tag>C++</tag>
+        <tag>CPP</tag>
       </tags>
   </entry>
 </search>
