@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha256-Z1K5uhUaJXA7Ll0XrZ/0JhX4lAtZFpT6jkKrEDT0drU=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"ziheliu.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.14.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":false,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="0. 导语 内存管理是 C++ 最令人切齿痛恨的问题，也是 C++ 最有争议的问题，C++ 高手从中获得了更好的性能、更大的自由，C++ 菜鸟的收获则是一遍一遍的检查代码和对 C++ 的痛恨，但内存管理在 C++ 中无处不在，内存泄漏几乎在每个 C++ 程序中都会发生，因此要想成为C++ 高手，内存管理一关是必须要过的， 除非放弃 C++，转到 Java 或者 .NET，他们的内存管理基本是自动的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++ 内存管理技术内幕">
+<meta property="og:url" content="http://ziheliu.github.io/2023/03/cpp-memory/index.html">
+<meta property="og:site_name" content="ZiheLiu">
+<meta property="og:description" content="0. 导语 内存管理是 C++ 最令人切齿痛恨的问题，也是 C++ 最有争议的问题，C++ 高手从中获得了更好的性能、更大的自由，C++ 菜鸟的收获则是一遍一遍的检查代码和对 C++ 的痛恨，但内存管理在 C++ 中无处不在，内存泄漏几乎在每个 C++ 程序中都会发生，因此要想成为C++ 高手，内存管理一关是必须要过的， 除非放弃 C++，转到 Java 或者 .NET，他们的内存管理基本是自动的">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-03-29T14:29:22.000Z">
+<meta property="article:modified_time" content="2023-03-29T15:48:52.674Z">
+<meta property="article:author" content="Zihe Liu">
+<meta property="article:tag" content="C++">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="http://ziheliu.github.io/2023/03/cpp-memory/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://ziheliu.github.io/2023/03/cpp-memory/","path":"2023/03/cpp-memory/","title":"C++ 内存管理技术内幕"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C++ 内存管理技术内幕 | ZiheLiu</title>
+  
+
+
+
+
+
+
+  <script async defer data-website-id="" src=""></script>
+
+  <script defer data-domain="" src=""></script>
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">ZiheLiu</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">2</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">2</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">2</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          TOC
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%BC%E8%AF%AD"><span class="nav-text">0. 导语</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-text">1. 内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#c%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86%E8%AF%A6%E8%A7%A3"><span class="nav-text">1.1. C++内存管理详解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F"><span class="nav-text">1.1.1. 内存分配方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E9%85%8D%E6%96%B9%E5%BC%8F%E7%AE%80%E4%BB%8B"><span class="nav-text">1.1.1.1. 分配方式简介</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%98%8E%E7%A1%AE%E5%8C%BA%E5%88%86%E5%A0%86%E4%B8%8E%E6%A0%88"><span class="nav-text">1.1.1.2. 明确区分堆与栈</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A0%86%E5%92%8C%E6%A0%88%E7%A9%B6%E7%AB%9F%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">1.1.1.3. 堆和栈究竟有什么区别？</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A7%E5%88%B6-c-%E7%9A%84%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D"><span class="nav-text">1.1.2. 控制 C++ 的内存分配</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%87%8D%E8%BD%BD%E5%85%A8%E5%B1%80%E7%9A%84-new-%E5%92%8C-delete-%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="nav-text">1.1.2.1. 重载全局的 new 和
+delete 操作符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E5%8D%95%E4%B8%AA%E7%9A%84%E7%B1%BB%E9%87%8D%E8%BD%BD-new-%E5%92%8Cdelete"><span class="nav-text">1.1.2.2. 为单个的类重载 new[]
+和delete[]</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%86%85%E5%AD%98%E9%94%99%E8%AF%AF%E5%8F%8A%E5%85%B6%E5%AF%B9%E7%AD%96"><span class="nav-text">1.1.3. 常见的内存错误及其对策</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E4%B8%8E%E6%95%B0%E7%BB%84%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="nav-text">1.1.4. 指针与数组的对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%86%85%E5%AE%B9"><span class="nav-text">1.1.4.1. 修改内容</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AE%B9%E5%A4%8D%E5%88%B6%E4%B8%8E%E6%AF%94%E8%BE%83"><span class="nav-text">1.1.4.2. 内容复制与比较</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E5%86%85%E5%AD%98%E5%AE%B9%E9%87%8F"><span class="nav-text">1.1.4.3. 计算内存容量</span></a></li></ol></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Zihe Liu"
+      src="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+  <p class="site-author-name" itemprop="name">Zihe Liu</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ZiheLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ZiheLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://ziheliu.github.io/2023/03/cpp-memory/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/13313784?s=460&v=4">
+      <meta itemprop="name" content="Zihe Liu">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ZiheLiu">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C++ 内存管理技术内幕 | ZiheLiu">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++ 内存管理技术内幕
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2023-03-29 22:29:22 / Modified: 23:48:52" itemprop="dateCreated datePublished" datetime="2023-03-29T22:29:22+08:00">2023-03-29</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count: </span>
+      <span>4.7k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>17 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="导语">0. 导语</h1>
+<p>内存管理是 C++ 最令人切齿痛恨的问题，也是 C++ 最有争议的问题，C++
+高手从中获得了更好的性能、更大的自由，C++
+菜鸟的收获则是一遍一遍的检查代码和对 C++ 的痛恨，但内存管理在 C++
+中无处不在，内存泄漏几乎在每个 C++ 程序中都会发生，因此要想成为C++
+高手，内存管理一关是必须要过的， 除非放弃 C++，转到 Java 或者
+.NET，他们的内存管理基本是自动的，当然你也放弃了自由和对内
+存的支配权，还放弃了 C++
+超绝的性能。本期专题将从内存管理、内存泄漏、内存回收这三个方面来探讨 C++
+内存管理问题。</p>
+<h1 id="内存管理">1. 内存管理</h1>
+<p>伟大的 Bill Gates 曾经失言：</p>
+<blockquote>
+<p>640K ought to be enough for everybody - Bill Gates 1981</p>
+</blockquote>
+<p>程序员们经常编写内存管理程序，往往提心吊胆。如果不想触雷，唯一的解决办法就是发现所有潜伏的地雷并且排除它们，躲是躲不了的。本文的内容比一般教科书的要深入得多，读者需细心阅读，做到真正地通晓内存管理。</p>
+<h2 id="c内存管理详解">1.1. C++内存管理详解</h2>
+<h3 id="内存分配方式">1.1.1. 内存分配方式</h3>
+<h4 id="分配方式简介">1.1.1.1. 分配方式简介</h4>
+<p>在 C++ 中，内存分成 5
+个区，他们分别是栈、堆、自由存储区、全局／静态存储区、常量存储区。</p>
+<ul>
+<li>栈。<br />
+在执行函数时，函数内局部变量的存储单元都可以在栈上创建，函数执行结束时这些存储单元自动被释放。栈内存分配运算内置于处理器的指令集中，效率很高，但是分配的内存容量有限。</li>
+<li>堆。<br />
+就是那些由 <code>new</code>
+分配的内存块，他们的释放编译器不去管，由我们的应用程序去控制，一般一个
+<code>new</code> 就要对应一个
+<code>delete</code>。如果程序员没有释放掉，那么在程序结束后，操作系统会自动回收。</li>
+<li>自由存储区。<br />
+就是那些由 <code>malloc</code>
+等分配的内存块，它和堆是十分相似的，不过它是用 <code>free</code>
+来结束自己的生命的。</li>
+<li>全局／静态存储区。<br />
+全局变量和静态变量被分配到同一块内存中。在以前的 C 语言中，全局变量
+又分为初始化的和未初始化的；在 C++
+里面没有这个区分了，它们共同占用同一块内存区。</li>
+<li>常量存储区。<br />
+这是一块比较特殊的存储区，它们里面存放的是常量，不允许修改。</li>
+</ul>
+<h4 id="明确区分堆与栈">1.1.1.2. 明确区分堆与栈</h4>
+<p>在 bbs
+上，堆与栈的区分问题，似乎是一个永恒的话题。由此可见，初学者对此往往是混淆不清的，所以我决定拿它第一个开刀。</p>
+<p>首先，我们举一个例子：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">f</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="type">int</span>* p = <span class="keyword">new</span> <span class="type">int</span>[<span class="number">5</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这条短短的一句话就包含了堆与栈。看到
+<code>new</code>，我们首先就应该想到，我们分配了一块堆内存，那么指针
+<code>p</code>
+呢？他分配的是一块栈内存，所以这句话的意思就是：在栈内存中存放了一个指向一块堆内存的指针
+<code>p</code>。程序会先确定在堆中分配内存的大小，然后调用
+<code>operator new</code>
+分配内存，然后返回这块内存的首地址，放入栈中，他在 VC6
+下的汇编代码如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">00401028 push 14h</span><br><span class="line">0040102A call operator new (00401060)</span><br><span class="line">0040102F add esp,4</span><br><span class="line">00401032 mov dword ptr [ebp.-8],eax </span><br><span class="line">00401035 mov eax,dword ptr [ebp-8]</span><br><span class="line">00401038 mov dword ptr [ebp-4],eax</span><br></pre></td></tr></table></figure>
+<p>这里，我们为了简单井没有释放内存，那么该怎么去释放呢？是
+<code>delete p</code> 么？奥，错了，应该是
+<code>delete []p</code>，这是为了告诉编译器：我删除的是一个数组，VC6
+就会根据相应的 Cookie 信息去进行释放内存的工作。</p>
+<h4 id="堆和栈究竟有什么区别">1.1.1.3. 堆和栈究竟有什么区别？</h4>
+<p>好了，我们回到我们的主题：堆和栈究竟有什么区别？</p>
+<p>主要的区别有以下几点：</p>
+<ol type="1">
+<li>管理方式不同；</li>
+<li>空间大小不同；</li>
+<li>能否产生随便不同；</li>
+<li>生长方向不同；</li>
+<li>分配方式不同；</li>
+<li>分配效率不同；</li>
+</ol>
+<p><strong>管理方式</strong>：对于栈来讲，是由编译器自动管理，无需我们手工控制；对于堆来说，释放工作由程序员控制，容易产生
+memory leak。</p>
+<p><strong>空间大小</strong>：一般来讲在 32 位系统下，堆内存可以达到 4GB
+的空间，从这个角度来看堆内存几乎是没有什么限制的。但是对于栈来讲，一般都是有一定的空间大小的，例如，在
+VC6 下面，默认的栈空间大小是
+1MB（好像是，记不清楚了）。当然，我们可以修改：</p>
+<p>打开工程，依次操作菜单如下：Project-&gt;Setting-&gt;Link，在 Category
+中选中 Output，然后在 Reserve 中设定堆栈的最大值和 commit。</p>
+<p>注意：reserve 最小值为 4B；commit
+是保留在虚拟内存的页文件里面，它设置的较大会使栈开辟较大的值，可能增加内存的开销和启动时间。</p>
+<p><strong>碎片问题</strong>：对于堆来讲，频繁的
+<code>new</code>/<code>delete</code>
+势必会造成内存空间的不连续，从而造成大量的
+碎片，使程序效率降低。对于栈来讲，则不会存在这个问题，因为栈是先进后出的队列，他们是如此的一一对应，以至于永远都不可能有一个内存块从栈中间弹出，在他弹出之前，在他上面的后进的栈内容已经被弹出，详细的可以参考数据结构，这里我们就不再一一讨论了。</p>
+<p><strong>生长方向</strong>：对于堆来讲，生长方向是向上的，也就是向着内存地址增加的方向；对于栈来讲，它的生长方向是向下的，是向着内存地址减小的方向增长。</p>
+<p><strong>分配方式</strong>：堆都是动态分配的，没有静态分配的堆。栈有2种分配方式：静态分配和动态分配。静态分配是编译器完成的，比如局部变量的分配。动态分配由
+<code>alloca</code>
+函数进行分配，但是栈的动态分配和堆是不同的，他的动态分配是由编译器进行释放，无需我们手工实现。</p>
+<p><strong>分配效率</strong>：栈是机器系统提供的数据结构，计算机会在底层对栈提供支持：分配专门的寄存器存放栈的地址，压栈出栈都有专门的指令执行，这就决定了栈的效率比较高。堆则是
+C/C++
+函数库提供的，它的机制是很复杂的，例如为了分配一块内存，库函数会按照一定的算法（具体的算法可以参考数据结构／操作系统）在堆内存中搜索可用的足够大小的空间，如果没有足够大小的空间（可能是
+由于内存碎片太多），就有可能调用系统功能去增加程序数据段的内存空间，这样就有机会分到足够大小的内存，然后进行返回。显然，堆的效率比栈要低得多。</p>
+<p>从这里我们可以看到，堆和栈相比，由于大量
+<code>new</code>/<code>delete</code>
+的使用，容易造成大量的内存碎片；由于没有专门的系统支持，效率很低；由于可能引发用户态和核心态的切换，内存的申请，代价变得更加昂贵。所以栈在程序中是应用最广泛的，就算是函数的调用也利用栈去完成，函数调用过程中的参数、返回地址、EBP
+和局部变量都采用栈的方式存放。所以，我们推荐大家尽量用栈，而不是用堆。</p>
+<p>虽然栈有如此众多的好处，但是由于和堆相比不是那么灵活，有时候分配大量的内存空间，还是用堆好一些。</p>
+<p>无论是堆还是栈，都要防止越界现象的发生（除非你是故意使其越界），因为越界的结果要么是程序崩溃，要么是摧毁程序的堆、栈结构，产生意想不到的结果，就算是在你的程序运行过程中，没有发生上面的问题，你还是要小心，说不定什么时候就崩掉，那时候
+debug 可是相当困难的 :)</p>
+<h3 id="控制-c-的内存分配">1.1.2. 控制 C++ 的内存分配</h3>
+<p>在嵌入式系统中使用 C++ 的一个常见问题是内存分配，即对
+<code>new</code> 和 <code>delete</code> 操作符的失控。</p>
+<p>具有讽刺意味的是，问题的根源却是 C++
+对内存的管理非常的容易而且安全。具体地说，当一个对象被消除时，它的析构函数能够安全的释放所分配的内存。</p>
+<p>这当然是个好事情，但是这种使用的简单性使得程序员们过度使用
+<code>new</code> 和<code>delete</code>，而不注意在嵌入式 C++
+环境中的因果关系。井且，在嵌入式系统中，由于内存的限制，频繁的动态分配不定大小的内存会引起很大的问题以及堆破碎的风险。</p>
+<p>作为忠告，保守的使用内存分配是嵌入式环境中的第一原则。</p>
+<p>但当你必须要使用 <code>new</code> 和 <code>delete</code>
+时，你不得不控制 C++ 中的内存分配。你需要用一个全局的 <code>new</code>
+和 <code>delete</code> 来代替系统的内存分配符，井且一个类一个类的重载
+<code>new</code> 和 <code>delete</code>。</p>
+<p>一个防止堆破碎的通用方法是从不同固定大小的内存池中分配不同类型的对象。对每个类重载
+<code>new</code> 和 <code>delete</code> 就提供了这样的控制。</p>
+<h4 id="重载全局的-new-和-delete-操作符">1.1.2.1. 重载全局的 new 和
+delete 操作符</h4>
+<p>可以很容易地重载 <code>new</code> 和 <code>delete</code>
+操作符，如下所示：</p>
+<p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span>* <span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="type">void</span>* p = <span class="built_in">malloc</span>(size);</span><br><span class="line">  <span class="keyword">return</span> (p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span>* <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="type">void</span>* p)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">free</span>(p);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这段代码可以代替默认的操作符来满足内存分配的请求。出于解释 C++
+的目的，我们也可以直接调用 <code>malloc()</code> 和
+<code>free()</code>。</p>
+<p>也可以对单个类的 <code>new</code> 和 <code>delete</code>
+操作符重载。这使你能灵活的控制对象的内存分配。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">TestClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="function"><span class="type">void</span>* <span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span> size)</span></span>;</span><br><span class="line">  <span class="function"><span class="type">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="type">void</span>* p)</span></span>;</span><br><span class="line">  <span class="comment">// ... other members here ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span>* TestClass::<span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="type">size_t</span> size)</span> </span>&#123;</span><br><span class="line">  <span class="type">void</span>* p = <span class="built_in">malloc</span>(size); <span class="comment">// Replace this with alternative allocator</span></span><br><span class="line">  <span class="keyword">return</span> (p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> TestClass::<span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="type">void</span>* p)</span> </span>&#123;</span><br><span class="line">  <span class="built_in">free</span>(p); <span class="comment">// Replace this with alternative de-allocator</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所有 <code>TestClass</code>
+对象的内存分配都采用这段代码。更进一步，任何从 <code>TestClass</code>
+继承的类也都采用这一方式，除非它自己也重载了 <code>new</code> 和
+<code>delete</code> 操作符。通过重载 <code>new</code> 和
+<code>delete</code>
+操作符的方法，你可以自由地采用不同的分配策略，从不同的内存池中分配不同的类对象。</p>
+<h4 id="为单个的类重载-new-和delete">1.1.2.2. 为单个的类重载 new[]
+和delete[]</h4>
+<p>必须小心对象数组的分配。你可能希望调用到被你重载过的 <code>new</code>
+和 <code>delete</code> 操作符，但并不如此。内存的请求被定向到全局的
+<code>new[]</code> 和
+<code>delete[]</code>操作符，而这些内存来自于系统堆。</p>
+<p>C++
+将对象数组的内存分配作为一个单独的操作，而不同于单个对象的内存分配。为了改变这种方式，你同样需要重载
+<code>new[]</code> 和 <code>delete[]</code> 操作符。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">TestClass</span> &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  <span class="type">void</span>* <span class="keyword">operator</span> <span class="keyword">new</span>[](<span class="type">size_t</span> size);</span><br><span class="line">  <span class="type">void</span> <span class="keyword">operator</span> <span class="keyword">delete</span>[](<span class="type">void</span>* p);</span><br><span class="line">  <span class="comment">// ... other members here ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span>* TestClass::<span class="keyword">operator</span> <span class="keyword">new</span>[](<span class="type">size_t</span> size) &#123;</span><br><span class="line">  <span class="type">void</span>* p = <span class="built_in">malloc</span>(size);</span><br><span class="line">  <span class="keyword">return</span> (p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> TestClass::<span class="keyword">operator</span> <span class="keyword">delete</span>[](<span class="type">void</span>* p) &#123;</span><br><span class="line">  <span class="built_in">free</span>(p);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">(<span class="type">void</span>)</span> </span>&#123;</span><br><span class="line">  TestClass* p = <span class="keyword">new</span> TestClass[<span class="number">10</span>];</span><br><span class="line">  <span class="comment">// ... etc ...</span></span><br><span class="line">  <span class="keyword">delete</span>[] p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但是注意：对于多数 C++ 的实现，<code>new[]</code>
+操作符中的个数参数是数组的大小加上额外的存储对象数目的一些字节。在你的内存分配机制重要考虑的这一点。你应该尽量避免分配对象数组，从而使你的内存分配策略简单。</p>
+<h3 id="常见的内存错误及其对策">1.1.3. 常见的内存错误及其对策</h3>
+<p>发生内存错误是件非常麻烦的事情。编译器不能自动发现这些错误，通常是在程序运行时才能捕捉到。而这些错误大多没有明显的症状，时隐时现，增加了改错的难度。有时用户怒气冲冲地把你找来，程序却没有发生任何问题，你一走，错误又发作了。常见的内存错误及其对策如下：</p>
+<ul>
+<li>内存分配未成功，却使用了它。<br />
+编程新手常犯这种错误，因为他们没有意识到内存分配会不成功。常用解决办法是，在使用内存之前检查指针是否为
+<code>NULL</code>。如果指针 <code>p</code>
+是函数的参数，那么在函数的入口处用 <code>assert(p!=NULL)</code>
+进行检查。如果是用 <code>malloc</code> 或 <code>new</code>
+来申请内存，应该用 <code>if (p==NULL)</code> 或 <code>if(p!=NULL)</code>
+进行防错处理。</li>
+<li>内存分配虽然成功，但是尚未初始化就引用它。<br />
+犯这种错误主要有两个起因：一是没有初始化的观念；二是误以为内存的缺省初值全为零，导致引用初值错误（例如数组）。内存的缺省初值究竟是什么井没有统一的标准，尽管有些时候为零值，我们宁可信其无不可信其有。所以无论用何种方式创建数组，都别忘了赋初值，即便是赋零值也不可省略，不要赚麻烦。</li>
+<li>内存分配成功井且已经初始化，但操作越过了内存的边界。<br />
+例如在使用数组时经常发生下标”加 1”或者“减 1”的操作。特别是在
+<code>for</code> 循环语句中，循环次数很容易搞错，导致数组操作越界。</li>
+<li>忘记了释放内存，造成内存泄漏。<br />
+含有这种错误的函数每被调用一次就丢失一块内存。刚开始时系统的内存充足，你看不到错误。终有一次程序突然死掉，系统出现提示：内存耗尽。
+动态内存的申请与释放必须配对，程序中 <code>malloc</code> 与
+<code>free</code> 的使用次数一定要相同，否则肯定有错误（<code>new</code>
+/ <code>delete</code> 同理）。</li>
+<li>释放了内存却继续使用它。<br />
+有三种情况：
+<ol type="1">
+<li>程序中的对象调用关系过千复杂，实在难以搞清楚某个对象究竟是否已经释放了内存，此时应该重新设计数据结构，从根本上解决对象管理的混乱局面。</li>
+<li>函数的 <code>return</code>
+语句写错了，注意不要返回指向“栈内存”的“指针”或者“引用“，因为该内存在函数体结束时被自动销毁。</li>
+<li>使用 <code>free</code> 或 <code>delete</code>
+释放了内存后，没有将指针设置为
+<code>NULL</code>。导致产生“野指针“。</li>
+</ol></li>
+</ul>
+<p>规则总结</p>
+<ul>
+<li>【规则1】用 <code>malloc</code> 或 <code>new</code>
+申请内存之后，应该立即检查指针值是否为
+<code>NULL</code>。防止使用指针值为 <code>NULL</code> 的内存。</li>
+<li>【规则2】不要忘记为数组和动态内存赋初值。防止将未被初始化的内存作为右值使用。</li>
+<li>【规则3】避免数组或指针的下标越界，特别要当心发生”加 1“或者”少
+1“操作。</li>
+<li>【规则4】动态内存的申请与释放必须配对，防止内存泄漏。</li>
+<li>【规则5】用 <code>free</code> 或 <code>delete</code>
+释放了内存之后，立即将指针设置为
+<code>NULL</code>，防止产生”野指针“。</li>
+</ul>
+<h3 id="指针与数组的对比">1.1.4. 指针与数组的对比</h3>
+<p>C/C++
+程序中，指针和数组在不少地方可以相互替换着用，让人产生一种错觉，以为两者是等价的。</p>
+<ul>
+<li>数组要么在静态存储区被创建（如全局数组），要么在栈上被创建。数组名对应着（而不是指向）
+一块内存，其地址与容量在生命期内保持不变，只有数组的内容可以改变。</li>
+<li>指针可以随时指向任意类型的内存块，它的特征是“可变”，所以我们常用指针来操作动态内存。指针远比数组灵活，但也更危险。</li>
+</ul>
+<p>下面以字符串为例比较指针与数组的特性。</p>
+<h4 id="修改内容">1.1.4.1. 修改内容</h4>
+<p>下面示例中，字符数组 <code>a</code> 的容量是 6
+个字符，其内容为“hello”。<code>a</code> 的内容可以改变，如
+<code>a[0]='X'</code>。指针 <code>p</code>
+指向常量字符串“world”（位于静态存储区，内容为“world”)，常量字符串的内容是不可以被修改的。从语法上看，编译器并不觉得语句
+<code>p[0]='X'</code>
+有什么不妥，但是该语句企图修改常量字符串的内容而导致运行错误。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> a[] = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">a[<span class="number">0</span>] =<span class="string">&#x27;X&#x27;</span>;</span><br><span class="line">cout &lt;&lt; a &lt;&lt; endl;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span>* p = <span class="string">&quot;world&quot;</span>;  <span class="comment">//注意 p 指向常量字符串</span></span><br><span class="line">p[<span class="number">0</span>] =<span class="string">&#x27;X&#x27;</span>; <span class="comment">// 编译器不能发现该错误</span></span><br><span class="line">cout &lt;&lt; p &lt;&lt; endl;</span><br></pre></td></tr></table></figure>
+<h4 id="内容复制与比较">1.1.4.2. 内容复制与比较</h4>
+<p>不能对数组名进行直接复制与比较。若想把数组 <code>a</code>
+的内容复制给数组 <code>b</code>，不能用语句
+<code>b = a</code>，否则将产生编译错误。应该用标准库函数
+<code>strcpy</code> 进行复制。同理，比较 <code>b</code> 和
+<code>a</code> 的内容是否相同，不能用 <code>if (b==a)</code>
+来判断，应该用标准库函数 strcmp 进行比较。</p>
+<p>语句 <code>p = a</code> 并不能把 <code>a</code> 的内容复制给指针
+<code>p</code>，而是把 <code>a</code> 的地址赋给了
+<code>p</code>。要想复制 <code>a</code> 的内容，可以先用库函数
+<code>malloc</code> 为 <code>p</code> 申请一块容量为
+<code>strlen(a) + 1</code> 的内存，再用 <code>strcpy</code>
+进行字符串复制。同理，语句 <code>if (p==a)</code>
+比较的不是内容而是地址，应该用库函数 <code>strcmp</code> 来比较。</p>
+<p><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组</span></span><br><span class="line"><span class="type">char</span> a[] = <span class="string">&quot;hello&quot;</span>;</span><br><span class="line"><span class="type">char</span> b[<span class="number">10</span>];</span><br><span class="line"><span class="built_in">strcpy</span>(b, a); <span class="comment">// 不能用 b = a</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strcmp</span>(b, a) == <span class="number">0</span>) &#123; <span class="comment">// 不能用 if (b == a)</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 指针</span></span><br><span class="line"><span class="type">int</span> len = <span class="built_in">strlen</span>(a);</span><br><span class="line"><span class="type">char</span>* p = (<span class="type">char</span>*)<span class="built_in">malloc</span>(<span class="built_in">sizeof</span>(chat) * (len + <span class="number">1</span>));</span><br><span class="line"><span class="built_in">strcpy</span>(p, a); <span class="comment">// 不能用 b = a</span></span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">strcmp</span>(p, a) == <span class="number">0</span>) &#123; <span class="comment">// 不能用 if (b == a)</span></span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h4 id="计算内存容量">1.1.4.3. 计算内存容量</h4>
+<p>用运算符 <code>sizeof</code>
+可以计算出数组的容量（字节数）。如下示例中，<code>sizeof(a)</code>
+的值是 12（注意别忘了 <code>\0</code>）。指针 <code>p</code> 指向
+<code>a</code>，但是 <code>sizeof(p)</code> 的值却是4。这是因为
+<code>sizeof(p)</code> 得到的是一个指针变量的字节数，相当于
+<code>sizeof(char*)</code>，而不是 <code>p</code> 所指的内存容量。C/C++
+语言没有办法知道指针所指的内存容最，除非在申请内存时记住它。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">char</span> a[]    = <span class="string">&quot;hello world&quot;</span>; </span><br><span class="line"><span class="type">char</span>* p = a;</span><br><span class="line">cout&lt;&lt; <span class="built_in">sizeof</span>(a) &lt;&lt; endl;    <span class="comment">// 12B</span></span><br><span class="line">cout&lt;&lt; <span class="built_in">sizeof</span>(p) &lt;&lt; endl;    <span class="comment">// 4B</span></span><br></pre></td></tr></table></figure>
+<p>注意当数组作为函数的参数进行传递时，该数组自动退化为同类型的指针。如下示例中，不论数组
+<code>a</code> 的容量是多少，<code>sizeof(a)</code> 始终等于
+<code>sizeof(char*)</code>。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">Func</span><span class="params">(<span class="type">char</span> a[<span class="number">100</span>])</span> </span>&#123;</span><br><span class="line">    cout &lt;&lt; <span class="built_in">sizeof</span>(a)	&lt;&lt; endl;	<span class="comment">// 4B 而不是 100B</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/12/hexo-use/" rel="prev" title="Hexo 使用记录">
+                  <i class="fa fa-chevron-left"></i> Hexo 使用记录
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Zihe Liu</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">5k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">19 mins.</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{"enable":true,"mhchem":false,"tags":"ams","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js","integrity":"sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI="}}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"ZiheLiu","repo":"ZiheLiu.github.io","client_id":"ca907b39e9fe53066330","client_secret":"cc37193c180a3140c0f5c28f11ab3172e9ddaacf","admin_user":"ZiheLiu","distraction_free_mode":false,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"en","js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/gitalk/1.8.0/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"d384a3011474a2931e9eaf37bee6e192"}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
