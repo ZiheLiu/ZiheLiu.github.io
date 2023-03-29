@@ -2,9 +2,9 @@
 title: C++ 内存管理技术内幕
 date: 2023-03-29 22:29:22
 categories:
-	- C++
+	- CPP
 tags:
-	- C++
+	- CPP
 typora-root-url: ../
 ---
 
